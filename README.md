@@ -1,2 +1,3 @@
 # imageBrowser
-An multi-channel image browser for R
+
+An interactive multi-channel image viewer for R
