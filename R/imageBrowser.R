@@ -34,23 +34,23 @@ imageBrowser <- function(image,
                         img_id = NULL,
                         ...) {
     # Object checks
-    .valid.sce.shiny(object, img_id, cell_id, image, mask)
-    .valid.image(image, img_id)
+    #.valid.sce.shiny(image, mask, object, cell_id, img_id)
+    #.valid.image(image, img_id)
 
-    if (!is.null(mask)) {
-        .valid.sce(object, img_id, cell_id, exprs_values = NULL)
-        .valid.mask(mask, img_id)
-        .valid.matchObjects.plotCells(object, mask, img_id)
-    }
+    #if (!is.null(mask)) {
+    #    .valid.sce(object, img_id, cell_id, exprs_values = NULL)
+    #    .valid.mask(mask, img_id)
+    #    .valid.matchObjects.plotCells(object, mask, img_id)
+    #}
 
-    if (!is.null(image) & !is.null(mask)) {
-        .valid.matchObjects.plotPixels(object, mask, image, img_id)
-    }
+    #if (!is.null(image) & !is.null(mask)) {
+    #    .valid.matchObjects.plotPixels(object, mask, image, img_id)
+    #}
 
     shiny_ui <- dashboardPage(
         header = .imageBrowser_header(),
         sidebar = .imageBrowser_sidebar(),
-        body = .imageBrowser_body(),
+        body = .imageBrowser_body()
     )
 
     shiny_server <- function(input, output, session) {

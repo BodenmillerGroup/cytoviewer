@@ -4,10 +4,10 @@
 
 # Create the application header
 #' @importFrom utils packageVersion
-.cytomapper_header <- function(){
+.imageBrowser_header <- function(){
     cm_head <- dashboardHeader(
         title = paste0("imageBrowser v",
-                        packageVersion("imageBrowser")),,
+                        packageVersion("imageBrowser")),
         dropdownMenu(
             notificationItem(
                 text = actionButton(
@@ -16,7 +16,6 @@
                     style = paste0("background-color: #3C8DBC; color: white; ",
                                     "border-color: #3C8DBC")
                 ),
-                icon = icon(""),
                 status = "info"
             ),
             notificationItem(
@@ -26,7 +25,6 @@
                     style = paste0("background-color: #3C8DBC; color: white; ",
                                     "border-color: #3C8DBC")
                 ),
-                icon = icon(""),
                 status = "info"
             ),
             type = "tasks",
@@ -38,7 +36,7 @@
     }
 
 # Create the side bar layout
-.cytomapper_sidebar <- function(){
+.imageBrowser_sidebar <- function(){
     cm_side <- dashboardSidebar(
         sidebarMenu(
             menuItem("General controls",
@@ -63,22 +61,22 @@
                                     "transparent; border-color: transparent",
                                     "; color: white; margin-left: 0px; ",
                                     "padding-left: 0px;")))),
-                    selectizeInput("marker1", choices = NULL),
-                    sliderInput(inputId = "contrast1",  min = 1, max = 100, value = 1),
-                    selectizeInput("marker2", choices = NULL),
-                    sliderInput(inputId = "contrast2",  min = 1, max = 100, value = 1),
-                    selectizeInput("marker3", choices = NULL),
-                    sliderInput(inputId = "contrast3",  min = 1, max = 100, value = 1),
-                    selectizeInput("marker4", choices = NULL),
-                    sliderInput(inputId = "contrast4",  min = 1, max = 100, value = 1),
-                    selectizeInput("marker5", choices = NULL),
-                    sliderInput(inputId = "contrast5",  min = 1, max = 100, value = 1),
-                    selectizeInput("marker6", choices = NULL),
-                    sliderInput(inputId = "contrast6",  min = 1, max = 100, value = 1),
+                    selectizeInput("marker1", label = "Marker 1", choices = "H3"),
+                    sliderInput(inputId = "contrast1", label = NULL,  min = 1, max = 100, value = 1),
+                    selectizeInput("marker2", label = "Marker 2", choices = NULL),
+                    sliderInput(inputId = "contrast2", label = NULL, min = 1, max = 100, value = 1),
+                    selectizeInput("marker3", label = "Marker 3", choices = NULL),
+                    sliderInput(inputId = "contrast3", label = NULL, min = 1, max = 100, value = 1),
+                    selectizeInput("marker4", label = "Marker 4", choices = NULL),
+                    sliderInput(inputId = "contrast4", label = NULL, min = 1, max = 100, value = 1),
+                    selectizeInput("marker5", label = "Marker 5", choices = NULL),
+                    sliderInput(inputId = "contrast5", label = NULL, min = 1, max = 100, value = 1),
+                    selectizeInput("marker6", label = "Marker 6", choices = NULL),
+                    sliderInput(inputId = "contrast6", label = NULL, min = 1, max = 100, value = 1),
                     icon = icon("fas fa-sliders-h"), 
                     startExpanded = TRUE),
             menuItem("Adavanced controls",
-                sliderInput(inputId = "test", min = 1, max = 12, value = 1),
+                sliderInput(inputId = "test", label = "test", min = 1, max = 12, value = 1),
                 icon = icon("far fa-chart-bar"), startExpanded = TRUE),
             id = "sidebar"
             )
@@ -90,13 +88,14 @@
 
 # Create the main body
 #' @importFrom svgPanZoom svgPanZoomOutput
-.cytomapper_body <- function(){
+.imageBrowser_body <- function(){
     cm_body <- dashboardBody(
-        column(width = 12,
-               svgPanZoomOutput("image_expression", height = "300px"))
+        box(
+            svgPanZoomOutput("imagePlot"),
+            title = "Expression", id = "expression", status = "primary",
+            width = 12, height = "550px")
         )
     return(cm_body)
-
     }
 
 

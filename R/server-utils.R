@@ -84,13 +84,11 @@
 }
 
 # Create interactive observers
-#' @importFrom matrixStats rowRanges
-.create_interactive_observer <- function(object, img_id, input, session,
-                                            rValues, objValues){
+.create_interactive_observer <- function(image, input, session){
 
     # Next Image Observer
     observeEvent(input$next.sample, {
-        img_IDs <- unique(colData(object)[,img_id])
+        img_IDs <- names(images)
         cur_index <- match(input$sample, img_IDs)
         updated_index <- ifelse(cur_index == length(img_IDs), 1, cur_index + 1)
     
@@ -105,7 +103,7 @@
 
     # Previous Image Observer
     observeEvent(input$previous.sample, {
-        img_IDs <- unique(colData(object)[,img_id])
+        img_IDs <- names(images)
         cur_index <- match(input$sample, img_IDs)
         updated_index <- ifelse(cur_index == 1,  length(img_IDs), cur_index - 1)
     
@@ -131,7 +129,7 @@
     updateSelectizeInput(session, inputId = "marker1",
                         choices = markers,
                         server = TRUE,
-                        selected = "")
+                        selected = markers[1])
     updateSelectizeInput(session, inputId = "marker2",
                          choices = markers,
                          server = TRUE,
@@ -157,7 +155,7 @@
 # Helper function to select markers
 .select_markers <- function(input, exprs_marker_update = TRUE){
     cur_markers <- c(input$marker1, input$marker2, input$marker3, 
-                     input$marker4, input$marker5)
+                     input$marker4, input$marker5, input$marker6)
 
     return(cur_markers)
 }
@@ -180,7 +178,7 @@
 # Visualize marker expression on images
 #' @importFrom svgPanZoom svgPanZoom renderSvgPanZoom
 #' @importFrom svglite stringSVG
-.createImageExpression <- function(input, object, mask, 
+.imagePlot <- function(input, object, mask, 
                                     image, img_id, cell_id, ...){
     renderSvgPanZoom({
 
@@ -189,11 +187,13 @@
         cur_bcg <- .select_contrast(input)
         cur_bcg <- cur_bcg[names(cur_bcg) != ""]
 
-        cur_image <- image[mcols(image)[,img_id] == input$sample]
+        cur_image <- image[input$sample]
         suppressMessages(svgPanZoom(stringSVG(
                     plotPixels(image = cur_image,
                             colour_by = cur_markers,
                             bcg = cur_bcg,
+                            legend = NULL,
+                            image_title = NULL,
                             ...)),
                 zoomScaleSensitivity = 0.4, maxZoom = 20,
                 controlIconsEnabled = TRUE, viewBox = FALSE))
