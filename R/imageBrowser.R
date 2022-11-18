@@ -27,14 +27,15 @@
 #'
 #'@import shiny
 #'@import shinydashboard
-imageBrowser <- function(object,
+imageBrowser <- function(image,
                         mask = NULL,
-                        image = NULL,
+                        object = NULL,
                         cell_id = NULL,
                         img_id = NULL,
                         ...) {
     # Object checks
     .valid.sce.shiny(object, img_id, cell_id, image, mask)
+    .valid.image(image, img_id)
 
     if (!is.null(mask)) {
         .valid.sce(object, img_id, cell_id, exprs_values = NULL)
@@ -42,11 +43,7 @@ imageBrowser <- function(object,
         .valid.matchObjects.plotCells(object, mask, img_id)
     }
 
-    if (!is.null(image)) {
-        if (is.null(mask)) {
-            stop("Please provide a mask object.")
-        }
-        .valid.image(image, img_id)
+    if (!is.null(image) & !is.null(mask)) {
         .valid.matchObjects.plotPixels(object, mask, image, img_id)
     }
 

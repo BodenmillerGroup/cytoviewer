@@ -42,11 +42,6 @@
     cm_side <- dashboardSidebar(
         sidebarMenu(
             menuItem("General controls",
-                    sliderInput("plotCount", label = "Select number of plots",
-                                min = 1, max = 12, value = 1),
-                    fluidRow(column(
-                        12, p(strong("Select sample")), 
-                        style="padding-left:30px;")),
                     fluidRow(column(2, 
                         actionButton("previous.sample", label = NULL,
                                     icon = icon("angle-left", class="fa-2x"),
@@ -68,17 +63,22 @@
                                     "transparent; border-color: transparent",
                                     "; color: white; margin-left: 0px; ",
                                     "padding-left: 0px;")))),
-
-                    selectizeInput("assay", 
-                                    label = "Select which assay to display",
-                                    choices = NULL, 
-                                    options = list(
-                                        placeholder = 'Select an assay', 
-                                        maxItems = 1)),
+                    selectizeInput("marker1", choices = NULL),
+                    sliderInput(inputId = "contrast1",  min = 1, max = 100, value = 1),
+                    selectizeInput("marker2", choices = NULL),
+                    sliderInput(inputId = "contrast2",  min = 1, max = 100, value = 1),
+                    selectizeInput("marker3", choices = NULL),
+                    sliderInput(inputId = "contrast3",  min = 1, max = 100, value = 1),
+                    selectizeInput("marker4", choices = NULL),
+                    sliderInput(inputId = "contrast4",  min = 1, max = 100, value = 1),
+                    selectizeInput("marker5", choices = NULL),
+                    sliderInput(inputId = "contrast5",  min = 1, max = 100, value = 1),
+                    selectizeInput("marker6", choices = NULL),
+                    sliderInput(inputId = "contrast6",  min = 1, max = 100, value = 1),
                     icon = icon("fas fa-sliders-h"), 
                     startExpanded = TRUE),
-            menuItem("Plots",
-                uiOutput("AdditionalPlots_sidebar"),
+            menuItem("Adavanced controls",
+                sliderInput(inputId = "test", min = 1, max = 12, value = 1),
                 icon = icon("far fa-chart-bar"), startExpanded = TRUE),
             id = "sidebar"
             )
@@ -92,14 +92,9 @@
 #' @importFrom svgPanZoom svgPanZoomOutput
 .cytomapper_body <- function(){
     cm_body <- dashboardBody(
-
-        tabBox(width = 12, id = "tabbox1",
-            tabPanel(title = "Scatter Plots", value = "tab1", 
-                        uiOutput("AdditionalPlots_tab1")),
-            tabPanel(title = "Images", value = "tab2", 
-                        uiOutput("AdditionalPlots_tab2")))
+        column(width = 12,
+               svgPanZoomOutput("image_expression", height = "300px"))
         )
-
     return(cm_body)
 
     }

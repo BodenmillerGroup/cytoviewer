@@ -120,10 +120,10 @@
 }
 
 # Create updateSelectizeInput objects
-.create_updateSelectizeInput <- function(object, img_id, input, session){
+.create_updateSelectizeInput <- function(image, input, session){
     # Store image IDs and marker names
-    img_IDs <- colData(object)[,img_id]
-    markers <- rownames(object)
+    img_IDs <- names(image)
+    markers <- channelNames(image)
 
     updateSelectizeInput(session, inputId = "sample",
                         choices = unique(img_IDs),
@@ -154,56 +154,6 @@
                          selected = "")
 }
 
-.addPlots_tab2 <- function(input, object, mask, image) {
-
-    if (is.null(mask) && is.null(image)) {
-        return(NULL)
-    } else if (!is.null(image)) {
-        contrast_input_1 <- numericInput("contrast_marker_1",
-                                label = span(paste("Contrast marker 1"),
-                                    style = "color: black; padding-top: 0px"),
-                                value = 1)
-        contrast_input_2 <- numericInput("contrast_marker_2",
-                                label = span(paste("Contrast marker 2"),
-                                    style = "color: black; padding-top: 0px"),
-                                value = 1)
-    } else {
-        contrast_input_1 <- contrast_input_2 <- NULL
-    }
-
-    markers <- rownames(object)
-
-    renderUI({
-
-        fluidRow(box(column(width = 12,
-                        actionButton("resetMarkers", label = "Reset markers",
-                        style = "background-color: #46EC46; color: black;")),
-                column(width = 6,
-                    selectInput("exprs_marker_1",
-                        label = span(paste("Select marker 1"),
-                            style = "color: black"),
-                        choices = markers),
-                    contrast_input_1),
-                column(width = 6,
-                    selectInput("exprs_marker_2",
-                        label = span(paste("Select marker 2"),
-                            style = "color: black"),
-                        choices = c(markers, ""),
-                        selected = ""),
-                    contrast_input_2),
-                column(width = 12,
-                        svgPanZoomOutput("image_expression", height = "300px")),
-                title = "Expression", status = "primary",
-                width = 6, height = "550px"),
-            box(
-                column(width = 12,
-                    svgPanZoomOutput("image_selection")),
-                    title = "Selection", id = "selection", status = "primary",
-                    width = 6, height = "550px"))
-    })
-}
-
-
 # Helper function to select markers
 .select_markers <- function(input, exprs_marker_update = TRUE){
     cur_markers <- c(input$marker1, input$marker2, input$marker3, 
@@ -216,12 +166,12 @@
 .select_contrast <- function(input){
     cur_markers <- .select_markers(input)
     
-    cur_bcg <- list(c(0, input$contrast_marker_1, 1),
-                    c(0, input$contrast_marker_2, 1),
-                    c(0, input$contrast_marker_3, 1),
-                    c(0, input$contrast_marker_4, 1),
-                    c(0, input$contrast_marker_5, 1),
-                    c(0, input$contrast_marker_6, 1))
+    cur_bcg <- list(c(0, input$contrast1, 1),
+                    c(0, input$contrast2, 1),
+                    c(0, input$contrast3, 1),
+                    c(0, input$contrast4, 1),
+                    c(0, input$contrast5, 1),
+                    c(0, input$contrast6, 1))
     names(cur_bcg) <- cur_markers
 
     return(cur_bcg)
