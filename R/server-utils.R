@@ -175,6 +175,44 @@
     return(cur_bcg)
 }
 
+.create_advanced_controls <- function(object, mask, input, session){
+    renderUI({
+        if (input$outline) {
+            wellPanel(
+            h3("Outline by", style = "color: black"),
+            selectizeInput("outline_by", label = span("Outline by",
+                                                      style = "color: black; padding-top: 0px"), 
+                           choices = NULL, options =
+                               list(placeholder = 'Outline by', maxItems = 1,
+                                    maxOptions = 10)),
+            h3("Select outline", style = "color: black"),
+            selectInput("select_outline",
+                           label = span("Select outline",
+                                        style = "color: black; padding-top: 0px"),
+                           choices = NULL,
+                           multiple = TRUE)
+            )
+        }
+    })
+}
+
+.populate_advanced_controls <- function(object, input, session){
+    observeEvent(input$outline, {
+        if (input$outline) {
+            updateSelectizeInput(session, inputId = "outline_by",
+                                choices = names(colData(object)),
+                                server = TRUE,
+                                selected = "")
+            observeEvent(input$outline_by, {
+                updateSelectizeInput(session, inputId = "select_outline",
+                                    choices = colData(object)[[input$outline_by]],
+                                    server = TRUE,
+                                    selected = colData(object)[[input$outline_by]])
+            })
+        }
+    })
+}
+
 # Visualize marker expression on images
 #' @importFrom svgPanZoom svgPanZoom renderSvgPanZoom
 #' @importFrom svglite stringSVG

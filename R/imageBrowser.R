@@ -54,7 +54,7 @@ imageBrowser <- function(image,
     )
 
     shiny_server <- function(input, output, session) {
-        .cytomapper_server(object, mask, image, cell_id, img_id,
+        .imageBrowser_server(object, mask, image, cell_id, img_id,
                             input, output, session, ...)
     }
 

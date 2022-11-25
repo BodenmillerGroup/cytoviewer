@@ -75,9 +75,10 @@
                     sliderInput(inputId = "contrast6", label = NULL, min = 1, max = 100, value = 1),
                     icon = icon("fas fa-sliders-h"), 
                     startExpanded = TRUE),
-            menuItem("Adavanced controls",
-                sliderInput(inputId = "test", label = "test", min = 1, max = 12, value = 1),
-                icon = icon("far fa-chart-bar"), startExpanded = TRUE),
+            menuItem("Advanced controls",
+                     checkboxInput("outline", "Outline", value = FALSE, width = NULL),
+                     uiOutput("Advanced_controls"),
+                     icon = icon("far fa-chart-bar"), startExpanded = TRUE),
             id = "sidebar"
             )
         )
