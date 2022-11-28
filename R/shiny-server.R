@@ -17,6 +17,6 @@
     .populate_advanced_controls(object, input, session)
 
     # Dynamically create image plot
-    output$imagePlot <- .imagePlot(input, object, mask, image, cell_id, img_id)
+    output$imagePlot <- .imagePlot(input, object, mask, image, img_id, cell_id)
     
 }

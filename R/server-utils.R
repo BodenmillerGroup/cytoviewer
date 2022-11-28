@@ -205,35 +205,76 @@
                                 selected = "")
             observeEvent(input$outline_by, {
                 updateSelectizeInput(session, inputId = "select_outline",
-                                    choices = colData(object)[[input$outline_by]],
+                                    choices = unique(colData(object)[[input$outline_by]]),
                                     server = TRUE,
-                                    selected = colData(object)[[input$outline_by]])
+                                    selected = unique(colData(object)[[input$outline_by]])[1])
             })
         }
     })
 }
 
+.create_image <- function(input, object, mask,
+                          image, img_id, cell_id, cur_markers, cur_bcg,
+                          ...){
+    
+    cur_markers <- .select_markers(input)
+    cur_markers <- cur_markers[cur_markers != ""]
+    cur_bcg <- .select_contrast(input)
+    cur_bcg <- cur_bcg[names(cur_bcg) != ""]
+    
+    cur_image <- image[input$sample]
+    
+    if (input$outline && input$outline_by == "") {
+        cur_mask <- mask[mcols(mask)[[img_id]] == mcols(cur_image)[[img_id]]]
+        
+        plotPixels(image = cur_image,
+                   mask = cur_mask,
+                   img_id = img_id,
+                   colour_by = cur_markers,
+                   bcg = cur_bcg,
+                   legend = NULL,
+                   image_title = NULL,
+                   ...)
+    } else if (input$outline && input$outline_by != "") {
+        cur_object <- object[,colData(object)[[input$outline_by]] %in% input$select_outline]
+        cur_mask <- mask[mcols(mask)[[img_id]] == mcols(cur_image)[[img_id]]]
+        
+        plotPixels(image = cur_image,
+                   mask = cur_mask,
+                   object = cur_object,
+                   img_id = img_id,
+                   cell_id = cell_id,
+                   colour_by = cur_markers,
+                   bcg = cur_bcg,
+                   outline_by = input$outline_by,
+                   legend = NULL,
+                   image_title = NULL,
+                   ...)
+    } else {
+        plotPixels(image = cur_image,
+                   colour_by = cur_markers,
+                   bcg = cur_bcg,
+                   legend = NULL,
+                   image_title = NULL,
+                   ...)   
+    }
+}
+
 # Visualize marker expression on images
 #' @importFrom svgPanZoom svgPanZoom renderSvgPanZoom
 #' @importFrom svglite stringSVG
-.imagePlot <- function(input, object, mask, 
-                                    image, img_id, cell_id, ...){
+.imagePlot <- function(input, object, mask,
+                       image, img_id, cell_id, ...){
     renderSvgPanZoom({
 
-        cur_markers <- .select_markers(input)
-        cur_markers <- cur_markers[cur_markers != ""]
-        cur_bcg <- .select_contrast(input)
-        cur_bcg <- cur_bcg[names(cur_bcg) != ""]
-
-        cur_image <- image[input$sample]
         suppressMessages(svgPanZoom(stringSVG(
-                    plotPixels(image = cur_image,
-                            colour_by = cur_markers,
-                            bcg = cur_bcg,
-                            legend = NULL,
-                            image_title = NULL,
-                            ...)),
-                zoomScaleSensitivity = 0.4, maxZoom = 20,
-                controlIconsEnabled = TRUE, viewBox = FALSE))
+            .create_image(input, object, mask,
+                          image, img_id, cell_id, cur_markers, cur_bcg,
+                          ...)
+            ),
+            zoomScaleSensitivity = 0.4, 
+            maxZoom = 20,
+            controlIconsEnabled = TRUE, 
+            viewBox = FALSE))
     })
 }
