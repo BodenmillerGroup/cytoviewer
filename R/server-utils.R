@@ -3,7 +3,7 @@
 # -----------------------------------------------------------------------------
 
 
-# Generate help text
+# Generate help text - TO BE UPDATED
 .general_help <- function(){
     tagList(
         h3("Using the Shiny application"),
@@ -156,15 +156,30 @@
 .select_markers <- function(input, exprs_marker_update = TRUE){
     cur_markers <- c(input$marker1, input$marker2, input$marker3, 
                      input$marker4, input$marker5, input$marker6)
-
     return(cur_markers)
 }
+
+# Helper function to select colors
+.select_colors <- function(input, exprs_marker_update = TRUE){
+  cur_colors <- list(c("black", input$color1),
+                     c("black", input$color2),
+                     c("black", input$color3),
+                     c("black", input$color4),
+                     c("black", input$color5),
+                     c("black", input$color6))
+  
+  cur_markers <- .select_markers(input)
+  names(cur_colors) <- cur_markers
+
+  return(cur_colors)
+}
+
 
 # Helper function to define bcg parameter when using plotPixels()
 .select_contrast <- function(input){
     cur_markers <- .select_markers(input)
     
-    cur_bcg <- list(c(0, input$contrast1, 1),
+    cur_bcg <- list(c(input$brightness1, input$contrast1, input$gamma1),
                     c(0, input$contrast2, 1),
                     c(0, input$contrast3, 1),
                     c(0, input$contrast4, 1),
@@ -174,6 +189,7 @@
 
     return(cur_bcg)
 }
+
 
 .create_advanced_controls <- function(object, mask, input, session){
     renderUI({
@@ -213,14 +229,18 @@
     })
 }
 
+#  Helper function to construct image 
+
 .create_image <- function(input, object, mask,
-                          image, img_id, cell_id, cur_markers, cur_bcg,
+                          image, img_id, cell_id, cur_markers, cur_bcg, cur_color,
                           ...){
     
     cur_markers <- .select_markers(input)
     cur_markers <- cur_markers[cur_markers != ""]
     cur_bcg <- .select_contrast(input)
     cur_bcg <- cur_bcg[names(cur_bcg) != ""]
+    cur_color <- .select_colors(input)
+    cur_color <- cur_color[names(cur_color) != ""]
     
     cur_image <- image[input$sample]
     
@@ -231,6 +251,7 @@
                    mask = cur_mask,
                    img_id = img_id,
                    colour_by = cur_markers,
+                   colour = cur_color,
                    bcg = cur_bcg,
                    legend = NULL,
                    image_title = NULL,
@@ -245,6 +266,7 @@
                    img_id = img_id,
                    cell_id = cell_id,
                    colour_by = cur_markers,
+                   colour = cur_color,
                    bcg = cur_bcg,
                    outline_by = input$outline_by,
                    legend = NULL,
@@ -253,6 +275,7 @@
     } else {
         plotPixels(image = cur_image,
                    colour_by = cur_markers,
+                   colour = cur_color,
                    bcg = cur_bcg,
                    legend = NULL,
                    image_title = NULL,

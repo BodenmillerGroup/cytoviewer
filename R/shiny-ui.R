@@ -27,10 +27,10 @@
                 ),
                 status = "info"
             ),
-            type = "tasks",
-            icon = icon("fas fa-question"),
-            badgeStatus = NULL,
-            headerText = "")
+            headerText = "Options",
+            type = "notifications",
+            icon = icon("circle-question"),
+            badgeStatus = NULL)
         )
     return(cm_head)
     }
@@ -61,18 +61,32 @@
                                     "transparent; border-color: transparent",
                                     "; color: white; margin-left: 0px; ",
                                     "padding-left: 0px;")))),
-                    selectizeInput("marker1", label = "Marker 1", choices = "H3"),
-                    sliderInput(inputId = "contrast1", label = NULL,  min = 1, max = 100, value = 1),
+                    hr(),
+                    selectizeInput("marker1", label = "Marker 1", choices = NULL),
+                    sliderInput(inputId = "contrast1", label = "Contrast",  min = 1, max = 10, value = 1, step = 0.5),
+                    sliderInput(inputId = "brightness1", label = "Brightness",  min = 1, max = 10, value = 1),
+                    sliderInput(inputId = "gamma1", label = "Gamma",  min = 1, max = 3, value = 1, step = 0.1),
+                    colourInput(inputId = "color1", label = "Color", value = "red"),
+                    hr(),
                     selectizeInput("marker2", label = "Marker 2", choices = NULL),
                     sliderInput(inputId = "contrast2", label = NULL, min = 1, max = 100, value = 1),
+                    colourInput(inputId = "color2", label = NULL, value = "green"),
+                    hr(),
                     selectizeInput("marker3", label = "Marker 3", choices = NULL),
                     sliderInput(inputId = "contrast3", label = NULL, min = 1, max = 100, value = 1),
+                    colourInput(inputId = "color3", label = NULL, value = "blue"),
+                    hr(),
                     selectizeInput("marker4", label = "Marker 4", choices = NULL),
                     sliderInput(inputId = "contrast4", label = NULL, min = 1, max = 100, value = 1),
+                    colourInput(inputId = "color4", label = NULL, value = "cyan"),
+                    hr(),
                     selectizeInput("marker5", label = "Marker 5", choices = NULL),
                     sliderInput(inputId = "contrast5", label = NULL, min = 1, max = 100, value = 1),
+                    colourInput(inputId = "color5", label = NULL, value = "magenta"),
+                    hr(),
                     selectizeInput("marker6", label = "Marker 6", choices = NULL),
                     sliderInput(inputId = "contrast6", label = NULL, min = 1, max = 100, value = 1),
+                    colourInput(inputId = "color6", label = NULL, value = "yellow"),
                     icon = icon("fas fa-sliders-h"), 
                     startExpanded = TRUE),
             menuItem("Advanced controls",
@@ -80,7 +94,12 @@
                      uiOutput("Advanced_controls"),
                      icon = icon("far fa-chart-bar"), startExpanded = TRUE),
             id = "sidebar"
-            )
+            ),
+        tags$style(
+          "#sidebarItemExpanded {
+            overflow: auto;
+            max-height: 100vh;
+        }")
         )
     
     return(cm_side)
@@ -91,11 +110,14 @@
 #' @importFrom svgPanZoom svgPanZoomOutput
 .imageBrowser_body <- function(){
     cm_body <- dashboardBody(
-        box(
-            svgPanZoomOutput("imagePlot"),
-            title = "Expression", id = "expression", status = "primary",
-            width = 12, height = "550px")
-        )
+      tabsetPanel(
+        tabPanel("Composite", 
+                 box(svgPanZoomOutput("imagePlot"),
+                     title = NULL, id = "expression", status = "primary",
+                     width = 12, height = NULL)),
+        tabPanel("Tiles", 
+                 box("Images tiles functionality to be added"))
+      ))
     return(cm_body)
     }
 
