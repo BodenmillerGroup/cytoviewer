@@ -45,9 +45,9 @@
                                     icon = icon("angle-left", class="fa-2x"),
                                     style = paste0("background-color: ",
                                     "transparent; border-color: transparent",
-                                    "; color:white; margin-left: 0px;"))),
+                                    "; color:white; margin-left: 0px;margin-top: 30px"))),
                         column(8, style="padding-left:0px;padding-right:0px;",
-                        selectizeInput("sample", label = NULL,
+                        selectizeInput("sample", label = "Image selection",
                                     width = "100%",
                                     choices = NULL,
                                     options = list(
@@ -60,15 +60,17 @@
                                     style = paste0("background-color: ",
                                     "transparent; border-color: transparent",
                                     "; color: white; margin-left: 0px; ",
-                                    "padding-left: 0px;")))),
+                                    "padding-left: 0px;margin-top: 30px")))),
                     hr(),
-                    selectizeInput("marker1", label = "Marker 1", choices = NULL),
+                    fluidRow(column(2, style=c("margin-top:25px;margin-right:0px"), checkboxInput(inputId = "view1", label = NULL, value = TRUE, width = "1000px")), 
+                      column(10, style= "margin-left:0px",selectizeInput("marker1", label = "Marker 1", choices = NULL))),
                     sliderInput(inputId = "contrast1", label = "Contrast",  min = 1, max = 10, value = 1, step = 0.5),
                     sliderInput(inputId = "brightness1", label = "Brightness",  min = 1, max = 10, value = 1),
                     sliderInput(inputId = "gamma1", label = "Gamma",  min = 1, max = 3, value = 1, step = 0.1),
                     colourInput(inputId = "color1", label = "Color", value = "red"),
                     hr(),
-                    selectizeInput("marker2", label = "Marker 2", choices = NULL),
+                    fluidRow(column(2, style=c("margin-top:25px;margin-right:0px"), checkboxInput(inputId = "view2", label = NULL, value = FALSE, width = "1000px")), 
+                             column(10, style= "margin-left:0px",selectizeInput("marker2", label = "Marker 2", choices = NULL))),
                     sliderInput(inputId = "contrast2", label = NULL, min = 1, max = 100, value = 1),
                     colourInput(inputId = "color2", label = NULL, value = "green"),
                     hr(),
@@ -90,20 +92,20 @@
                     icon = icon("fas fa-sliders-h"), 
                     startExpanded = TRUE),
             menuItem("Advanced controls",
-                     checkboxInput("outline", "Outline", value = FALSE, width = NULL),
+                     checkboxInput("outline", "Cell outline options", value = FALSE, width = NULL),
                      uiOutput("Advanced_controls"),
+                     hr(),
+                     numericInput(inputId = "scalebar", label = "Scale bar length", value = 20,
+                                  min = 0, max = 100, step = 5),
                      icon = icon("far fa-chart-bar"), startExpanded = TRUE),
             id = "sidebar"
             ),
         tags$style(
           "#sidebarItemExpanded {
             overflow: auto;
-            max-height: 100vh;
-        }")
+            max-height: 100vh}")
         )
-    
     return(cm_side)
-
 }
 
 # Create the main body

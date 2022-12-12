@@ -156,6 +156,13 @@
 .select_markers <- function(input, exprs_marker_update = TRUE){
     cur_markers <- c(input$marker1, input$marker2, input$marker3, 
                      input$marker4, input$marker5, input$marker6)
+    
+    cur_views <- c(input$view1, input$view2)
+    
+    names(cur_markers) <- cur_views
+    
+    cur_markers[names(cur_markers) == "FALSE"] <- ""
+    
     return(cur_markers)
 }
 
@@ -241,7 +248,7 @@
     cur_bcg <- cur_bcg[names(cur_bcg) != ""]
     cur_color <- .select_colors(input)
     cur_color <- cur_color[names(cur_color) != ""]
-    
+    cur_scale <- input$scalebar
     cur_image <- image[input$sample]
     
     if (input$outline && input$outline_by == "") {
@@ -255,7 +262,9 @@
                    bcg = cur_bcg,
                    legend = NULL,
                    image_title = NULL,
+                   scale_bar = list(length = cur_scale),
                    ...)
+        
     } else if (input$outline && input$outline_by != "") {
         cur_object <- object[,colData(object)[[input$outline_by]] %in% input$select_outline]
         cur_mask <- mask[mcols(mask)[[img_id]] == mcols(cur_image)[[img_id]]]
@@ -271,6 +280,7 @@
                    outline_by = input$outline_by,
                    legend = NULL,
                    image_title = NULL,
+                   scale_bar = list(length = cur_scale),
                    ...)
     } else {
         plotPixels(image = cur_image,
@@ -279,6 +289,7 @@
                    bcg = cur_bcg,
                    legend = NULL,
                    image_title = NULL,
+                   scale_bar = list(length = cur_scale),
                    ...)   
     }
 }
