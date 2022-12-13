@@ -198,43 +198,7 @@
 }
 
 
-.create_advanced_controls <- function(object, mask, input, session){
-    renderUI({
-        if (input$outline) {
-            wellPanel(
-            h3("Outline by", style = "color: black"),
-            selectizeInput("outline_by", label = span("Outline by",
-                                                      style = "color: black; padding-top: 0px"), 
-                           choices = NULL, options =
-                               list(placeholder = 'Outline by', maxItems = 1,
-                                    maxOptions = 10)),
-            h3("Select outline", style = "color: black"),
-            selectInput("select_outline",
-                           label = span("Select outline",
-                                        style = "color: black; padding-top: 0px"),
-                           choices = NULL,
-                           multiple = TRUE)
-            )
-        }
-    })
-}
 
-.populate_advanced_controls <- function(object, input, session){
-    observeEvent(input$outline, {
-        if (input$outline) {
-            updateSelectizeInput(session, inputId = "outline_by",
-                                choices = names(colData(object)),
-                                server = TRUE,
-                                selected = "")
-            observeEvent(input$outline_by, {
-                updateSelectizeInput(session, inputId = "select_outline",
-                                    choices = unique(colData(object)[[input$outline_by]]),
-                                    server = TRUE,
-                                    selected = unique(colData(object)[[input$outline_by]])[1])
-            })
-        }
-    })
-}
 
 #  Helper function to construct image 
 
@@ -311,4 +275,93 @@
             controlIconsEnabled = TRUE, 
             viewBox = FALSE))
     })
+}
+
+
+
+# # Download the images - via downloadHandler
+# .downloadSelection <- function(input, object, mask,
+#                                image, img_id, cell_id, ...){
+#   downloadHandler(
+#     filename = function(){
+#       paste0(input$filename1, ".",input$filename2)
+#       },
+#     content = function(file){
+#       #browser()
+#       if(input$filename2 == "pdf"){
+#         pdf(file = file)
+#         .create_image(input, object, mask,
+#                       image, img_id, cell_id, cur_markers, cur_bcg,
+#                       ...)
+#         dev.off()
+#       } else {
+#         png(file = file)
+#         .create_image(input, object, mask,
+#                       image, img_id, cell_id, cur_markers, cur_bcg,
+#                       ...)
+#         dev.off()
+#       }
+#     }
+#   )
+# }
+      
+
+# Download the images - via ActionButton 
+.downloadSelection_1 <- function(input, object, mask,
+                               image, img_id, cell_id, ...){
+  observeEvent(input$download_data, 
+               {
+      if(input$filename2 == "pdf"){
+        pdf(file = paste0(input$filename1, ".",input$filename2))
+        .create_image(input, object, mask,
+                      image, img_id, cell_id, cur_markers, cur_bcg,
+                      ...)
+        dev.off()
+      } else {
+        png(file = paste0(input$filename1, ".",input$filename2))
+        .create_image(input, object, mask,
+                      image, img_id, cell_id, cur_markers, cur_bcg,
+                      ...)
+        dev.off()
+      }})}
+      
+## Advanced controls - Cell outlining
+
+
+.create_advanced_controls <- function(object, mask, input, session){
+  renderUI({
+    if (input$outline) {
+      wellPanel(
+        h3("Outline by", style = "color: black"),
+        selectizeInput("outline_by", label = span("Outline by",
+                                                  style = "color: black; padding-top: 0px"), 
+                       choices = NULL, options =
+                         list(placeholder = 'Outline by', maxItems = 1,
+                              maxOptions = 10)),
+        h3("Select outline", style = "color: black"),
+        selectInput("select_outline",
+                    label = span("Select outline",
+                                 style = "color: black; padding-top: 0px"),
+                    choices = NULL,
+                    multiple = TRUE)
+      )
+    }
+  })
+}
+
+.populate_advanced_controls <- function(object, input, session){
+  observeEvent(input$outline, {
+    if (input$outline) {
+      updateSelectizeInput(session, inputId = "outline_by",
+                           choices = names(colData(object)),
+                           server = TRUE,
+                           selected = "")
+      observeEvent(input$outline_by, {
+        updateSelectizeInput(session, inputId = "select_outline",
+                             choices = unique(colData(object)[[input$outline_by]]),
+                             server = TRUE,
+                             selected = unique(colData(object)[[input$outline_by]])[1])
+      })
+    }
+  })
 }

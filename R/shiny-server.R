@@ -15,8 +15,11 @@
     output$Advanced_controls <- .create_advanced_controls(object, mask, input, session)
     
     .populate_advanced_controls(object, input, session)
-
+    
+    .downloadSelection_1(input, object, mask, image, img_id, cell_id, ...)
     # Dynamically create image plot
     output$imagePlot <- .imagePlot(input, object, mask, image, img_id, cell_id)
+    
+    #output$downloadData <- .downloadSelection(input, object, mask, image, img_id, cell_id, ...)
     
 }

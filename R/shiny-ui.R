@@ -27,11 +27,53 @@
                 ),
                 status = "info"
             ),
-            headerText = "Options",
+            headerText = "",
             type = "notifications",
             icon = icon("circle-question"),
-            badgeStatus = NULL)
-        )
+            badgeStatus = NULL),
+        dropdownMenu(
+          notificationItem(
+            text = textInput(inputId = "filename1",
+                             label = "File name (File path)",
+                             value = ""),
+            icon = icon(""),
+            status = "info"
+          ),
+          notificationItem(
+            text = radioButtons(inputId = "filename2", 
+                                label = "File format",
+                                choices = list("pdf","png"), 
+                                selected = "pdf"), 
+            icon = icon(""),
+            status = "info"
+          ),
+          # notificationItem(
+          #   text = downloadButton(
+          #     outputId = "downloadData",
+          #     label = "Download image",
+          #     style = paste0("background-color: #3C8DBC; color: white; ",
+          #                    "border-color: #7EA6F8")
+          #   ),
+          #   icon = icon(""),
+          #   status = "info"
+          # ),
+          notificationItem(
+            text = actionButton(
+              inputId = "download_data",
+              label = "Download image", 
+              icon = icon("fas fa-download"), 
+              width = "200px",
+              style = paste0("background-color: #3C8DBC; color: white; ",
+                             "border-color: #7EA6F8")
+            ),
+            icon = icon(""),
+            status = "info"
+          ),
+          type = "notification",
+          icon = icon("fas fa-download"),
+          badgeStatus = NULL,
+          headerText = "")
+    )
     return(cm_head)
     }
 
