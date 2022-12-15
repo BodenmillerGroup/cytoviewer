@@ -12,11 +12,17 @@
     
     .create_updateSelectizeInput(image, input, session)
     
-    output$Advanced_controls <- .create_advanced_controls(object, mask, input, session)
+    output$Outline_controls <- .create_outline_controls(object, mask, input, session)
+    .populate_outline_controls(object, input, session)
     
-    .populate_advanced_controls(object, input, session)
-
+    output$Basic_color_outline <- .create_basic_color_outline(object, mask, input, session)
+    output$Advanced_color_outline <- .create_advanced_color_outline(object, mask, input, session)
+    output$Outline_thickness <- .create_thickness_control(object, mask, input, session)
+      
+    .downloadSelection_1(input, object, mask, image, img_id, cell_id, ...)
     # Dynamically create image plot
     output$imagePlot <- .imagePlot(input, object, mask, image, img_id, cell_id)
+    
+    #output$downloadData <- .downloadSelection(input, object, mask, image, img_id, cell_id, ...)
     
 }

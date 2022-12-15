@@ -27,11 +27,53 @@
                 ),
                 status = "info"
             ),
-            type = "tasks",
-            icon = icon("fas fa-question"),
-            badgeStatus = NULL,
-            headerText = "")
-        )
+            headerText = "",
+            type = "notifications",
+            icon = icon("circle-question"),
+            badgeStatus = NULL),
+        dropdownMenu(
+          notificationItem(
+            text = textInput(inputId = "filename1",
+                             label = "File name (File path)",
+                             value = ""),
+            icon = icon(""),
+            status = "info"
+          ),
+          notificationItem(
+            text = radioButtons(inputId = "filename2", 
+                                label = "File format",
+                                choices = list("pdf","png"), 
+                                selected = "pdf"), 
+            icon = icon(""),
+            status = "info"
+          ),
+          # notificationItem(
+          #   text = downloadButton(
+          #     outputId = "downloadData",
+          #     label = "Download image",
+          #     style = paste0("background-color: #3C8DBC; color: white; ",
+          #                    "border-color: #7EA6F8")
+          #   ),
+          #   icon = icon(""),
+          #   status = "info"
+          # ),
+          notificationItem(
+            text = actionButton(
+              inputId = "download_data",
+              label = "Download image", 
+              icon = icon("fas fa-download"), 
+              width = "200px",
+              style = paste0("background-color: #3C8DBC; color: white; ",
+                             "border-color: #7EA6F8")
+            ),
+            icon = icon(""),
+            status = "info"
+          ),
+          type = "notification",
+          icon = icon("fas fa-download"),
+          badgeStatus = NULL,
+          headerText = "")
+    )
     return(cm_head)
     }
 
@@ -45,9 +87,9 @@
                                     icon = icon("angle-left", class="fa-2x"),
                                     style = paste0("background-color: ",
                                     "transparent; border-color: transparent",
-                                    "; color:white; margin-left: 0px;"))),
+                                    "; color:white; margin-left: 0px;margin-top: 30px"))),
                         column(8, style="padding-left:0px;padding-right:0px;",
-                        selectizeInput("sample", label = NULL,
+                        selectizeInput("sample", label = "Image selection",
                                     width = "100%",
                                     choices = NULL,
                                     options = list(
@@ -60,42 +102,90 @@
                                     style = paste0("background-color: ",
                                     "transparent; border-color: transparent",
                                     "; color: white; margin-left: 0px; ",
-                                    "padding-left: 0px;")))),
-                    selectizeInput("marker1", label = "Marker 1", choices = "H3"),
-                    sliderInput(inputId = "contrast1", label = NULL,  min = 1, max = 100, value = 1),
-                    selectizeInput("marker2", label = "Marker 2", choices = NULL),
-                    sliderInput(inputId = "contrast2", label = NULL, min = 1, max = 100, value = 1),
-                    selectizeInput("marker3", label = "Marker 3", choices = NULL),
-                    sliderInput(inputId = "contrast3", label = NULL, min = 1, max = 100, value = 1),
-                    selectizeInput("marker4", label = "Marker 4", choices = NULL),
-                    sliderInput(inputId = "contrast4", label = NULL, min = 1, max = 100, value = 1),
-                    selectizeInput("marker5", label = "Marker 5", choices = NULL),
-                    sliderInput(inputId = "contrast5", label = NULL, min = 1, max = 100, value = 1),
-                    selectizeInput("marker6", label = "Marker 6", choices = NULL),
-                    sliderInput(inputId = "contrast6", label = NULL, min = 1, max = 100, value = 1),
+                                    "padding-left: 0px;margin-top: 30px")))),
+                    hr(),
+                    fluidRow(column(2, style=c("margin-top:25px;margin-right:0px"), checkboxInput(inputId = "view1", label = NULL, value = TRUE, width = "1000px")), 
+                      column(10, style= "margin-left:0px", selectizeInput("marker1", label = "Marker 1", choices = NULL))),
+                    menuItem("Color control", 
+                      sliderInput(inputId = "contrast1", label = "Contrast",  min = 1, max = 10, value = 1, step = 0.5),
+                      sliderInput(inputId = "brightness1", label = "Brightness",  min = 1, max = 10, value = 1),
+                      sliderInput(inputId = "gamma1", label = "Gamma",  min = 1, max = 3, value = 1, step = 0.1),
+                      colourInput(inputId = "color1", label = "Color", value = "magenta")),
+                    hr(),
+                    fluidRow(column(2, style=c("margin-top:25px;margin-right:0px"), checkboxInput(inputId = "view2", label = NULL, value = FALSE, width = "1000px")), 
+                             column(10, style= "margin-left:0px",selectizeInput("marker2", label = "Marker 2", choices = NULL))),
+                    menuItem("Color control", 
+                             sliderInput(inputId = "contrast2", label = "Contrast",  min = 1, max = 10, value = 1, step = 0.5),
+                             sliderInput(inputId = "brightness2", label = "Brightness",  min = 1, max = 10, value = 1),
+                             sliderInput(inputId = "gamma2", label = "Gamma",  min = 1, max = 3, value = 1, step = 0.1),
+                             colourInput(inputId = "color2", label = "Color", value = "cyan")),
+                    hr(),
+                    fluidRow(column(2, style=c("margin-top:25px;margin-right:0px"), checkboxInput(inputId = "view3", label = NULL, value = FALSE, width = "1000px")), 
+                             column(10, style= "margin-left:0px",selectizeInput("marker3", label = "Marker 3", choices = NULL))),
+                    menuItem("Color control", 
+                             sliderInput(inputId = "contrast3", label = "Contrast",  min = 1, max = 10, value = 1, step = 0.5),
+                             sliderInput(inputId = "brightness3", label = "Brightness",  min = 1, max = 10, value = 1),
+                             sliderInput(inputId = "gamma3", label = "Gamma",  min = 1, max = 3, value = 1, step = 0.1),
+                             colourInput(inputId = "color3", label = "Color", value = "yellow")),
+                    hr(),
+                    fluidRow(column(2, style=c("margin-top:25px;margin-right:0px"), checkboxInput(inputId = "view4", label = NULL, value = FALSE, width = "1000px")), 
+                             column(10, style= "margin-left:0px",selectizeInput("marker4", label = "Marker 4", choices = NULL))),
+                    menuItem("Color control", 
+                             sliderInput(inputId = "contrast4", label = "Contrast",  min = 1, max = 10, value = 1, step = 0.5),
+                             sliderInput(inputId = "brightness4", label = "Brightness",  min = 1, max = 10, value = 1),
+                             sliderInput(inputId = "gamma4", label = "Gamma",  min = 1, max = 3, value = 1, step = 0.1),
+                             colourInput(inputId = "color4", label = "Color", value = "red")),
+                    hr(),
+                    fluidRow(column(2, style=c("margin-top:25px;margin-right:0px"), checkboxInput(inputId = "view5", label = NULL, value = FALSE, width = "1000px")), 
+                             column(10, style= "margin-left:0px",selectizeInput("marker5", label = "Marker 5", choices = NULL))),
+                    menuItem("Color control", 
+                             sliderInput(inputId = "contrast5", label = "Contrast",  min = 1, max = 10, value = 1, step = 0.5),
+                             sliderInput(inputId = "brightness5", label = "Brightness",  min = 1, max = 10, value = 1),
+                             sliderInput(inputId = "gamma5", label = "Gamma",  min = 1, max = 3, value = 1, step = 0.1),
+                             colourInput(inputId = "color5", label = "Color", value = "green")),
+                    hr(),
+                    fluidRow(column(2, style=c("margin-top:25px;margin-right:0px"), checkboxInput(inputId = "view6", label = NULL, value = FALSE, width = "1000px")), 
+                             column(10, style= "margin-left:0px",selectizeInput("marker6", label = "Marker 6", choices = NULL))),
+                    menuItem("Color control", 
+                             sliderInput(inputId = "contrast6", label = "Contrast",  min = 1, max = 10, value = 1, step = 0.5),
+                             sliderInput(inputId = "brightness6", label = "Brightness",  min = 1, max = 10, value = 1),
+                             sliderInput(inputId = "gamma6", label = "Gamma",  min = 1, max = 3, value = 1, step = 0.1),
+                             colourInput(inputId = "color6", label = "Color", value = "blue")),
+                    hr(),
                     icon = icon("fas fa-sliders-h"), 
-                    startExpanded = TRUE),
+                    startExpanded = FALSE),
             menuItem("Advanced controls",
-                     checkboxInput("outline", "Outline", value = FALSE, width = NULL),
-                     uiOutput("Advanced_controls"),
-                     icon = icon("far fa-chart-bar"), startExpanded = TRUE),
+                     checkboxInput("outline", "Cell outline options", value = FALSE, width = NULL),
+                     uiOutput("Outline_controls"),
+                     uiOutput("Basic_color_outline"),
+                     uiOutput("Advanced_color_outline"),
+                     uiOutput("Outline_thickness"),
+                     hr(),
+                     numericInput(inputId = "scalebar", label = "Scale bar length", value = 20,
+                                  min = 0, max = 100, step = 5),
+                     icon = icon("far fa-chart-bar"), startExpanded = FALSE),
             id = "sidebar"
-            )
+            ),
+        tags$style(
+          "#sidebarItemExpanded {
+            overflow: auto;
+            max-height: 100vh}")
         )
-    
     return(cm_side)
-
 }
 
 # Create the main body
 #' @importFrom svgPanZoom svgPanZoomOutput
 .imageBrowser_body <- function(){
     cm_body <- dashboardBody(
-        box(
-            svgPanZoomOutput("imagePlot"),
-            title = "Expression", id = "expression", status = "primary",
-            width = 12, height = "550px")
-        )
+      tabsetPanel(
+        tabPanel("Composite", 
+                 box(svgPanZoomOutput("imagePlot"),
+                     title = NULL, id = "expression", status = "primary",
+                     width = 12, height = NULL)),
+        tabPanel("Tiles", 
+                 box("Images tiles functionality to be added"))
+      ))
     return(cm_body)
     }
 
