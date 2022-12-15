@@ -182,6 +182,17 @@
 }
 
 
+# Helper function to select outline colors
+.select_outline_colors <- function(input, exprs_marker_update = TRUE){
+  #print(input[[paste0("color_outline_",i)]])
+  cur_vec <- input[grepl("color_outline_", names(input))]
+  names(cur_vec) <- input$select_outline
+  cur_vec <- unlist(cur_vec, use.names = TRUE)
+  
+  return(cur_vec)
+}
+
+
 # Helper function to define bcg parameter when using plotPixels()
 .select_contrast <- function(input){
     cur_markers <- .select_markers(input)
@@ -210,6 +221,7 @@
     cur_bcg <- cur_bcg[names(cur_bcg) != ""]
     cur_color <- .select_colors(input)
     cur_color <- cur_color[names(cur_color) != ""]
+    cur_basic_outline <- input$basic_color_outline
     cur_scale <- input$scalebar
     cur_thick <- input$thick
     cur_image <- image[input$sample]
@@ -222,6 +234,7 @@
                    img_id = img_id,
                    colour_by = cur_markers,
                    colour = cur_color,
+                   missing_colour = cur_basic_outline, 
                    bcg = cur_bcg,
                    legend = NULL,
                    image_title = NULL,
@@ -229,9 +242,11 @@
                    scale_bar = list(length = cur_scale),
                    ...)
         
-    } else if (input$outline && input$outline_by != "") {
+    } else if (input$outline && input$outline_by != "" && !is.null(input$select_outline)) {
         cur_object <- object[,colData(object)[[input$outline_by]] %in% input$select_outline]
         cur_mask <- mask[mcols(mask)[[img_id]] == mcols(cur_image)[[img_id]]]
+        #cur_advanced_outline <- .select_outline_colors(input)
+        #cur_color[[input$outline_by]] <- cur_advanced_outline
         
         plotPixels(image = cur_image,
                    mask = cur_mask,
@@ -327,95 +342,24 @@
         dev.off()
       }})}
       
+
+
 ## Advanced controls - Cell outlining
 
-.create_advanced_controls <- function(object, mask, input, session, ...){
+.create_outline_controls <- function(object, mask, input, session, ...){
   renderUI({
-    if (input$outline) {
-      if (input$outline_by == ""){
-      wellPanel(
-        selectizeInput("outline_by", label = span("Outline by",style = "color: black; padding-top: 0px"), 
-                       choices = NULL, options = NULL, list(placeholder = 'Outline by', maxItems = 1,maxOptions = 10)
-                       ),
-        selectizeInput("select_outline",
-                       label = span("Select outline",style = "color: black; padding-top: 0px"),
-                       choices = NULL,
-                       multiple = TRUE),
-        colourInput(inputId = "color_outline_all",
-                    label = "Outline color",
-                    value = RColorBrewer::brewer.pal(12, "Paired")[1])
-      )}}})}
+    if (input$outline){
+        wellPanel(
+          selectizeInput("outline_by", label = span("Outline by",style = "color: black; padding-top: 0px"), 
+                         choices = NULL, options = NULL, list(placeholder = 'Outline by', maxItems = 1,maxOptions = 10)
+          ),
+          selectizeInput("select_outline",
+                         label = span("Select outline",style = "color: black; padding-top: 0px"),
+                         choices = NULL,
+                         multiple = TRUE)
+        )}})}
 
-
-# .create_advanced_colors <- function(object, mask, input, session, ...){
-#   renderUI() # Idea create separate wellPanel for colorInput that changes depending on outline/outline_by/select_outline
-# }
-
-
-    # #observeEvent(input$outline_by, {
-    #   if(is.null(input$outline_by) | input$outline_by == ""){
-    #         colourInput(inputId = "color_outline_all",
-    #                     label = "Outline color",
-    #                     value = RColorBrewer::brewer.pal(12, "Paired")[1])
-    #       }else{
-    #         colourInput(inputId = "color_outline_all_1",
-    #                     label = "Outline color",
-    #                     value = RColorBrewer::brewer.pal(12, "Paired")[2])
-    #       }
-    #     #})
- 
-
-        # menuItem(span("Color control", style = "color: black;padding-top: 0px"), style = "color: black; padding-top: 0px",
-        #            isolate({
-        #            if(is.null(input$outline_by) | input$outline_by == ""){
-        #              colourInput(inputId = "color_outline_all",
-        #                          label = "Outline color",
-        #                          value = RColorBrewer::brewer.pal(12, "Paired")[1])
-        #          }else{
-        #            #browser()
-        #            lapply(seq_along(input$select_outline), function(i){
-        #              colourInput(inputId = paste0("color_outline_",i),
-        #                          label = input$select_outline[i],
-        #                          value = RColorBrewer::brewer.pal(12, "Paired")[i])
-        #            })
-        #            }
-        #          })
-        #          )
-
-                 
-                 
-                 
-#                  #reactive({  
-#                    if(!is.null(input$select_outline)){
-#                      #isolate({
-#                        lapply(seq_along(input$select_outline), function(i){
-#                          colourInput(inputId = paste0("color_outline_",i),
-#                                      label = input$select_outline[i],
-#                                      value = RColorBrewer::brewer.pal(12, "Paired")[i])
-#                          #})
-#                        })
-#                    }else{
-#                      colourInput(inputId = "color_outline_all",
-#                                  label = "Outline color",
-#                                  value = RColorBrewer::brewer.pal(12, "Paired")[1])
-#                      
-#                      }
-#                    #})
-#                  
-#       ))
-#     }
-#   })
-# }
-
-# .counter <- function(object, input, session){
-#   counter <- reactiveValues(n = 0) #Track number of color inputs 
-#   observeEvent(input$outline_by, {counter$n <- counter$n+1}) 
-#   return(counter)
-# }
-
-#inputId$select_outline
-
-.populate_advanced_controls <- function(object, input, session){
+.populate_outline_controls <- function(object, input, session){
   observeEvent(input$outline, {
     if (input$outline) {
       updateSelectizeInput(session, inputId = "outline_by",
@@ -431,4 +375,37 @@
     }
   })
 }
+
+.create_basic_color_outline <- function(object, mask, input, session, ...){
+  renderUI({
+    if (input$outline && is.null(input$select_outline)){
+      wellPanel(
+        menuItem(span("Outline color control", style = "color: black;padding-top: 0px"), style = "color: black; padding-top: 0px",
+        colourInput(inputId = "basic_color_outline",
+                    label = "General outline color",
+                    value = "white")
+                    ))}})}
+
+.create_advanced_color_outline <- function(object, mask, input, session, ...){
+  renderUI({
+  if(input$outline && !is.null(input$select_outline)){
+    wellPanel(
+      menuItem(span("Outline color control", style = "color: black;padding-top: 0px"), style = "color: black; padding-top: 0px",
+      lapply(seq_along(input$select_outline), function(i){
+        colourInput(inputId = paste0(input$select_outline[i],"color"),
+                    label = input$select_outline[i],
+                    value = brewer.pal(12, "Paired")[i])
+      })))}})}
+
+#paste0(input$selected_var[i],"_weight")
+       
+    
+.create_thickness_control <- function(object, mask, input, session, ...){
+  renderUI({
+  if(input$outline){
+    wellPanel(
+      menuItem(span("Outline thickness control", style = "color: black;padding-top: 0px"), style = "color: black; padding-top: 0px",
+      checkboxInput(inputId = "thick", "Thick", value = FALSE)
+      ))}})}
+
 
