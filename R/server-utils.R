@@ -157,7 +157,8 @@
     cur_markers <- c(input$marker1, input$marker2, input$marker3, 
                      input$marker4, input$marker5, input$marker6)
     
-    cur_views <- c(input$view1, input$view2)
+    cur_views <- c(input$view1, input$view2, input$view3, 
+                   input$view4, input$view5, input$view6)
     
     names(cur_markers) <- cur_views
     
@@ -183,13 +184,15 @@
 
 
 # Helper function to select outline colors
-.select_outline_colors <- function(input, exprs_marker_update = TRUE){
-  #print(input[[paste0("color_outline_",i)]])
+.select_outline_colors <- function(input, object, mask, session, exprs_marker_update = TRUE){
+  
+  browser()
+  input[["color_outline1"]]
   cur_vec <- input[grepl("color_outline_", names(input))]
   names(cur_vec) <- input$select_outline
   cur_vec <- unlist(cur_vec, use.names = TRUE)
-  
   return(cur_vec)
+
 }
 
 
@@ -209,6 +212,26 @@
 }
 
 
+# Helper function for legend construction 
+
+.show_legend <- function(input){
+  #browser()
+  legend_param <- list(margin = 3) #use default options from cytomapper
+  
+  if(input$show_legend){cur_legend <- legend_param}else{cur_legend <- NULL}
+  return(cur_legend)
+}
+
+# Helper function for image title 
+
+.show_title <- function(input){
+  #browser()
+  imagetitle_param <- list(margin = c(10,2)) #use default options from cytomapper
+  
+  if(input$show_title){cur_imagetitle <- imagetitle_param}else{cur_imagetitle <- NULL}
+  return(cur_imagetitle)
+}
+
 #  Helper function to construct image 
 
 .create_image <- function(input, object, mask,
@@ -225,7 +248,9 @@
     cur_scale <- input$scalebar
     cur_thick <- input$thick
     cur_image <- image[input$sample]
-    
+    cur_legend <- .show_legend(input)
+    cur_imagetitle <- .show_title(input)
+
     if (input$outline && input$outline_by == "") {
         cur_mask <- mask[mcols(mask)[[img_id]] == mcols(cur_image)[[img_id]]]
         
@@ -236,8 +261,8 @@
                    colour = cur_color,
                    missing_colour = cur_basic_outline, 
                    bcg = cur_bcg,
-                   legend = NULL,
-                   image_title = NULL,
+                   legend = cur_legend,
+                   image_title = cur_imagetitle,
                    thick = cur_thick,
                    scale_bar = list(length = cur_scale),
                    ...)
@@ -257,8 +282,8 @@
                    colour = cur_color,
                    bcg = cur_bcg,
                    outline_by = input$outline_by,
-                   legend = NULL,
-                   image_title = NULL,
+                   legend = cur_legend,
+                   image_title = cur_imagetitle,
                    thick = cur_thick,
                    scale_bar = list(length = cur_scale),
                    ...)
@@ -268,8 +293,8 @@
                    colour_by = cur_markers,
                    colour = cur_color,
                    bcg = cur_bcg,
-                   legend = NULL,
-                   image_title = NULL,
+                   legend = cur_legend,
+                   image_title = cur_imagetitle,
                    scale_bar = list(length = cur_scale),
                    ...)   
     }
@@ -294,6 +319,16 @@
     })
 }
 
+# Optional: Image function for not-zoomable images - maybe relevant for tiles
+.basic_imagePlot <- function(input, object, mask, 
+                       image, img_id, cell_id, ...){
+  
+  renderPlot({
+    .create_image(input, object, mask,
+                            image, img_id, cell_id, cur_markers, cur_bcg,
+                            ...)
+    })
+}
 
 
 # # Download the images - via downloadHandler
@@ -343,7 +378,6 @@
       }})}
       
 
-
 ## Advanced controls - Cell outlining
 
 .create_outline_controls <- function(object, mask, input, session, ...){
@@ -390,16 +424,25 @@
   renderUI({
   if(input$outline && !is.null(input$select_outline)){
     wellPanel(
-      menuItem(span("Outline color control", style = "color: black;padding-top: 0px"), style = "color: black; padding-top: 0px",
-      lapply(seq_along(input$select_outline), function(i){
-        colourInput(inputId = paste0(input$select_outline[i],"color"),
+     menuItem(span("Outline color control", style = "color: black;padding-top: 0px"), style = "color: black; padding-top: 0px",
+     lapply(seq_along(input$select_outline), function (i){
+        colourInput(inputId = paste0("color_outline",i),
                     label = input$select_outline[i],
                     value = brewer.pal(12, "Paired")[i])
       })))}})}
 
-#paste0(input$selected_var[i],"_weight")
-       
-    
+
+# .populate_advanced_color_outline <- function(object, mask, input, session, ...){
+#   observeEvent(input$select_outline, {
+#     for(i in seq_along(input$select_outline)){
+#     updateColourInput(session, inputId = paste0(input$select_outline[i],"_color"),
+#                       label = input$select_outline[i],
+#                       value = brewer.pal(12, "Paired")[i]
+#                       )
+#   }
+# })}
+
+
 .create_thickness_control <- function(object, mask, input, session, ...){
   renderUI({
   if(input$outline){
@@ -407,5 +450,36 @@
       menuItem(span("Outline thickness control", style = "color: black;padding-top: 0px"), style = "color: black; padding-top: 0px",
       checkboxInput(inputId = "thick", "Thick", value = FALSE)
       ))}})}
+
+
+
+# Tiles functionality 
+
+.add_tiles_tab <- function(input, object, mask,
+                           image, img_id, cell_id){
+  renderUI({
+    #browser()
+    cur_markers <- .select_markers(input)
+    cur_markers <- cur_markers[cur_markers != ""]
+    
+    cur_row <- ceiling(length(cur_markers) / 3)
+
+    # Generate separate boxes
+    box_list <- lapply(seq_along(cur_markers), function(cur_plot) {
+
+      cur_val <- (cur_plot * 2) - 1
+
+      box(svgPanZoomOutput(paste0("tile", cur_plot)), #can use plotOutput() for not zoom-able images
+          title = paste(cur_markers[cur_plot]),
+          status = "primary",
+          width = 4)
+    })
+    lapply(seq_len(cur_row), function(cr) {
+      cur_val <- (cr * 3) - 2
+      fluidRow(box_list[seq.int(cur_val, cur_val + 2)])
+    })
+    })
+    }
+
 
 

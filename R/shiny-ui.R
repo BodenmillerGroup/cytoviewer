@@ -163,6 +163,8 @@
                      hr(),
                      numericInput(inputId = "scalebar", label = "Scale bar length", value = 20,
                                   min = 0, max = 100, step = 5),
+                     checkboxInput(inputId = "show_legend","Show Legend", value = FALSE),
+                     checkboxInput(inputId = "show_title","Show Title", value = FALSE),
                      icon = icon("far fa-chart-bar"), startExpanded = FALSE),
             id = "sidebar"
             ),
@@ -180,13 +182,10 @@
     cm_body <- dashboardBody(
       tabsetPanel(
         tabPanel("Composite", 
-                 box(svgPanZoomOutput("imagePlot"),
-                     title = NULL, id = "expression", status = "primary",
+                 box(svgPanZoomOutput("imagePlot"), title = NULL, id = "expression", status = "primary",
                      width = 12, height = NULL)),
-        tabPanel("Tiles", 
-                 box("Images tiles functionality to be added"))
+        tabPanel("Tiles", value = "tiles_tab", width = 12, uiOutput("tiles_tab"))
       ))
     return(cm_body)
     }
-
 
