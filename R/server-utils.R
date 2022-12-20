@@ -237,13 +237,14 @@
 .create_image <- function(input, object, mask,
                           image, img_id, cell_id, cur_markers, cur_bcg, cur_color,
                           ...){
-    
+    # Marker and color control
     cur_markers <- .select_markers(input)
     cur_markers <- cur_markers[cur_markers != ""]
     cur_bcg <- .select_contrast(input)
     cur_bcg <- cur_bcg[names(cur_bcg) != ""]
     cur_color <- .select_colors(input)
     cur_color <- cur_color[names(cur_color) != ""]
+    
     cur_basic_outline <- input$basic_color_outline
     cur_scale <- input$scalebar
     cur_thick <- input$thick
@@ -329,6 +330,105 @@
                             ...)
     })
 }
+
+
+## Image tiles function draft 
+.create_image_tiles <- function(input, object, mask, image, img_id, cell_id, ...){
+  
+  #browser()
+  cur_markers <- .select_markers(input)
+  cur_markers <- cur_markers[cur_markers != ""]
+  
+  plot_list <- list()
+  plot_list <- lapply(seq_along(cur_markers), function(i){ 
+    
+    seq <- seq_along(cur_markers)
+    markers <- cur_markers
+    markers[seq != i] <- ""
+    markers <- markers[markers != ""]
+    
+    # Coloring
+    cur_color <- .select_colors(input)
+    cur_color <- cur_color[names(cur_color) != ""]
+    cur_bcg <- .select_contrast(input)
+    cur_bcg <- cur_bcg[names(cur_bcg) != ""]
+    
+    cur_basic_outline <- input$basic_color_outline
+    cur_scale <- input$scalebar
+    cur_thick <- input$thick
+    cur_image <- image[input$sample]
+    cur_legend <- .show_legend(input)
+    cur_imagetitle <- .show_title(input)
+    
+    # plot_list[[i]] <- plotPixels(image = cur_image,
+    #                              colour_by = markers,
+    #                              colour = cur_color,
+    #                              bcg = cur_bcg,
+    #                              legend = cur_legend,
+    #                              image_title = cur_imagetitle,
+    #                              scale_bar = list(length = cur_scale),
+    #                              return_plot = TRUE,
+    #                              ...)   
+    
+    if (input$outline && input$outline_by == "") {
+      cur_mask <- mask[mcols(mask)[[img_id]] == mcols(cur_image)[[img_id]]]
+      
+      plot_list[[i]] <- plotPixels(image = cur_image,
+                 mask = cur_mask,
+                 img_id = img_id,
+                 colour_by = markers,
+                 colour = cur_color,
+                 missing_colour = cur_basic_outline, 
+                 bcg = cur_bcg,
+                 legend = cur_legend,
+                 image_title = cur_imagetitle,
+                 thick = cur_thick,
+                 scale_bar = list(length = cur_scale),
+                 return_plot = TRUE,
+                 ...)
+      
+    } else if (input$outline && input$outline_by != "" && !is.null(input$select_outline)) {
+      cur_object <- object[,colData(object)[[input$outline_by]] %in% input$select_outline]
+      cur_mask <- mask[mcols(mask)[[img_id]] == mcols(cur_image)[[img_id]]]
+      #cur_advanced_outline <- .select_outline_colors(input)
+      #cur_color[[input$outline_by]] <- cur_advanced_outline
+      
+      plot_list[[i]] <- plotPixels(image = cur_image,
+                 mask = cur_mask,
+                 object = cur_object,
+                 img_id = img_id,
+                 cell_id = cell_id,
+                 colour_by = markers,
+                 colour = cur_color,
+                 bcg = cur_bcg,
+                 outline_by = input$outline_by,
+                 legend = cur_legend,
+                 image_title = cur_imagetitle,
+                 thick = cur_thick,
+                 scale_bar = list(length = cur_scale),
+                 return_plot = TRUE,
+                 ...)
+      
+    } else {
+      plot_list[[i]] <- plotPixels(image = cur_image,
+                 colour_by = markers,
+                 colour = cur_color,
+                 bcg = cur_bcg,
+                 legend = cur_legend,
+                 image_title = cur_imagetitle,
+                 scale_bar = list(length = cur_scale),
+                 return_plot = TRUE,
+                 ...)   
+    }
+    
+    #return(plot_list)
+  
+    })
+  
+  return(plot_list)
+}
+
+
 
 
 # # Download the images - via downloadHandler
@@ -469,7 +569,7 @@
 
       cur_val <- (cur_plot * 2) - 1
 
-      box(svgPanZoomOutput(paste0("tile", cur_plot)), #can use plotOutput() for not zoom-able images
+      box(plotOutput(paste0("tile", cur_plot)), #can use svgPanZoomOutput() for zoom-able images?
           title = paste(cur_markers[cur_plot]),
           status = "primary",
           width = 4)

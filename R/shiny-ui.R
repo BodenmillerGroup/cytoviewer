@@ -181,10 +181,14 @@
 .imageBrowser_body <- function(){
     cm_body <- dashboardBody(
       tabsetPanel(
-        tabPanel("Composite", 
-                 box(svgPanZoomOutput("imagePlot"), title = NULL, id = "expression", status = "primary",
-                     width = 12, height = NULL)),
-        tabPanel("Tiles", value = "tiles_tab", width = 12, uiOutput("tiles_tab"))
+        tabPanel("Pixel-level",
+                 tabsetPanel(
+                   tabPanel("Composite",box(svgPanZoomOutput("imagePlot"), title = NULL, id = "expression", status = "primary",
+                                            width = 12, height = NULL)),
+                   tabPanel("Tiles", value = "tiles_tab", width = 12, uiOutput("tiles_tab")))),
+        tabPanel("Cell-level", 
+                 tabsetPanel(
+                   tabPanel("Masks", value = "mask_tab", width = 12, uiOutput("masks_tab"))))
       ))
     return(cm_body)
     }
