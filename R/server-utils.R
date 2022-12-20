@@ -360,16 +360,6 @@
     cur_legend <- .show_legend(input)
     cur_imagetitle <- .show_title(input)
     
-    # plot_list[[i]] <- plotPixels(image = cur_image,
-    #                              colour_by = markers,
-    #                              colour = cur_color,
-    #                              bcg = cur_bcg,
-    #                              legend = cur_legend,
-    #                              image_title = cur_imagetitle,
-    #                              scale_bar = list(length = cur_scale),
-    #                              return_plot = TRUE,
-    #                              ...)   
-    
     if (input$outline && input$outline_by == "") {
       cur_mask <- mask[mcols(mask)[[img_id]] == mcols(cur_image)[[img_id]]]
       
@@ -459,10 +449,11 @@
       
 
 # Download the images - via ActionButton 
+#' @importFrom cowplot ggdraw plot_grid
 .downloadSelection_1 <- function(input, object, mask,
                                image, img_id, cell_id, ...){
-  observeEvent(input$download_data, 
-               {
+  observeEvent(input$download_data, {
+    if(input$fileselection == "Composite"){
       if(input$filename2 == "pdf"){
         pdf(file = paste0(input$filename1, ".",input$filename2))
         .create_image(input, object, mask,
@@ -475,8 +466,35 @@
                       image, img_id, cell_id, cur_markers, cur_bcg,
                       ...)
         dev.off()
-      }})}
+      }}
+    else if(input$fileselection == "Tiles"){
+      #browser()
+      cur_markers <- .select_markers(input)
+      cur_markers <- cur_markers[cur_markers != ""]
+      plot_list <- .create_image_tiles(input, object, mask, image, img_id, cell_id)
       
+      plot_out <- list()
+      plot_out <- lapply(seq_along(cur_markers), function(i){ 
+        plot_out[[i]] <- cowplot::ggdraw(plot_list[[i]]$plot, clip = "on")
+      })
+
+      cur_row <- ceiling(length(cur_markers) / 3) # number of rows
+      cur_col <- ifelse(length(cur_markers) > 3, 3, length(cur_markers)) #number of columns
+      
+      if(input$filename2 == "pdf"){
+        #browser()
+        pdf(file = paste0(input$filename1, ".",input$filename2))
+        cowplot::plot_grid(plotlist = plot_out, nrow = cur_row, ncol = cur_col, labels = cur_markers)
+        dev.off()
+      } else {
+        png(file = paste0(input$filename1, ".",input$filename2))
+        cowplot::plot_grid(plotlist = plot_out, nrow = cur_row, ncol = cur_col, labels = cur_markers)
+        dev.off()
+        }
+    }#else to be added for plotCells implementation
+  })}
+
+
 
 ## Advanced controls - Cell outlining
 

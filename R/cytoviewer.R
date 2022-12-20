@@ -27,7 +27,7 @@
 #'
 #'@import shiny
 #'@import shinydashboard
-imageBrowser <- function(image,
+cytoviewer <- function(image,
                         mask = NULL,
                         object = NULL,
                         cell_id = NULL,
@@ -50,7 +50,7 @@ imageBrowser <- function(image,
     shiny_ui <- dashboardPage(
         header = .imageBrowser_header(),
         sidebar = .imageBrowser_sidebar(),
-        body = .imageBrowser_body(),
+        body = .imageBrowser_body()
         
     )
 

@@ -40,6 +40,14 @@
             status = "info"
           ),
           notificationItem(
+            text = radioButtons(inputId = "fileselection", 
+                                label = "Select image",
+                                choices = list("Composite","Tiles","Masks"), 
+                                selected = "Composite"), 
+            icon = icon(""),
+            status = "info"
+          ),
+          notificationItem(
             text = radioButtons(inputId = "filename2", 
                                 label = "File format",
                                 choices = list("pdf","png"), 
@@ -60,7 +68,7 @@
           notificationItem(
             text = actionButton(
               inputId = "download_data",
-              label = "Download image", 
+              label = "Download selection", 
               icon = icon("fas fa-download"), 
               width = "200px",
               style = paste0("background-color: #3C8DBC; color: white; ",
