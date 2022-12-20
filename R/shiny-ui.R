@@ -6,8 +6,8 @@
 #' @importFrom utils packageVersion
 .imageBrowser_header <- function(){
     cm_head <- dashboardHeader(
-        title = paste0("imageBrowser v",
-                        packageVersion("imageBrowser")),
+        title = paste0("cytoviewer v",
+                        packageVersion("cytoviewer")),
         dropdownMenu(
             notificationItem(
                 text = actionButton(
