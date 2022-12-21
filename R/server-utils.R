@@ -185,12 +185,12 @@
 
 # Helper function to select outline colors
 .select_outline_colors <- function(input, object, mask, session, exprs_marker_update = TRUE){
-  
-  browser()
-  input[["color_outline1"]]
-  cur_vec <- input[grepl("color_outline_", names(input))]
+    
+  cur_vec <- lapply(seq_along(input$select_outline), function (i){
+        return(input[[paste0("color_outline", i)]])
+      })
+  cur_vec <- unlist(cur_vec)
   names(cur_vec) <- input$select_outline
-  cur_vec <- unlist(cur_vec, use.names = TRUE)
   return(cur_vec)
 
 }
@@ -271,8 +271,8 @@
     } else if (input$outline && input$outline_by != "" && !is.null(input$select_outline)) {
         cur_object <- object[,colData(object)[[input$outline_by]] %in% input$select_outline]
         cur_mask <- mask[mcols(mask)[[img_id]] == mcols(cur_image)[[img_id]]]
-        #cur_advanced_outline <- .select_outline_colors(input)
-        #cur_color[[input$outline_by]] <- cur_advanced_outline
+        cur_advanced_outline <- .select_outline_colors(input)
+        cur_color[[input$outline_by]] <- cur_advanced_outline
         
         plotPixels(image = cur_image,
                    mask = cur_mask,
@@ -380,8 +380,8 @@
     } else if (input$outline && input$outline_by != "" && !is.null(input$select_outline)) {
       cur_object <- object[,colData(object)[[input$outline_by]] %in% input$select_outline]
       cur_mask <- mask[mcols(mask)[[img_id]] == mcols(cur_image)[[img_id]]]
-      #cur_advanced_outline <- .select_outline_colors(input)
-      #cur_color[[input$outline_by]] <- cur_advanced_outline
+      cur_advanced_outline <- .select_outline_colors(input)
+      cur_color[[input$outline_by]] <- cur_advanced_outline
       
       plot_list[[i]] <- plotPixels(image = cur_image,
                  mask = cur_mask,
