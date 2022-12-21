@@ -181,7 +181,8 @@
         menuItem("Cell-level", 
                  menuItem("General controls",
                           checkboxInput("plotcells", "Show cell-level plot", value = FALSE, width = NULL),
-                          uiOutput("Colorby_controls")), 
+                          uiOutput("Colorby_controls"),
+                          uiOutput("Colorby_colors")), 
                  startExpanded = TRUE, icon = icon("shapes")
                  )),
         tags$style(
@@ -204,7 +205,7 @@
                    tabPanel("Tiles", value = "tiles_tab", width = 12, uiOutput("tiles_tab")))),
         tabPanel("Cell-level", 
                  tabsetPanel(
-                   tabPanel("Masks", value = "mask_tab", width = 12, uiOutput("masks_tab"))))
+                   tabPanel("Masks", value = "cells_tab", width = 12, uiOutput("cells_tab"))))
       ))
     return(cm_body)
     }

@@ -46,6 +46,10 @@
     ## Cell-level 
     output$Colorby_controls <- .create_colorby_controls(object, mask, input, session)
     .populate_colorby_controls(object, input, session)
+    output$Colorby_colors <- .create_colorby_color(object, mask, input, session, ...)
+    
+    output$cells_tab <- .add_cells_tab(input, object, mask, image, img_id, cell_id)
+    output$cellsPlot <- .cellsPlot(input, object, mask, image, img_id, cell_id, ...)
     
     
     ## Download

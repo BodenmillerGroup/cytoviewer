@@ -192,7 +192,6 @@
   cur_vec <- unlist(cur_vec)
   names(cur_vec) <- input$select_outline
   return(cur_vec)
-
 }
 
 
@@ -222,7 +221,6 @@
 }
 
 # Helper function for image title 
-
 .show_title <- function(input){
   imagetitle_param <- list(margin = c(10,2)) #use default options from cytomapper
   
@@ -548,17 +546,6 @@
       })))}})}
 
 
-# .populate_advanced_color_outline <- function(object, mask, input, session, ...){
-#   observeEvent(input$select_outline, {
-#     for(i in seq_along(input$select_outline)){
-#     updateColourInput(session, inputId = paste0(input$select_outline[i],"_color"),
-#                       label = input$select_outline[i],
-#                       value = brewer.pal(12, "Paired")[i]
-#                       )
-#   }
-# })}
-
-
 .create_thickness_control <- function(object, mask, input, session, ...){
   renderUI({
   if(input$outline){
@@ -609,35 +596,6 @@
                        choices = NULL, options = NULL, list(placeholder = 'Color by', maxItems = 1,maxOptions = 10)
         ),
         selectizeInput("color_by_selection",
-                       label = span("Color by selection",style = "color: black; padding-top: 0px"),
-                       choices = NULL,
-                       multiple = TRUE)
-      )}})}
-
-.populate_colorby_controls <- function(object, input, session){
-  observeEvent(input$plotcells, {
-    if (input$plotcells) {
-      updateSelectizeInput(session, inputId = "color_by",
-                           choices = names(colData(object)),
-                           server = TRUE,
-                           selected = "")
-      observeEvent(input$color_by_selection, { 
-        updateSelectizeInput(session, inputId = "color_by_selection",
-                             choices = unique(colData(object)[[input$color_by]]),
-                             server = TRUE,
-                             selected = unique(colData(object)[[input$color_by]])[1])
-      })
-      }
-  })}
-
-.create_colorby_controls <- function(object, mask, input, session, ...){
-  renderUI({
-    if (input$plotcells){
-      wellPanel(
-        selectizeInput("color_by", label = span("Color by",style = "color: black; padding-top: 0px"), 
-                       choices = NULL, options = NULL, list(placeholder = 'Color by', maxItems = 1,maxOptions = 10)
-        ),
-        selectizeInput("color_by_selection",
                        label = span("Select color by",style = "color: black; padding-top: 0px"),
                        choices = NULL,
                        multiple = TRUE)
@@ -658,5 +616,118 @@
       })
     }
   })
-  }
+}
+
+.create_colorby_color <- function(object, mask, input, session, ...){
+  renderUI({
+    if(input$plotcells && !is.null(input$color_by_selection)){
+      wellPanel(
+        menuItem(span("Color control", style = "color: black;padding-top: 0px"), style = "color: black; padding-top: 0px",
+                 lapply(seq_along(input$color_by_selection), function (i){
+                   colourInput(inputId = paste0("color_by",i),
+                               label = input$color_by_selection[i],
+                               value = brewer.pal(12, "Paired")[i])}),
+                 colourInput(inputId = "missing_colorby", 
+                             label = "Missing color",
+                             value = "white")
+                 
+                 ))}})}
+
+
+# Helper function to retrieve color by colors
+.select_colorby_color <- function(input, object, mask, session, exprs_marker_update = TRUE){
   
+  cur_list <- list()
+  if(input$color_by != ""){
+  cur_vec <- lapply(seq_along(input$color_by_selection), function (i){
+    return(input[[paste0("color_by", i)]])
+  })
+  cur_vec <- unlist(cur_vec)
+  names(cur_vec) <- input$color_by_selection
+  cur_list[[input$color_by]] <- cur_vec
+  
+  } else {cur_list <- NULL}
+  
+  return(cur_list)
+  
+}
+
+# Helper function to retrieve color_by
+.select_colorby <- function(input){
+  if(input$color_by != ""){cur_colorby <- input$color_by}else{cur_colorby <- NULL}
+  return(cur_colorby)
+}
+
+# Helper function to subset object 
+.subset_object <- function(input, object){
+  
+  if(input$color_by != ""){
+    object <- object[, colData(object)[[input$color_by]] %in% input$color_by_selection]
+  }else{object <- object}
+  
+  return(object)
+}
+
+#  Helper function to construct image 
+
+.create_cells <- function(input, object, mask,
+                          image, img_id, cell_id, ...){
+
+  cur_scale <- input$scalebar
+  cur_legend <- .show_legend(input)
+  cur_imagetitle <- .show_title(input)
+  cur_missingcolor <- input$missing_colorby
+  
+  cur_colorby <- .select_colorby(input)
+  cur_color <- .select_colorby_color(input)
+
+  #browser()
+  cur_object <- .subset_object(input, object)
+
+  cur_image <- image[input$sample]
+  cur_mask <- mask[mcols(mask)[[img_id]] == mcols(cur_image)[[img_id]]]
+  
+  plotCells(mask = cur_mask,
+            img_id = img_id,
+            object = cur_object,
+            cell_id = cell_id,
+            colour_by = cur_colorby,
+            colour = cur_color,
+            missing_colour = cur_missingcolor, 
+            legend = cur_legend,
+            image_title = cur_imagetitle,
+            scale_bar = list(length = cur_scale),
+            ...)
+    
+}
+
+# Visualize plotCells
+#' @importFrom svgPanZoom svgPanZoom renderSvgPanZoom
+#' @importFrom svglite stringSVG
+.cellsPlot <- function(input, object, mask,
+                       image, img_id, cell_id, ...){
+  renderSvgPanZoom({
+    
+    suppressMessages(svgPanZoom(stringSVG(
+      .create_cells(input, object, mask, image, img_id, cell_id, ...)
+    ),
+    zoomScaleSensitivity = 0.4, 
+    maxZoom = 20,
+    controlIconsEnabled = TRUE, 
+    viewBox = FALSE))
+  })
+}
+
+## Add plotCells tab
+.add_cells_tab <- function(input, object, mask,
+                           image, img_id, cell_id){
+  renderUI({
+    if(input$plotcells){
+    box(svgPanZoomOutput("cellsPlot"), 
+          title = NULL, 
+          id = "expression",
+          status = "primary",
+          width = 12)
+    }
+    })
+  }
