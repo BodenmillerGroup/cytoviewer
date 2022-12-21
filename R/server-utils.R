@@ -88,7 +88,7 @@
 
     # Next Image Observer
     observeEvent(input$next.sample, {
-        img_IDs <- names(images)
+        img_IDs <- names(image)
         cur_index <- match(input$sample, img_IDs)
         updated_index <- ifelse(cur_index == length(img_IDs), 1, cur_index + 1)
     
@@ -103,7 +103,7 @@
 
     # Previous Image Observer
     observeEvent(input$previous.sample, {
-        img_IDs <- names(images)
+        img_IDs <- names(image)
         cur_index <- match(input$sample, img_IDs)
         updated_index <- ifelse(cur_index == 1,  length(img_IDs), cur_index - 1)
     
@@ -215,7 +215,6 @@
 # Helper function for legend construction 
 
 .show_legend <- function(input){
-  #browser()
   legend_param <- list(margin = 3) #use default options from cytomapper
   
   if(input$show_legend){cur_legend <- legend_param}else{cur_legend <- NULL}
@@ -225,7 +224,6 @@
 # Helper function for image title 
 
 .show_title <- function(input){
-  #browser()
   imagetitle_param <- list(margin = c(10,2)) #use default options from cytomapper
   
   if(input$show_title){cur_imagetitle <- imagetitle_param}else{cur_imagetitle <- NULL}
@@ -468,7 +466,7 @@
         dev.off()
       }}
     else if(input$fileselection == "Tiles"){
-      #browser()
+      browser()
       cur_markers <- .select_markers(input)
       cur_markers <- cur_markers[cur_markers != ""]
       plot_list <- .create_image_tiles(input, object, mask, image, img_id, cell_id)
@@ -599,5 +597,66 @@
     })
     }
 
+# PlotCells functionality 
 
+## Advanced controls - Cell outlining
 
+.create_colorby_controls <- function(object, mask, input, session, ...){
+  renderUI({
+    if (input$plotcells){
+      wellPanel(
+        selectizeInput("color_by", label = span("Color by",style = "color: black; padding-top: 0px"), 
+                       choices = NULL, options = NULL, list(placeholder = 'Color by', maxItems = 1,maxOptions = 10)
+        ),
+        selectizeInput("color_by_selection",
+                       label = span("Color by selection",style = "color: black; padding-top: 0px"),
+                       choices = NULL,
+                       multiple = TRUE)
+      )}})}
+
+.populate_colorby_controls <- function(object, input, session){
+  observeEvent(input$plotcells, {
+    if (input$plotcells) {
+      updateSelectizeInput(session, inputId = "color_by",
+                           choices = names(colData(object)),
+                           server = TRUE,
+                           selected = "")
+      observeEvent(input$color_by_selection, { 
+        updateSelectizeInput(session, inputId = "color_by_selection",
+                             choices = unique(colData(object)[[input$color_by]]),
+                             server = TRUE,
+                             selected = unique(colData(object)[[input$color_by]])[1])
+      })
+      }
+  })}
+
+.create_colorby_controls <- function(object, mask, input, session, ...){
+  renderUI({
+    if (input$plotcells){
+      wellPanel(
+        selectizeInput("color_by", label = span("Color by",style = "color: black; padding-top: 0px"), 
+                       choices = NULL, options = NULL, list(placeholder = 'Color by', maxItems = 1,maxOptions = 10)
+        ),
+        selectizeInput("color_by_selection",
+                       label = span("Select color by",style = "color: black; padding-top: 0px"),
+                       choices = NULL,
+                       multiple = TRUE)
+      )}})}
+
+.populate_colorby_controls <- function(object, input, session){
+  observeEvent(input$plotcells, {
+    if (input$plotcells) {
+      updateSelectizeInput(session, inputId = "color_by",
+                           choices = names(colData(object)),
+                           server = TRUE,
+                           selected = "")
+      observeEvent(input$color_by, { 
+        updateSelectizeInput(session, inputId = "color_by_selection",
+                             choices = unique(colData(object)[[input$color_by]]),
+                             server = TRUE,
+                             selected = unique(colData(object)[[input$color_by]]))
+      })
+    }
+  })
+  }
+  

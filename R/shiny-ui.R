@@ -89,6 +89,7 @@
 .imageBrowser_sidebar <- function(){
     cm_side <- dashboardSidebar(
         sidebarMenu(
+          menuItem("Image-level", startExpanded = TRUE, icon = icon("camera"),
             menuItem("General controls",
                     fluidRow(column(2, 
                         actionButton("previous.sample", label = NULL,
@@ -160,10 +161,10 @@
                              sliderInput(inputId = "gamma6", label = "Gamma",  min = 1, max = 3, value = 1, step = 0.1),
                              colourInput(inputId = "color6", label = "Color", value = "blue")),
                     hr(),
-                    icon = icon("fas fa-sliders-h"), 
+                    #icon = icon("fas fa-sliders-h"), 
                     startExpanded = FALSE),
             menuItem("Advanced controls",
-                     checkboxInput("outline", "Cell outline options", value = FALSE, width = NULL),
+                     checkboxInput("outline", "Show cell outlines", value = FALSE, width = NULL),
                      uiOutput("Outline_controls"),
                      uiOutput("Basic_color_outline"),
                      uiOutput("Advanced_color_outline"),
@@ -173,9 +174,16 @@
                                   min = 0, max = 100, step = 5),
                      checkboxInput(inputId = "show_legend","Show Legend", value = FALSE),
                      checkboxInput(inputId = "show_title","Show Title", value = FALSE),
-                     icon = icon("far fa-chart-bar"), startExpanded = FALSE),
+                     #icon = icon("far fa-chart-bar"), 
+                     startExpanded = FALSE),
             id = "sidebar"
             ),
+        menuItem("Cell-level", 
+                 menuItem("General controls",
+                          checkboxInput("plotcells", "Show cell-level plot", value = FALSE, width = NULL),
+                          uiOutput("Colorby_controls")), 
+                 startExpanded = TRUE, icon = icon("shapes")
+                 )),
         tags$style(
           "#sidebarItemExpanded {
             overflow: auto;
@@ -189,7 +197,7 @@
 .imageBrowser_body <- function(){
     cm_body <- dashboardBody(
       tabsetPanel(
-        tabPanel("Pixel-level",
+        tabPanel("Image-level",
                  tabsetPanel(
                    tabPanel("Composite",box(svgPanZoomOutput("imagePlot"), title = NULL, id = "expression", status = "primary",
                                             width = 12, height = NULL)),

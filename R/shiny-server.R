@@ -11,6 +11,9 @@
     .create_general_observer(input, si = cur_sessionInfo)
     
     ## Dynamic user inputs
+    # Sample selection 
+    .create_interactive_observer(image, input, session)
+    
     # Marker inputs
     .create_updateSelectizeInput(image, input, session)
     
@@ -22,7 +25,7 @@
     #.populate_advanced_color_outline(object, mask, input, session)
     output$Outline_thickness <- .create_thickness_control(object, mask, input, session)
     
-    ## Plots 
+    ## Image-level
     # Dynamically create image plot
     output$imagePlot <- .imagePlot(input, object, mask, image, img_id, cell_id)
     
@@ -38,6 +41,12 @@
           output[[paste0("tile", cur_plot)]] <- renderPlot(.create_image_tiles(input, object, mask, image, img_id, cell_id)[[cur_plot]]$plot)
         })
       })
+    
+    
+    ## Cell-level 
+    output$Colorby_controls <- .create_colorby_controls(object, mask, input, session)
+    .populate_colorby_controls(object, input, session)
+    
     
     ## Download
     .downloadSelection_1(input, object, mask, image, img_id, cell_id, ...)
