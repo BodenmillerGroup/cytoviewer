@@ -89,30 +89,30 @@
 .imageBrowser_sidebar <- function(){
     cm_side <- dashboardSidebar(
         sidebarMenu(
+          fluidRow(column(2, 
+                          actionButton("previous.sample", label = NULL,
+                                       icon = icon("angle-left", class="fa-2x"),
+                                       style = paste0("background-color: ",
+                                                      "transparent; border-color: transparent",
+                                                      "; color:white; margin-left: 0px;margin-top: 30px"))),
+                   column(8, style="padding-left:0px;padding-right:0px;",
+                          selectizeInput("sample", label = "Sample selection",
+                                         width = "100%",
+                                         choices = NULL,
+                                         options = list(
+                                           placeholder = 'Select a sample', 
+                                           maxItems = 1))),
+                   column(2,style="padding-left:0px;",
+                          actionButton("next.sample", label = NULL,
+                                       icon = icon(name = "angle-right", 
+                                                   class="fa-2x"),
+                                       style = paste0("background-color: ",
+                                                      "transparent; border-color: transparent",
+                                                      "; color: white; margin-left: 0px; ",
+                                                      "padding-left: 0px;margin-top: 30px")))),
+          
           menuItem("Image-level", startExpanded = TRUE, icon = icon("camera"),
-            menuItem("General controls",
-                    fluidRow(column(2, 
-                        actionButton("previous.sample", label = NULL,
-                                    icon = icon("angle-left", class="fa-2x"),
-                                    style = paste0("background-color: ",
-                                    "transparent; border-color: transparent",
-                                    "; color:white; margin-left: 0px;margin-top: 30px"))),
-                        column(8, style="padding-left:0px;padding-right:0px;",
-                        selectizeInput("sample", label = "Image selection",
-                                    width = "100%",
-                                    choices = NULL,
-                                    options = list(
-                                        placeholder = 'Select a sample', 
-                                        maxItems = 1))),
-                        column(2,style="padding-left:0px;",
-                        actionButton("next.sample", label = NULL,
-                                    icon = icon(name = "angle-right", 
-                                            class="fa-2x"),
-                                    style = paste0("background-color: ",
-                                    "transparent; border-color: transparent",
-                                    "; color: white; margin-left: 0px; ",
-                                    "padding-left: 0px;margin-top: 30px")))),
-                    hr(),
+            menuItem("Basic controls",
                     fluidRow(column(2, style=c("margin-top:25px;margin-right:0px"), checkboxInput(inputId = "view1", label = NULL, value = TRUE, width = "1000px")), 
                       column(10, style= "margin-left:0px", selectizeInput("marker1", label = "Marker 1", choices = NULL))),
                     menuItem("Color control", 
@@ -179,12 +179,22 @@
             id = "sidebar"
             ),
         menuItem("Cell-level", 
-                 menuItem("General controls",
+                 menuItem("Basic controls",
                           checkboxInput("plotcells", "Show cell-level plot", value = FALSE, width = NULL),
                           uiOutput("Colorby_controls"),
                           uiOutput("Colorby_colors")), 
                  startExpanded = TRUE, icon = icon("shapes")
-                 )),
+                 ),
+        menuItem("General",
+                 menuItem("Basic controls", 
+                          numericInput(inputId = "scalebar", label = "Scale bar length", value = 20,
+                                       min = 0, max = 100, step = 5),
+                          checkboxInput(inputId = "show_legend","Show Legend", value = FALSE),
+                          checkboxInput(inputId = "show_title","Show Title", value = FALSE)
+                          ),
+                 startExpanded = TRUE, icon = icon("sliders")
+                          )
+        ),
         tags$style(
           "#sidebarItemExpanded {
             overflow: auto;
