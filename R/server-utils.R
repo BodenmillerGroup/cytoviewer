@@ -609,11 +609,17 @@
                            server = TRUE,
                            selected = "")
       observeEvent(input$color_by, { 
+        if(is.numeric(colData(object)[[input$color_by]])){
+          updateSelectizeInput(session, inputId = "color_by_selection",
+                               choices = input$color_by,
+                               server = TRUE,
+                               selected = input$color_by)
+        }else{
         updateSelectizeInput(session, inputId = "color_by_selection",
                              choices = unique(colData(object)[[input$color_by]]),
                              server = TRUE,
                              selected = unique(colData(object)[[input$color_by]]))
-      })
+      }})
     }
   })
 }
@@ -622,31 +628,41 @@
   renderUI({
     if(input$plotcells && !is.null(input$color_by_selection)){
       wellPanel(
-        menuItem(span("Color control", style = "color: black;padding-top: 0px"), style = "color: black; padding-top: 0px",
-                 lapply(seq_along(input$color_by_selection), function (i){
-                   colourInput(inputId = paste0("color_by",i),
-                               label = input$color_by_selection[i],
-                               value = brewer.pal(12, "Paired")[i])}),
-                 colourInput(inputId = "missing_colorby", 
-                             label = "Missing color",
-                             value = "white")
-                 
-                 ))}})}
-
+        if(is.numeric(colData(object)[[input$color_by]])){
+          menuItem(span("Color control", style = "color: black;padding-top: 0px"), style = "color: black; padding-top: 0px",
+                   radioButtons(inputId = "numeric_colorby", label = "Color palettes",
+                                choices = list("viridis","inferno","plasma"), 
+                                selected = "viridis"))
+        }else{
+          menuItem(span("Color control", style = "color: black;padding-top: 0px"), style = "color: black; padding-top: 0px",
+                   lapply(seq_along(input$color_by_selection), function (i){
+                     colourInput(inputId = paste0("color_by",i),
+                                 label = input$color_by_selection[i],
+                                 value = brewer.pal(12, "Paired")[i])}),
+                   colourInput(inputId = "missing_colorby", 
+                               label = "Missing color",
+                               value = "white"))
+        }
+        )}})}
 
 # Helper function to retrieve color by colors
-.select_colorby_color <- function(input, object, mask, session, exprs_marker_update = TRUE){
+.select_colorby_color <- function(input, object, session, exprs_marker_update = TRUE){
   
   cur_list <- list()
-  if(input$color_by != ""){
-  cur_vec <- lapply(seq_along(input$color_by_selection), function (i){
-    return(input[[paste0("color_by", i)]])
-  })
-  cur_vec <- unlist(cur_vec)
-  names(cur_vec) <- input$color_by_selection
-  cur_list[[input$color_by]] <- cur_vec
   
-  } else {cur_list <- NULL}
+  if (input$color_by != "") {
+    if (is.numeric(colData(object)[[input$color_by]])) {
+      #browser()
+      cur_list[[input$color_by]] <- viridis(100, option = input$numeric_colorby)
+      } else {
+      cur_vec <- lapply(seq_along(input$color_by_selection), function (i){
+        return(input[[paste0("color_by", i)]])})
+      cur_vec <- unlist(cur_vec)
+      names(cur_vec) <- input$color_by_selection
+      cur_list[[input$color_by]] <- cur_vec
+      }} else {
+    cur_list <- NULL
+    }
   
   return(cur_list)
   
@@ -654,14 +670,19 @@
 
 # Helper function to retrieve color_by
 .select_colorby <- function(input){
-  if(input$color_by != ""){cur_colorby <- input$color_by}else{cur_colorby <- NULL}
+  
+  if (input$color_by != "") {
+    cur_colorby <- input$color_by
+  } else { 
+    cur_colorby <- NULL 
+    }
+  
   return(cur_colorby)
 }
 
 # Helper function to subset object 
 .subset_object <- function(input, object){
-  
-  if(input$color_by != ""){
+  if(input$color_by != "" && !is.numeric(colData(object)[[input$color_by]])){
     object <- object[, colData(object)[[input$color_by]] %in% input$color_by_selection]
   }else{object <- object}
   
@@ -679,7 +700,7 @@
   cur_missingcolor <- input$missing_colorby
   
   cur_colorby <- .select_colorby(input)
-  cur_color <- .select_colorby_color(input)
+  cur_color <- .select_colorby_color(input, object)
 
   #browser()
   cur_object <- .subset_object(input, object)
