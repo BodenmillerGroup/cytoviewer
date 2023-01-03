@@ -186,12 +186,15 @@
 # Helper function to select outline colors
 .select_outline_colors <- function(input, object, session, exprs_marker_update = TRUE){
   if (is.numeric(colData(object)[[input$outline_by]])) {
+    req(input$numeric_color_outline)
     cur_vec <- viridis(100, option = input$numeric_color_outline)
   }else{
     cur_vec <- lapply(seq_along(input$select_outline), function (i){
       return(input[[paste0("color_outline", i)]])})
     cur_vec <- unlist(cur_vec)
-    names(cur_vec) <- input$select_outline 
+    if(!is.null(cur_vec)){
+      names(cur_vec) <- input$select_outline
+    }
   }
   return(cur_vec)  
 }
@@ -234,7 +237,10 @@
 .create_image <- function(input, object, mask,
                           image, img_id, cell_id, cur_markers, cur_bcg, cur_color,
                           ...){
-    # Marker and color control
+    
+  req(input$sample != "")
+  
+  # Marker and color control
     cur_markers <- .select_markers(input)
     cur_markers <- cur_markers[cur_markers != ""]
     cur_bcg <- .select_contrast(input)
@@ -249,7 +255,8 @@
     cur_legend <- .show_legend(input)
     cur_imagetitle <- .show_title(input)
 
-    if (input$outline && input$outline_by == "") {
+    if (input$outline && !is.null(input$outline_by)){
+      if(input$outline_by == "") {
         cur_mask <- mask[mcols(mask)[[img_id]] == mcols(cur_image)[[img_id]]]
         
         plotPixels(image = cur_image,
@@ -264,19 +271,22 @@
                    thick = cur_thick,
                    scale_bar = list(length = cur_scale),
                    ...)
-        
-    } else if (input$outline && input$outline_by != "" && !is.null(input$select_outline)) {
-      
-      if(is.numeric(colData(object)[[input$outline_by]])){
-        cur_object <- object
-      }else{
-        cur_object <- object[,colData(object)[[input$outline_by]] %in% input$select_outline]
       }
+    #} else if (input$outline && !is.null(input$outline_by)){
+      else if (input$outline_by != ""){ #&& !is.null(input$select_outline)) {
+        
+        if(is.numeric(colData(object)[[input$outline_by]])){
+        cur_object <- object
+        }else{
+        cur_object <- object[,colData(object)[[input$outline_by]] %in% input$select_outline]
+        }
       
       cur_mask <- mask[mcols(mask)[[img_id]] == mcols(cur_image)[[img_id]]]
       cur_advanced_outline <- .select_outline_colors(input, object)
       cur_color[[input$outline_by]] <- cur_advanced_outline
-        
+      
+      req(!identical(unique(colData(cur_object)[,img_id]), integer(0)))
+      
       plotPixels(image = cur_image,
                    mask = cur_mask,
                    object = cur_object,
@@ -292,15 +302,15 @@
                    scale_bar = list(length = cur_scale),
                    ...)
         
-    } else {
-        plotPixels(image = cur_image,
-                   colour_by = cur_markers,
-                   colour = cur_color,
-                   bcg = cur_bcg,
-                   legend = cur_legend,
-                   image_title = cur_imagetitle,
-                   scale_bar = list(length = cur_scale),
-                   ...)   
+    }} else {
+      plotPixels(image = cur_image,
+                 colour_by = cur_markers,
+                 colour = cur_color,
+                 bcg = cur_bcg,
+                 legend = cur_legend,
+                 image_title = cur_imagetitle,
+                 scale_bar = list(length = cur_scale),
+                 ...)   
     }
 }
 
@@ -310,7 +320,6 @@
 .imagePlot <- function(input, object, mask,
                        image, img_id, cell_id, ...){
     renderSvgPanZoom({
-
         suppressMessages(svgPanZoom(stringSVG(
             .create_image(input, object, mask,
                           image, img_id, cell_id, cur_markers, cur_bcg,
@@ -678,15 +687,18 @@
   
   cur_list <- list()
   
-  if (input$color_by != "") {
+  if (input$color_by != "" && !is.null(input$color_by_selection)) {
     if (is.numeric(colData(object)[[input$color_by]])) {
+      req(input$numeric_colorby)
       cur_list[[input$color_by]] <- viridis(100, option = input$numeric_colorby)
       } else {
       cur_vec <- lapply(seq_along(input$color_by_selection), function (i){
         return(input[[paste0("color_by", i)]])})
       cur_vec <- unlist(cur_vec)
-      names(cur_vec) <- input$color_by_selection
-      cur_list[[input$color_by]] <- cur_vec
+      if(!is.null(cur_vec)){
+        names(cur_vec) <- input$color_by_selection
+        cur_list[[input$color_by]] <- cur_vec
+      } else { cur_list <- NULL }
       }} else {
     cur_list <- NULL
     }
@@ -720,7 +732,9 @@
 
 .create_cells <- function(input, object, mask,
                           image, img_id, cell_id, ...){
-
+  
+  req(img_id, cell_id)
+  #browser()
   cur_scale <- input$scalebar
   cur_legend <- .show_legend(input)
   cur_imagetitle <- .show_title(input)
@@ -728,12 +742,13 @@
   
   cur_colorby <- .select_colorby(input)
   cur_color <- .select_colorby_color(input, object)
-
-  #browser()
   cur_object <- .subset_object(input, object)
 
   cur_image <- image[input$sample]
   cur_mask <- mask[mcols(mask)[[img_id]] == mcols(cur_image)[[img_id]]]
+  cur_object <- cur_object[, colData(cur_object)[[img_id]] %in% mcols(mask)[,img_id]]
+  
+  req(!identical(unique(colData(cur_object)[,img_id]), integer(0)))
   
   plotCells(mask = cur_mask,
             img_id = img_id,
@@ -746,7 +761,7 @@
             image_title = cur_imagetitle,
             scale_bar = list(length = cur_scale),
             ...)
-    
+  #}  
 }
 
 # Visualize plotCells

@@ -36,15 +36,15 @@
             text = textInput(inputId = "filename1",
                              label = "File name (File path)",
                              value = ""),
-            icon = icon(""),
-            status = "info"
+            icon = icon(NULL),
+            status = "danger"
           ),
           notificationItem(
             text = radioButtons(inputId = "fileselection", 
                                 label = "Select image",
                                 choices = list("Composite","Tiles","Masks"), 
                                 selected = "Composite"), 
-            icon = icon(""),
+            icon = icon(NULL),
             status = "info"
           ),
           notificationItem(
@@ -52,7 +52,7 @@
                                 label = "File format",
                                 choices = list("pdf","png"), 
                                 selected = "pdf"), 
-            icon = icon(""),
+            icon = icon(NULL),
             status = "info"
           ),
           # notificationItem(
@@ -74,7 +74,7 @@
               style = paste0("background-color: #3C8DBC; color: white; ",
                              "border-color: #7EA6F8")
             ),
-            icon = icon(""),
+            icon = icon(NULL),
             status = "info"
           ),
           type = "notification",
@@ -199,17 +199,19 @@
 
 # Create the main body
 #' @importFrom svgPanZoom svgPanZoomOutput
+#' @importFrom shinycssloaders svgPanZoomOutput
 .imageBrowser_body <- function(){
     cm_body <- dashboardBody(
       tabsetPanel(
         tabPanel("Image-level",
                  tabsetPanel(
-                   tabPanel("Composite",box(svgPanZoomOutput("imagePlot"), title = NULL, id = "expression", status = "primary",
+                   tabPanel("Composite",box(withSpinner(svgPanZoomOutput("imagePlot"), type = 6), 
+                                            title = NULL, id = "expression", status = "primary",
                                             width = 12, height = NULL)),
-                   tabPanel("Tiles", value = "tiles_tab", width = 12, uiOutput("tiles_tab")))),
+                   tabPanel("Tiles", value = "tiles_tab", width = 12, withSpinner(uiOutput("tiles_tab"), type = 6)))),
         tabPanel("Cell-level", 
                  tabsetPanel(
-                   tabPanel("Masks", value = "cells_tab", width = 12, uiOutput("cells_tab"))))
+                   tabPanel("Masks", value = "cells_tab", width = 12, withSpinner(uiOutput("cells_tab"), type = 6))))
       ))
     return(cm_body)
     }
