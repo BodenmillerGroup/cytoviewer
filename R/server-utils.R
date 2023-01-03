@@ -184,16 +184,17 @@
 
 
 # Helper function to select outline colors
-.select_outline_colors <- function(input, object, mask, session, exprs_marker_update = TRUE){
-    
-  cur_vec <- lapply(seq_along(input$select_outline), function (i){
-        return(input[[paste0("color_outline", i)]])
-      })
-  cur_vec <- unlist(cur_vec)
-  names(cur_vec) <- input$select_outline
-  return(cur_vec)
+.select_outline_colors <- function(input, object, session, exprs_marker_update = TRUE){
+  if (is.numeric(colData(object)[[input$outline_by]])) {
+    cur_vec <- viridis(100, option = input$numeric_color_outline)
+  }else{
+    cur_vec <- lapply(seq_along(input$select_outline), function (i){
+      return(input[[paste0("color_outline", i)]])})
+    cur_vec <- unlist(cur_vec)
+    names(cur_vec) <- input$select_outline 
+  }
+  return(cur_vec)  
 }
-
 
 # Helper function to define bcg parameter when using plotPixels()
 .select_contrast <- function(input){
@@ -265,12 +266,18 @@
                    ...)
         
     } else if (input$outline && input$outline_by != "" && !is.null(input$select_outline)) {
+      
+      if(is.numeric(colData(object)[[input$outline_by]])){
+        cur_object <- object
+      }else{
         cur_object <- object[,colData(object)[[input$outline_by]] %in% input$select_outline]
-        cur_mask <- mask[mcols(mask)[[img_id]] == mcols(cur_image)[[img_id]]]
-        cur_advanced_outline <- .select_outline_colors(input)
-        cur_color[[input$outline_by]] <- cur_advanced_outline
+      }
+      
+      cur_mask <- mask[mcols(mask)[[img_id]] == mcols(cur_image)[[img_id]]]
+      cur_advanced_outline <- .select_outline_colors(input, object)
+      cur_color[[input$outline_by]] <- cur_advanced_outline
         
-        plotPixels(image = cur_image,
+      plotPixels(image = cur_image,
                    mask = cur_mask,
                    object = cur_object,
                    img_id = img_id,
@@ -374,9 +381,13 @@
                  ...)
       
     } else if (input$outline && input$outline_by != "" && !is.null(input$select_outline)) {
-      cur_object <- object[,colData(object)[[input$outline_by]] %in% input$select_outline]
+      if(is.numeric(colData(object)[[input$outline_by]])){
+        cur_object <- object
+      }else{
+        cur_object <- object[,colData(object)[[input$outline_by]] %in% input$select_outline]
+      }
       cur_mask <- mask[mcols(mask)[[img_id]] == mcols(cur_image)[[img_id]]]
-      cur_advanced_outline <- .select_outline_colors(input)
+      cur_advanced_outline <- .select_outline_colors(input, object)
       cur_color[[input$outline_by]] <- cur_advanced_outline
       
       plot_list[[i]] <- plotPixels(image = cur_image,
@@ -507,6 +518,7 @@
                          multiple = TRUE)
         )}})}
 
+
 .populate_outline_controls <- function(object, input, session){
   observeEvent(input$outline, {
     if (input$outline) {
@@ -515,10 +527,18 @@
                            server = TRUE,
                            selected = "")
       observeEvent(input$outline_by, { 
-        updateSelectizeInput(session, inputId = "select_outline",
-                             choices = unique(colData(object)[[input$outline_by]]),
-                             server = TRUE,
-                             selected = unique(colData(object)[[input$outline_by]])[1])
+        if(is.numeric(colData(object)[[input$outline_by]])){
+          updateSelectizeInput(session, inputId = "select_outline",
+                               choices = input$outline_by,
+                               server = TRUE,
+                               selected = input$outline_by) 
+        }else{
+          updateSelectizeInput(session, inputId = "select_outline",
+                               choices = unique(colData(object)[[input$outline_by]]),
+                               server = TRUE,
+                               selected = unique(colData(object)[[input$outline_by]])) 
+          
+        }
       })
     }
   })
@@ -538,12 +558,20 @@
   renderUI({
   if(input$outline && !is.null(input$select_outline)){
     wellPanel(
-     menuItem(span("Outline color control", style = "color: black;padding-top: 0px"), style = "color: black; padding-top: 0px",
-     lapply(seq_along(input$select_outline), function (i){
-        colourInput(inputId = paste0("color_outline",i),
-                    label = input$select_outline[i],
-                    value = brewer.pal(12, "Paired")[i])
-      })))}})}
+      if(is.numeric(colData(object)[[input$outline_by]])){ 
+        menuItem(span("Outline color control", style = "color: black;padding-top: 0px"), style = "color: black; padding-top: 0px",
+                 radioButtons(inputId = "numeric_color_outline", label = "Color palettes",
+                              choices = list("viridis","inferno","plasma"), 
+                              selected = "viridis"))
+      }else{
+        menuItem(span("Outline color control", style = "color: black;padding-top: 0px"), style = "color: black; padding-top: 0px",
+                 lapply(seq_along(input$select_outline), function (i){
+                   colourInput(inputId = paste0("color_outline",i),
+                               label = input$select_outline[i],
+                               value = brewer.pal(12, "Paired")[i])
+                 }))
+      }
+      )}})}
 
 
 .create_thickness_control <- function(object, mask, input, session, ...){
@@ -652,7 +680,6 @@
   
   if (input$color_by != "") {
     if (is.numeric(colData(object)[[input$color_by]])) {
-      #browser()
       cur_list[[input$color_by]] <- viridis(100, option = input$numeric_colorby)
       } else {
       cur_vec <- lapply(seq_along(input$color_by_selection), function (i){
