@@ -497,7 +497,7 @@
             dev.control("enable")
             
             pdf(file = paste0(input$filename1,cur_markers[1],".pdf"))
-            plot_list[[1]]$plot
+            replayPlot(plot_list[[1]]$plot)
             dev.off()
             
             # for(i in seq_along(cur_markers)){
