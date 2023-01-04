@@ -271,13 +271,11 @@
                    thick = cur_thick,
                    scale_bar = list(length = cur_scale),
                    ...)
-      }
-    #} else if (input$outline && !is.null(input$outline_by)){
-      else if (input$outline_by != ""){ #&& !is.null(input$select_outline)) {
+      } else if (input$outline_by != "") { 
         
-        if(is.numeric(colData(object)[[input$outline_by]])){
+        if (is.numeric(colData(object)[[input$outline_by]])) {
         cur_object <- object
-        }else{
+        } else {
         cur_object <- object[,colData(object)[[input$outline_by]] %in% input$select_outline]
         }
       
@@ -347,7 +345,7 @@
 ## Image tiles function draft 
 .create_image_tiles <- function(input, object, mask, image, img_id, cell_id, ...){
   
-  #browser()
+  req(input$sample != "")
   cur_markers <- .select_markers(input)
   cur_markers <- cur_markers[cur_markers != ""]
   
@@ -372,7 +370,8 @@
     cur_legend <- .show_legend(input)
     cur_imagetitle <- .show_title(input)
     
-    if (input$outline && input$outline_by == "") {
+    if (input$outline && !is.null(input$outline_by)){
+      if(input$outline_by == "") {
       cur_mask <- mask[mcols(mask)[[img_id]] == mcols(cur_image)[[img_id]]]
       
       plot_list[[i]] <- plotPixels(image = cur_image,
@@ -389,15 +388,19 @@
                  return_plot = TRUE,
                  ...)
       
-    } else if (input$outline && input$outline_by != "" && !is.null(input$select_outline)) {
+    } else if (input$outline_by != "") {
+      
       if(is.numeric(colData(object)[[input$outline_by]])){
         cur_object <- object
       }else{
         cur_object <- object[,colData(object)[[input$outline_by]] %in% input$select_outline]
       }
+      
       cur_mask <- mask[mcols(mask)[[img_id]] == mcols(cur_image)[[img_id]]]
       cur_advanced_outline <- .select_outline_colors(input, object)
       cur_color[[input$outline_by]] <- cur_advanced_outline
+      
+      req(!identical(unique(colData(cur_object)[,img_id]), integer(0)))
       
       plot_list[[i]] <- plotPixels(image = cur_image,
                  mask = cur_mask,
@@ -415,7 +418,7 @@
                  return_plot = TRUE,
                  ...)
       
-    } else {
+    }} else {
       plot_list[[i]] <- plotPixels(image = cur_image,
                  colour_by = markers,
                  colour = cur_color,
@@ -426,9 +429,6 @@
                  return_plot = TRUE,
                  ...)   
     }
-    
-    #return(plot_list)
-  
     })
   
   return(plot_list)
