@@ -3,7 +3,7 @@
 # -----------------------------------------------------------------------------
 
 #' @importFrom SummarizedExperiment assay
-.imageBrowser_server <- function(object, mask, image, cell_id, img_id,
+.cytoviewer_server <- function(object, mask, image, cell_id, img_id,
                                 input, output, session, ...)
 {
     ## Session Info
@@ -54,6 +54,6 @@
     
     ## Download
     .downloadSelection_1(input, object, mask, image, img_id, cell_id, ...)
-    #output$downloadData <- .downloadSelection(input, object, mask, image, img_id, cell_id, ...)
+    output$downloadData <- .downloadSelection(input, object, mask, image, img_id, cell_id, ...)
     
 }

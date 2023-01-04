@@ -55,16 +55,16 @@
             icon = icon(NULL),
             status = "info"
           ),
-          # notificationItem(
-          #   text = downloadButton(
-          #     outputId = "downloadData",
-          #     label = "Download image",
-          #     style = paste0("background-color: #3C8DBC; color: white; ",
-          #                    "border-color: #7EA6F8")
-          #   ),
-          #   icon = icon(""),
-          #   status = "info"
-          # ),
+          notificationItem(
+            text = downloadButton(
+              outputId = "downloadData",
+              label = "Download image",
+              style = paste0("background-color: #3C8DBC; color: white; ",
+                             "border-color: #7EA6F8")
+            ),
+            icon = icon(NULL),
+            status = "info"
+          ),
           notificationItem(
             text = actionButton(
               inputId = "download_data",

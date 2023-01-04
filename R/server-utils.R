@@ -437,32 +437,135 @@
 
 
 
-# # Download the images - via downloadHandler
-# .downloadSelection <- function(input, object, mask,
-#                                image, img_id, cell_id, ...){
-#   downloadHandler(
-#     filename = function(){
-#       paste0(input$filename1, ".",input$filename2)
-#       },
-#     content = function(file){
-#       #browser()
-#       if(input$filename2 == "pdf"){
-#         pdf(file = file)
-#         .create_image(input, object, mask,
-#                       image, img_id, cell_id, cur_markers, cur_bcg,
-#                       ...)
-#         dev.off()
-#       } else {
-#         png(file = file)
-#         .create_image(input, object, mask,
-#                       image, img_id, cell_id, cur_markers, cur_bcg,
-#                       ...)
-#         dev.off()
+# Download the images - via downloadHandler
+.downloadSelection <- function(input, object, mask,
+                               image, img_id, cell_id, ...){
+    downloadHandler(
+    filename = function(){
+      if(input$fileselection %in% c("Composite","Masks")){
+        paste0(input$filename1, ".",input$filename2)
+      } else {
+        paste0(input$filename1,".zip")
+      }},
+    content = function(file){
+      if(input$fileselection == "Composite"){
+        if(input$filename2 == "pdf"){
+          pdf(file = file)
+          .create_image(input, object, mask,
+                        image, img_id, cell_id, cur_markers, cur_bcg,
+                        ...)
+          dev.off()
+          } else {
+            png(file = file)
+            .create_image(input, object, mask,
+                          image, img_id, cell_id, cur_markers, cur_bcg,
+                          ...)
+            dev.off()
+          }
+        } else if(input$fileselection == "Masks"){
+          if(input$filename2 == "pdf"){
+            pdf(file = file)
+            .create_cells(input, object, mask, image, img_id, cell_id, ...)
+            dev.off()
+          } else {
+            png(file = file)
+            .create_cells(input, object, mask, image, img_id, cell_id, ...)
+            dev.off()
+          }
+        } else {
+          #browser()
+          #dev.control("enable")
+          cur_markers <- .select_markers(input)
+          cur_markers <- cur_markers[cur_markers != ""]
+          plot_list <- .create_image_tiles(input, object, mask, image, img_id, cell_id)
+          #dev.off()
+          
+          #twd <- tempdir()
+          #old <- getwd()
+          #twd <- setwd(tempdir())
+          #on.exit(setwd(old))
+          #on.exit(unlink(twd))
+          
+          files <- NULL 
+          
+          if(input$filename2 == "pdf"){
+            
+            # For testing
+            filename = paste0(input$filename1,cur_markers[1],".pdf")
+            
+            plot.new()
+            dev.control("enable")
+            
+            pdf(file = paste0(input$filename1,cur_markers[1],".pdf"))
+            plot_list[[1]]$plot
+            dev.off()
+            
+            # for(i in seq_along(cur_markers)){
+            #   filename = paste0(input$filename1,cur_markers[i],".pdf")
+            #   pdf(file = filename)
+            #   plot_list[[i]]$plot
+            #   dev.off()
+            #   files <- c(files, filename)
+            # }
+            # }
+           }
+          
+          #create archive from written files
+          archive_write_files(file, filename)
+          #zip(file, filename) - also an option
+          }
+      })
+    } 
+
+# else {
+#       downloadHandler(
+#         filename = function(){
+#           paste0(input$filename1, ".zip")
+#         }, 
+#         content = function(file){
+#           
+#           
+#           # definition of content to download
+#           cur_markers <- .select_markers(input)
+#           cur_markers <- cur_markers[cur_markers != ""]
+#           plot_list <- .create_image_tiles(input, object, mask, image, img_id, cell_id)
+#           
+#           plot_out <- list()
+#           plot_out <- lapply(seq_along(cur_markers), function(i){ 
+#             plot_out[[i]] <- cowplot::ggdraw(plot_list[[i]]$plot, clip = "on")
+#           })
+#           
+#           #cur_row <- ceiling(length(cur_markers) / 3) # number of rows
+#           #cur_col <- ifelse(length(cur_markers) > 3, 3, length(cur_markers)) #number of columns
+#           
+#           # temp dir for the csv's as we can only create
+#           # an archive from existent files and not data from R
+#           twd <- setwd(tempdir())
+#           on.exit(setwd(twd))
+
+#           
+
+#           files <- NULL
+#           if(input$filename2 == "pdf"){
+#             
+#             for(i in seq_along(cur_markers)){
+#             fileName <- paste0(input$filename1, "_", cur_markers[i], ".pdf") # pdf file name
+#             pdf(file = fileName)
+#             plot_list[[i]]
+#             dev.off()
+#             files <- c(files, fileName)
+#             }
+#           } 
+#           # create archive from written files
+#           archive_write_files(file, files)
+#                
+#         }
+#      
+#       )
+#       
+#         }
 #       }
-#     }
-#   )
-# }
-      
+
 
 # Download the images - via ActionButton 
 #' @importFrom cowplot ggdraw plot_grid
@@ -484,7 +587,7 @@
         dev.off()
       }}
     else if(input$fileselection == "Tiles"){
-      browser()
+      #browser()
       cur_markers <- .select_markers(input)
       cur_markers <- cur_markers[cur_markers != ""]
       plot_list <- .create_image_tiles(input, object, mask, image, img_id, cell_id)
