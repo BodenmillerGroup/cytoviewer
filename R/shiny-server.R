@@ -53,7 +53,6 @@
     
     
     ## Download
-    .downloadSelection_1(input, object, mask, image, img_id, cell_id, ...)
     output$downloadData <- .downloadSelection(input, object, mask, image, img_id, cell_id, ...)
     
 }

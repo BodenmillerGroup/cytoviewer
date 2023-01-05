@@ -438,6 +438,7 @@
 
 
 # Download the images - via downloadHandler
+#' @importFrom archive archive_write_files
 .downloadSelection <- function(input, object, mask,
                                image, img_id, cell_id, ...){
     downloadHandler(
@@ -473,146 +474,44 @@
             dev.off()
           }
         } else {
-          #browser()
-          #dev.control("enable")
           cur_markers <- .select_markers(input)
           cur_markers <- cur_markers[cur_markers != ""]
           plot_list <- .create_image_tiles(input, object, mask, image, img_id, cell_id)
-          #dev.off()
           
-          #twd <- tempdir()
-          #old <- getwd()
-          #twd <- setwd(tempdir())
-          #on.exit(setwd(old))
-          #on.exit(unlink(twd))
+          # save files into temporary directory
+          twd <- setwd(tempdir())
+          on.exit(setwd(twd))
           
           files <- NULL 
           
           if(input$filename2 == "pdf"){
+            for(i in seq_along(cur_markers)){
+            filename = paste0(input$filename1,"_",cur_markers[i],".pdf")
             
-            # For testing
-            filename = paste0(input$filename1,cur_markers[1],".pdf")
-            
-            plot.new()
-            dev.control("enable")
-            
-            pdf(file = paste0(input$filename1,cur_markers[1],".pdf"))
-            replayPlot(plot_list[[1]]$plot)
+            pdf(file = filename)
+            replayPlot(plot_list[[i]]$plot)
             dev.off()
             
-            # for(i in seq_along(cur_markers)){
-            #   filename = paste0(input$filename1,cur_markers[i],".pdf")
-            #   pdf(file = filename)
-            #   plot_list[[i]]$plot
-            #   dev.off()
-            #   files <- c(files, filename)
-            # }
-            # }
-           }
+            files <- c(files, filename)
+            }
+            
+          } else {
+             for(i in seq_along(cur_markers)){
+              filename = paste0(input$filename1,"_",cur_markers[i],".png")
+              
+              png(file = filename)
+              replayPlot(plot_list[[i]]$plot)
+              dev.off()
+              
+              files <- c(files, filename)
+             }
+            }
           
-          #create archive from written files
-          archive_write_files(file, filename)
-          #zip(file, filename) - also an option
+          #create archive from written files (here zip)
+          archive_write_files(file, files)
           }
       })
     } 
-
-# else {
-#       downloadHandler(
-#         filename = function(){
-#           paste0(input$filename1, ".zip")
-#         }, 
-#         content = function(file){
-#           
-#           
-#           # definition of content to download
-#           cur_markers <- .select_markers(input)
-#           cur_markers <- cur_markers[cur_markers != ""]
-#           plot_list <- .create_image_tiles(input, object, mask, image, img_id, cell_id)
-#           
-#           plot_out <- list()
-#           plot_out <- lapply(seq_along(cur_markers), function(i){ 
-#             plot_out[[i]] <- cowplot::ggdraw(plot_list[[i]]$plot, clip = "on")
-#           })
-#           
-#           #cur_row <- ceiling(length(cur_markers) / 3) # number of rows
-#           #cur_col <- ifelse(length(cur_markers) > 3, 3, length(cur_markers)) #number of columns
-#           
-#           # temp dir for the csv's as we can only create
-#           # an archive from existent files and not data from R
-#           twd <- setwd(tempdir())
-#           on.exit(setwd(twd))
-
-#           
-
-#           files <- NULL
-#           if(input$filename2 == "pdf"){
-#             
-#             for(i in seq_along(cur_markers)){
-#             fileName <- paste0(input$filename1, "_", cur_markers[i], ".pdf") # pdf file name
-#             pdf(file = fileName)
-#             plot_list[[i]]
-#             dev.off()
-#             files <- c(files, fileName)
-#             }
-#           } 
-#           # create archive from written files
-#           archive_write_files(file, files)
-#                
-#         }
-#      
-#       )
-#       
-#         }
-#       }
-
-
-# Download the images - via ActionButton 
-#' @importFrom cowplot ggdraw plot_grid
-.downloadSelection_1 <- function(input, object, mask,
-                               image, img_id, cell_id, ...){
-  observeEvent(input$download_data, {
-    if(input$fileselection == "Composite"){
-      if(input$filename2 == "pdf"){
-        pdf(file = paste0(input$filename1, ".",input$filename2))
-        .create_image(input, object, mask,
-                      image, img_id, cell_id, cur_markers, cur_bcg,
-                      ...)
-        dev.off()
-      } else {
-        png(file = paste0(input$filename1, ".",input$filename2))
-        .create_image(input, object, mask,
-                      image, img_id, cell_id, cur_markers, cur_bcg,
-                      ...)
-        dev.off()
-      }}
-    else if(input$fileselection == "Tiles"){
-      #browser()
-      cur_markers <- .select_markers(input)
-      cur_markers <- cur_markers[cur_markers != ""]
-      plot_list <- .create_image_tiles(input, object, mask, image, img_id, cell_id)
-      
-      plot_out <- list()
-      plot_out <- lapply(seq_along(cur_markers), function(i){ 
-        plot_out[[i]] <- cowplot::ggdraw(plot_list[[i]]$plot, clip = "on")
-      })
-
-      cur_row <- ceiling(length(cur_markers) / 3) # number of rows
-      cur_col <- ifelse(length(cur_markers) > 3, 3, length(cur_markers)) #number of columns
-      
-      if(input$filename2 == "pdf"){
-        #browser()
-        pdf(file = paste0(input$filename1, ".",input$filename2))
-        cowplot::plot_grid(plotlist = plot_out, nrow = cur_row, ncol = cur_col, labels = cur_markers)
-        dev.off()
-      } else {
-        png(file = paste0(input$filename1, ".",input$filename2))
-        cowplot::plot_grid(plotlist = plot_out, nrow = cur_row, ncol = cur_col, labels = cur_markers)
-        dev.off()
-        }
-    }#else to be added for plotCells implementation
-  })}
-
 
 
 ## Advanced controls - Cell outlining

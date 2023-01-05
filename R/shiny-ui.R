@@ -34,7 +34,7 @@
         dropdownMenu(
           notificationItem(
             text = textInput(inputId = "filename1",
-                             label = "File name (File path)",
+                             label = "File name",
                              value = ""),
             icon = icon(NULL),
             status = "danger"
@@ -58,19 +58,7 @@
           notificationItem(
             text = downloadButton(
               outputId = "downloadData",
-              label = "Download image",
-              style = paste0("background-color: #3C8DBC; color: white; ",
-                             "border-color: #7EA6F8")
-            ),
-            icon = icon(NULL),
-            status = "info"
-          ),
-          notificationItem(
-            text = actionButton(
-              inputId = "download_data",
-              label = "Download selection", 
-              icon = icon("fas fa-download"), 
-              width = "200px",
+              label = "Download",
               style = paste0("background-color: #3C8DBC; color: white; ",
                              "border-color: #7EA6F8")
             ),
