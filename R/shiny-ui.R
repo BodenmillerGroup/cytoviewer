@@ -8,24 +8,27 @@
     cm_head <- dashboardHeader(
         title = paste0("cytoviewer v",
                         packageVersion("cytoviewer")),
+        titleWidth = 250,
         dropdownMenu(
             notificationItem(
                 text = actionButton(
                     inputId = "SessionInfo",
                     label = "Session Info",
                     style = paste0("background-color: #3C8DBC; color: white; ",
-                                    "border-color: #3C8DBC")
+                                    "border-color: #3C8DBC"),
                 ),
-                status = "info"
+                status = "info", 
+                icon = icon(NULL)
             ),
             notificationItem(
                 text = actionButton(
                     inputId = "Help",
                     label = "Help",
                     style = paste0("background-color: #3C8DBC; color: white; ",
-                                    "border-color: #3C8DBC")
+                                   "border-color: #3C8DBC"),
                 ),
-                status = "info"
+                status = "info", 
+                icon(NULL)
             ),
             headerText = "",
             type = "notifications",
@@ -60,7 +63,7 @@
               outputId = "downloadData",
               label = "Download",
               style = paste0("background-color: #3C8DBC; color: white; ",
-                             "border-color: #7EA6F8")
+                            "border-color: #7EA6F8")
             ),
             icon = icon(NULL),
             status = "info"
@@ -177,6 +180,7 @@
                  startExpanded = TRUE, icon = icon("sliders")
                           )
         ),
+        width = 250,
         tags$style(
           "#sidebarItemExpanded {
             overflow: auto;
@@ -194,7 +198,7 @@
         tabPanel("Image-level",
                  tabsetPanel(
                    tabPanel("Composite",box(withSpinner(svgPanZoomOutput("imagePlot"), type = 6), 
-                                            title = NULL, id = "expression", status = "primary",
+                                            title = NULL, id = "expression", status = "primary", 
                                             width = 12, height = NULL)),
                    tabPanel("Tiles", value = "tiles_tab", width = 12, withSpinner(uiOutput("tiles_tab"), type = 6)))),
         tabPanel("Cell-level", 

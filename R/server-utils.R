@@ -435,8 +435,6 @@
 }
 
 
-
-
 # Download the images - via downloadHandler
 #' @importFrom archive archive_write_files
 .downloadSelection <- function(input, object, mask,
@@ -694,10 +692,11 @@
       req(input$numeric_colorby)
       cur_list[[input$color_by]] <- viridis(100, option = input$numeric_colorby)
       } else {
-      cur_vec <- lapply(seq_along(input$color_by_selection), function (i){
+        cur_vec <- lapply(seq_along(input$color_by_selection), function (i){
         return(input[[paste0("color_by", i)]])})
-      cur_vec <- unlist(cur_vec)
+        cur_vec <- unlist(cur_vec)
       if(!is.null(cur_vec)){
+        req(length(cur_vec) == length(input$color_by_selection))
         names(cur_vec) <- input$color_by_selection
         cur_list[[input$color_by]] <- cur_vec
       } else { cur_list <- NULL }

@@ -50,8 +50,7 @@ cytoviewer <- function(image,
     shiny_ui <- dashboardPage(
         header = .imageBrowser_header(),
         sidebar = .imageBrowser_sidebar(),
-        body = .imageBrowser_body()
-        
+        body = .imageBrowser_body() 
     )
 
     shiny_server <- function(input, output, session) {
@@ -59,7 +58,7 @@ cytoviewer <- function(image,
                             input, output, session, ...)
     }
 
-    shinyApp(ui = shiny_ui, server = shiny_server)
+    app <- shinyApp(ui = shiny_ui, server = shiny_server)
 }
 
 
