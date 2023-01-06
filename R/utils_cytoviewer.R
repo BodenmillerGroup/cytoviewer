@@ -3,7 +3,7 @@
 # -----------------------------------------------------------------------------
 
 
-# Generate help text - TO BE UPDATED
+# Generate help text
 .general_help <- function(){
     tagList(
         h3("Using the Shiny application"),
@@ -239,7 +239,7 @@
                           ...){
     
   req(input$sample != "")
-  
+
   # Marker and color control
     cur_markers <- .select_markers(input)
     cur_markers <- cur_markers[cur_markers != ""]
@@ -301,6 +301,7 @@
                    ...)
         
     }} else {
+      req(length(cur_markers) != 0)
       plotPixels(image = cur_image,
                  colour_by = cur_markers,
                  colour = cur_color,
@@ -330,22 +331,12 @@
     })
 }
 
-# Optional: Image function for not-zoomable images - maybe relevant for tiles
-.basic_imagePlot <- function(input, object, mask, 
-                       image, img_id, cell_id, ...){
-  
-  renderPlot({
-    .create_image(input, object, mask,
-                            image, img_id, cell_id, cur_markers, cur_bcg,
-                            ...)
-    })
-}
-
 
 ## Image tiles function draft 
 .create_image_tiles <- function(input, object, mask, image, img_id, cell_id, ...){
   
   req(input$sample != "")
+  
   cur_markers <- .select_markers(input)
   cur_markers <- cur_markers[cur_markers != ""]
   
@@ -419,6 +410,7 @@
                  ...)
       
     }} else {
+      req(length(cur_markers) != 0)
       plot_list[[i]] <- plotPixels(image = cur_image,
                  colour_by = markers,
                  colour = cur_color,
@@ -735,7 +727,7 @@
                           image, img_id, cell_id, ...){
   
   req(img_id, cell_id)
-  #browser()
+
   cur_scale <- input$scalebar
   cur_legend <- .show_legend(input)
   cur_imagetitle <- .show_title(input)
@@ -762,7 +754,7 @@
             image_title = cur_imagetitle,
             scale_bar = list(length = cur_scale),
             ...)
-  #}  
+    
 }
 
 # Visualize plotCells
@@ -795,3 +787,4 @@
     }
     })
   }
+

@@ -1,4 +1,4 @@
-#'Shiny application to visualise multi-channel images
+#'Shiny application to interactively browse multi-channel images
 #'
 #'TODO
 #'
@@ -17,7 +17,8 @@
 #'    \code{\link{plotPixels}} function.
 #'
 #'
-#'@return A Shiny app object for multi-channel image visualization
+#'@return A Shiny app object for interactive multi-channel image visualization 
+#'and exploration
 #'
 #'@examples
 #'TODO
@@ -27,6 +28,7 @@
 #'
 #'@import shiny
 #'@import shinydashboard
+
 cytoviewer <- function(image,
                         mask = NULL,
                         object = NULL,
@@ -48,9 +50,9 @@ cytoviewer <- function(image,
     #}
 
     shiny_ui <- dashboardPage(
-        header = .imageBrowser_header(),
-        sidebar = .imageBrowser_sidebar(),
-        body = .imageBrowser_body() 
+        header = .cytoviewer_header(),
+        sidebar = .cytoviewer_sidebar(),
+        body = .cytoviewer_body() 
     )
 
     shiny_server <- function(input, output, session) {

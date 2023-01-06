@@ -4,7 +4,7 @@
 
 # Create the application header
 #' @importFrom utils packageVersion
-.imageBrowser_header <- function(){
+.cytoviewer_header <- function(){
     cm_head <- dashboardHeader(
         title = paste0("cytoviewer v",
                         packageVersion("cytoviewer")),
@@ -77,7 +77,7 @@
     }
 
 # Create the side bar layout
-.imageBrowser_sidebar <- function(){
+.cytoviewer_sidebar <- function(){
     cm_side <- dashboardSidebar(
         sidebarMenu(
           fluidRow(column(2, 
@@ -192,7 +192,7 @@
 # Create the main body
 #' @importFrom svgPanZoom svgPanZoomOutput
 #' @importFrom shinycssloaders svgPanZoomOutput
-.imageBrowser_body <- function(){
+.cytoviewer_body <- function(){
     cm_body <- dashboardBody(
       tabsetPanel(
         tabPanel("Image-level",
