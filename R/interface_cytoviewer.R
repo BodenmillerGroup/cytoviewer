@@ -86,7 +86,7 @@
                                        style = paste0("background-color: ",
                                                       "transparent; border-color: transparent",
                                                       "; color:white; margin-left: 0px;margin-top: 30px"))),
-                   column(8, style="padding-left:0px;padding-right:0px; overflow-x:scroll",
+                   column(8, style="padding-left:0px;padding-right:0px",
                           selectizeInput("sample", label = "Sample selection",
                                          width = "100%",
                                          choices = NULL,

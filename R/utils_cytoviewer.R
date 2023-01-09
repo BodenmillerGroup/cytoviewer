@@ -570,9 +570,12 @@
       }else{
         menuItem(span("Outline color control", style = "color: black;padding-top: 0px"), style = "color: black; padding-top: 0px",
                  lapply(seq_along(input$select_outline), function (i){
+                   cur_col <- c(brewer.pal(12, "Paired"),
+                                brewer.pal(8, "Pastel2")[-c(3,5,8)],
+                                brewer.pal(12, "Set3")[-c(2,3,8,9,11,12)])
                    colourInput(inputId = paste0("color_outline",i),
                                label = input$select_outline[i],
-                               value = brewer.pal(12, "Paired")[i])
+                               value = cur_col[i])
                  }))
       }
       )}})}
@@ -593,9 +596,10 @@
 .add_tiles_tab <- function(input, object, mask,
                            image, img_id, cell_id){
   renderUI({
-    #browser()
     cur_markers <- .select_markers(input)
     cur_markers <- cur_markers[cur_markers != ""]
+    
+    req(length(cur_markers) == length(unique(cur_markers)))
     
     cur_row <- ceiling(length(cur_markers) / 3)
 
@@ -668,9 +672,12 @@
         }else{
           menuItem(span("Color control", style = "color: black;padding-top: 0px"), style = "color: black; padding-top: 0px",
                    lapply(seq_along(input$color_by_selection), function (i){
+                     cur_col <- c(brewer.pal(12, "Paired"),
+                                  brewer.pal(8, "Pastel2")[-c(3,5,8)],
+                                  brewer.pal(12, "Set3")[-c(2,3,8,9,11,12)])
                      colourInput(inputId = paste0("color_by",i),
                                  label = input$color_by_selection[i],
-                                 value = brewer.pal(12, "Paired")[i])}),
+                                 value = cur_col[i])}),
                    colourInput(inputId = "missing_colorby", 
                                label = "Missing color",
                                value = "white"))
