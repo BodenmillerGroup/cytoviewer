@@ -2,7 +2,7 @@
 % Please edit documentation in R/cytoviewer.R
 \name{cytoviewer}
 \alias{cytoviewer}
-\title{Shiny application to visualise multi-channel images}
+\title{Shiny application to interactively browse multi-channel images}
 \usage{
 cytoviewer(
   image,
@@ -34,7 +34,8 @@ in which the image IDs are stored.}
 \code{\link{plotPixels}} function.}
 }
 \value{
-A Shiny app object for multi-channel image visualization
+A Shiny app object for interactive multi-channel image visualization 
+and exploration
 }
 \description{
 TODO

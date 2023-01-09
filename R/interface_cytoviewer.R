@@ -6,8 +6,8 @@
 #' @importFrom utils packageVersion
 .cytoviewer_header <- function(){
     cm_head <- dashboardHeader(
-        title = paste0("cytoviewer v",
-                        packageVersion("cytoviewer")),
+        title = paste0("cytoviewer v","0.1"),
+                        #packageVersion("cytoviewer")),
         titleWidth = 250,
         dropdownMenu(
             notificationItem(
@@ -32,7 +32,7 @@
             ),
             headerText = "",
             type = "notifications",
-            icon = icon("circle-question"),
+            icon = icon("question"),
             badgeStatus = NULL),
         dropdownMenu(
           notificationItem(
@@ -86,7 +86,7 @@
                                        style = paste0("background-color: ",
                                                       "transparent; border-color: transparent",
                                                       "; color:white; margin-left: 0px;margin-top: 30px"))),
-                   column(8, style="padding-left:0px;padding-right:0px;",
+                   column(8, style="padding-left:0px;padding-right:0px; overflow-x:scroll",
                           selectizeInput("sample", label = "Sample selection",
                                          width = "100%",
                                          choices = NULL,
@@ -177,7 +177,7 @@
                           checkboxInput(inputId = "show_legend","Show Legend", value = FALSE),
                           checkboxInput(inputId = "show_title","Show Title", value = FALSE)
                           ),
-                 startExpanded = TRUE, icon = icon("sliders")
+                 startExpanded = TRUE, icon = icon("sliders-h")
                           )
         ),
         width = 250,

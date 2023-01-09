@@ -283,7 +283,10 @@
       cur_advanced_outline <- .select_outline_colors(input, object)
       cur_color[[input$outline_by]] <- cur_advanced_outline
       
+      #browser()
+      
       req(!identical(unique(colData(cur_object)[,img_id]), integer(0)))
+      req(!identical(unique(colData(cur_object)[,img_id]), character(0)))
       
       plotPixels(image = cur_image,
                    mask = cur_mask,
@@ -601,7 +604,7 @@
 
       cur_val <- (cur_plot * 2) - 1
 
-      box(plotOutput(paste0("tile", cur_plot)), #can use svgPanZoomOutput() for zoom-able images?
+      box(withSpinner(plotOutput(paste0("tile", cur_plot)), type = 6), #can use svgPanZoomOutput() for zoom-able images?
           title = paste(cur_markers[cur_plot]),
           status = "primary",
           width = 4)
@@ -715,6 +718,7 @@
 # Helper function to subset object 
 .subset_object <- function(input, object){
   if(input$color_by != "" && !is.numeric(colData(object)[[input$color_by]])){
+    req(input$color_by_selection)
     object <- object[, colData(object)[[input$color_by]] %in% input$color_by_selection]
   }else{object <- object}
   
@@ -739,9 +743,10 @@
 
   cur_image <- image[input$sample]
   cur_mask <- mask[mcols(mask)[[img_id]] == mcols(cur_image)[[img_id]]]
-  cur_object <- cur_object[, colData(cur_object)[[img_id]] %in% mcols(mask)[,img_id]]
+  cur_object <- cur_object[, colData(cur_object)[[img_id]] %in% mcols(cur_mask)[,img_id]]
   
   req(!identical(unique(colData(cur_object)[,img_id]), integer(0)))
+  req(!identical(unique(colData(cur_object)[,img_id]), character(0)))
   
   plotCells(mask = cur_mask,
             img_id = img_id,
@@ -775,11 +780,12 @@
 }
 
 ## Add plotCells tab
+#' @importFrom svgPanZoom svgPanZoomOutput
 .add_cells_tab <- function(input, object, mask,
                            image, img_id, cell_id){
   renderUI({
     if(input$plotcells){
-    box(svgPanZoomOutput("cellsPlot"), 
+    box(withSpinner(svgPanZoomOutput("cellsPlot"),type = 6), 
           title = NULL, 
           id = "expression",
           status = "primary",
