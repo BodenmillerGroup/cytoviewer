@@ -13,6 +13,8 @@
 #'@param img_id character specifying the \code{colData(object)} and
 #'    \code{mcols(mask)} and/or \code{mcols(image)} entry, 
 #'    in which the image IDs are stored.
+#'@param viv logical indicating wether an interactive browser window running
+#'    a viv server should be opened. 
 #'@param ... parameters passed to the \code{\link{plotCells}} or
 #'    \code{\link{plotPixels}} function.
 #'
@@ -34,6 +36,7 @@ cytoviewer <- function(image,
                         object = NULL,
                         cell_id = NULL,
                         img_id = NULL,
+                        viv = FALSE,
                         ...) {
     # Object checks
     #.valid.sce.shiny(image, mask, object, cell_id, img_id)
@@ -48,19 +51,23 @@ cytoviewer <- function(image,
     #if (!is.null(image) & !is.null(mask)) {
     #    .valid.matchObjects.plotPixels(object, mask, image, img_id)
     #}
-
-    shiny_ui <- dashboardPage(
-        header = .cytoviewer_header(),
-        sidebar = .cytoviewer_sidebar(),
-        body = .cytoviewer_body() 
-    )
-
-    shiny_server <- function(input, output, session) {
-        .cytoviewer_server(object, mask, image, cell_id, img_id,
-                            input, output, session, ...)
+    
+    if (viv) {
+        runVIV(image, mask, img_id)
+    } else {
+        shiny_ui <- dashboardPage(
+            header = .cytoviewer_header(),
+            sidebar = .cytoviewer_sidebar(),
+            body = .cytoviewer_body() 
+        )
+        
+        shiny_server <- function(input, output, session) {
+            .cytoviewer_server(object, mask, image, cell_id, img_id,
+                               input, output, session, ...)
+        }
+        
+        app <- shinyApp(ui = shiny_ui, server = shiny_server) 
     }
-
-    app <- shinyApp(ui = shiny_ui, server = shiny_server)
 }
 
 
