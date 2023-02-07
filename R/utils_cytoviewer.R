@@ -3,7 +3,8 @@
 # -----------------------------------------------------------------------------
 
 #' @importFrom cytomapper plotCells plotPixels channelNames
-#' @importFrom SingleCellExperiment colData mcols 
+#' @importFrom SingleCellExperiment colData
+#' @importFrom SummarizedExperiment mcols 
 #' @importFrom viridis viridis
 #' @importFrom archive archive_write_files
 #' @importFrom colourpicker colourInput
@@ -13,6 +14,8 @@
 #' @importFrom svglite stringSVG
 #' @importFrom svgPanZoom svgPanZoom renderSvgPanZoom svgPanZoomOutput
 #' @importFrom utils capture.output
+#' @importFrom EBImage gblur
+#' @importFrom methods as
 
 
 # Generate help text
@@ -201,6 +204,26 @@
   return(cur_imagetitle)
 }
 
+# Helper function to apply image filter
+
+.filter_image <- function(input, image, ...){
+  
+  cur_image <- image[input$sample]
+  
+  cur_image <- CytoImageList(cur_image, on_disk = FALSE) #get image into memory
+  
+  if(input$gaussian_blur){
+    cur_image_fil <- lapply(seq_along(cur_image), function(x){
+      gblur(cur_image[[x]], sigma = input$gaussian_blur_sigma)
+      })
+    cur_image_fil <- as(cur_image_fil, "CytoImageList") 
+    names(cur_image_fil) <- names(cur_image)
+    mcols(cur_image_fil) <- mcols(cur_image)
+    cur_image <- cur_image_fil
+  }
+  return(cur_image)
+}
+
 #  Helper function to construct image 
 .create_image <- function(input, object, mask,
                           image, img_id, cell_id, cur_markers, cur_bcg, cur_color,
@@ -220,7 +243,7 @@
     cur_scale <- input$scalebar
     cur_thick <- input$thick
     cur_interpolate <- input$interpolate
-    cur_image <- image[input$sample]
+    cur_image <- .filter_image(input, image)
     cur_legend <- .show_legend(input)
     cur_imagetitle <- .show_title(input)
 
@@ -329,7 +352,7 @@
     cur_scale <- input$scalebar
     cur_thick <- input$thick
     cur_interpolate <- input$interpolate
-    cur_image <- image[input$sample]
+    cur_image <- .filter_image(input, image)
     cur_legend <- .show_legend(input)
     cur_imagetitle <- .show_title(input)
     

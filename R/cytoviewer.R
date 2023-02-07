@@ -73,8 +73,8 @@ cytoviewer <- function(image,
         .cytoviewer_server(object, mask, image, cell_id, img_id,
                             input, output, session, ...)
     }
-
-    app <- shinyApp(ui = shiny_ui, server = shiny_server)
+    
+    shinyApp(ui = shiny_ui, server = shiny_server)
 }
 
 
