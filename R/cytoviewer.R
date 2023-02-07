@@ -1,8 +1,14 @@
-#'Shiny application to interactively browse multi-channel images
+#'Cytoviewer - Shiny application to interactively browse multi-channel images
 #'
-#'TODO
+#'This shiny application allows users to interactively visualize multi-channel 
+#'images and masks. Cytoviewer is divided into image-level (Composite and Tiles) 
+#'and cell-level visualization (Masks). It allows users to overlay individual images 
+#'with masks and integrates well with \code{\linkS4class{SingleCellExperiment}} objects 
+#'for metadata visualization. 
 #'
-#'@param object a \code{\linkS4class{SingleCellExperiment}} object.
+#'
+#'@param object a \code{\linkS4class{SingleCellExperiment}} or 
+#'    \code{\linkS4class{SpatialExperiment}} object.
 #'@param mask (optional) a \code{\linkS4class{CytoImageList}} containing
 #'    single-channel \code{\linkS4class{Image}} objects.
 #'@param image (optional) a \code{\linkS4class{CytoImageList}} object containing
@@ -13,16 +19,35 @@
 #'@param img_id character specifying the \code{colData(object)} and
 #'    \code{mcols(mask)} and/or \code{mcols(image)} entry, 
 #'    in which the image IDs are stored.
-#'@param ... parameters passed to the \code{\link{plotCells}} or
-#'    \code{\link{plotPixels}} function.
-#'
+#'    
 #'
 #'@return A Shiny app object for interactive multi-channel image visualization 
 #'and exploration
 #'
 #'@examples
-#'TODO
+#'## Only run this example in interactive R sessions
+#'if (interactive()) {
 #'
+#' library(cytoviewer)
+#' 
+#' # Load example datasets 
+#' data("pancreasImages")
+#' data("pancreasMasks")
+#' data("pancreasSCE")
+#'
+#' # Use shiny with images and SCE object 
+#' app <- cytoviewer(image = pancreasImages, object = pancreasSCE, img_id = "ImageNb", cell_id = "CellNb")
+#' shiny::runApp(app, launch.browser = TRUE)
+#' 
+#' # Use shiny with masks and SCE objects
+#' app <- cytoviewer(masks = pancreasMasks, object = pancreasSCE, img_id = "ImageNb", cell_id = "CellNb")
+#' shiny::runApp(app, launch.browser = TRUE)
+#' 
+#' # Use shiny with images, masks and SCE object
+#' app <- cytoviewer(image = pancreasImages, masks = pancreasMasks, object = pancreasSCE, img_id = "ImageNb", cell_id = "CellNb")
+#' shiny::runApp(app, launch.browser = TRUE)
+#' 
+#'}
 #'
 #'@export
 #'
@@ -35,19 +60,8 @@ cytoviewer <- function(image,
                         cell_id = NULL,
                         img_id = NULL,
                         ...) {
-    # Object checks
-    #.valid.sce.shiny(image, mask, object, cell_id, img_id)
-    #.valid.image(image, img_id)
-
-    #if (!is.null(mask)) {
-    #    .valid.sce(object, img_id, cell_id, exprs_values = NULL)
-    #    .valid.mask(mask, img_id)
-    #    .valid.matchObjects.plotCells(object, mask, img_id)
-    #}
-
-    #if (!is.null(image) & !is.null(mask)) {
-    #    .valid.matchObjects.plotPixels(object, mask, image, img_id)
-    #}
+    
+    # Validity checks - TO DO 
 
     shiny_ui <- dashboardPage(
         header = .cytoviewer_header(),

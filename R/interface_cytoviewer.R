@@ -2,8 +2,12 @@
 # Helper functions to modify the visual appearance of the shiny app
 # -----------------------------------------------------------------------------
 
-# Create the application header
 #' @importFrom utils packageVersion
+#' @importFrom colourpicker colourInput
+#' @importFrom shinycssloaders withSpinner
+#' @importFrom svgPanZoom svgPanZoomOutput 
+
+# Create the application header
 .cytoviewer_header <- function(){
     cm_head <- dashboardHeader(
         title = paste0("cytoviewer v","0.1"),
@@ -190,8 +194,6 @@
 }
 
 # Create the main body
-#' @importFrom svgPanZoom svgPanZoomOutput
-#' @importFrom shinycssloaders svgPanZoomOutput
 .cytoviewer_body <- function(){
     cm_body <- dashboardBody(
       tabsetPanel(
@@ -207,4 +209,3 @@
       ))
     return(cm_body)
     }
-

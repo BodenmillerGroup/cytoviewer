@@ -2,7 +2,8 @@
 # Definition of the shiny server
 # -----------------------------------------------------------------------------
 
-#' @importFrom SummarizedExperiment assay
+#' @importFrom utils sessionInfo
+
 .cytoviewer_server <- function(object, mask, image, cell_id, img_id,
                                 input, output, session, ...)
 {
@@ -17,7 +18,6 @@
   
   ## Download 
   output$downloadData <- .downloadSelection(input, object, mask, image, img_id, cell_id, ...)
-  
   
   
   #2. Image-level
@@ -46,7 +46,6 @@
       output[[paste0("tile", cur_plot)]] <- renderPlot(.create_image_tiles(input, object, mask, image, img_id, cell_id)[[cur_plot]]$plot)
     })
   })
-  
   
   
   # 3. Cell-level

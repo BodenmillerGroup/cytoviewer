@@ -2,7 +2,11 @@ Package: cytoviewer
 Version: 0.1.3
 Title: A multi-channel image browser for R
 Description: 
-    TODO
+    This shiny application allows users to interactively visualize multi-channel 
+    images and masks. Cytoviewer is divided into image-level (Composite and Tiles) 
+    and cell-level visualization (Masks). It allows users to overlay individual images 
+    with masks and integrates well with SingleCellExperiment/SpatialExperiment objects 
+    for metadata visualization. 
 Authors@R: 
     c(person("Lasse", "Meyer", role = c("aut", "cre"), 
       email = "lasse.meyer@dqbm.uzh.ch",
@@ -12,33 +16,20 @@ Authors@R:
 License: GPL (>= 2)
 Depends:
     R (>= 4.0),
-    EBImage,
-    SingleCellExperiment,
-    methods
+    cytomapper
+    SingleCellExperiment
 Imports:
-    SpatialExperiment,
-    S4Vectors,
-    BiocParallel,
-    HDF5Array,
-    DelayedArray,
-    RColorBrewer,
-    viridis,
-    utils,
-    SummarizedExperiment,
-    tools,
-    graphics,
-    raster,
-    grDevices,
-    stats,
-    ggplot2,
-    cowplot,
-    svgPanZoom,
-    svglite,
-    shiny,
+    shiny, 
     shinydashboard,
-    matrixStats,
-    rhdf5,
-    nnls
+    utils,
+    colourpicker,
+    shinycssloaders,
+    svgPanZoom,
+    viridis,
+    archive,
+    grDevices,
+    RColorBrewer,
+    svglite
 Suggests:
     BiocStyle,
     knitr,

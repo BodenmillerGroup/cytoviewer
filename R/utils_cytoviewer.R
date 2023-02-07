@@ -2,63 +2,32 @@
 # Helper functions to modify the server side of the shiny app
 # -----------------------------------------------------------------------------
 
+#' @importFrom cytomapper plotCells plotPixels channelNames
+#' @importFrom SingleCellExperiment colData mcols 
+#' @importFrom viridis viridis
+#' @importFrom archive archive_write_files
+#' @importFrom colourpicker colourInput
+#' @importFrom grDevices dev.off pdf png replayPlot
+#' @importFrom RColorBrewer brewer.pal 
+#' @importFrom shinycssloaders withSpinner
+#' @importFrom svglite stringSVG
+#' @importFrom svgPanZoom svgPanZoom renderSvgPanZoom svgPanZoomOutput
+#' @importFrom utils capture.output
+
 
 # Generate help text
 .general_help <- function(){
     tagList(
         h3("Using the Shiny application"),
-        p("This help page provides a recommended workflow on how to most ",
-        "efficiently use the app. The workflow is solely a recommendation - ",
-        "the app provides full flexibility to change settings during each ",
-        "step. To see the full documentation, please refer to the help page ",
-        "found at", em("?cytomapperShiny")),
-        h3("1. Select the number of plots"),
-        p("The slider under ", em("General controls"), 
-        " can be used to specify ",
-        "the number of plots on which to perform gating. Up to two markers ",
-        "can be visualized per plot."),
-        h3("2. Select the sample"),
-        p("The ", em("assay"), " dropdown selection under ", 
-        em("General controls"), " allows the user to specify on",
-        "which assay entry to perform gating. In most cases, a log- or ",
-        "arcsinh-transformation can help to distinguish between 'positive' ",
-        "and 'negative' populations."),
-        h3("3. Select the markers"),
-        p("For each plot, up to two markers can be specified. If selecting ",
-        "a single marker, please specify this marker in the first of the ",
-        "two dropdown menus. A violin plot is used to visualize the ",
-        "expression of a single marker while a scatter plot is used to ",
-        "visualize the expression of two markers."),
-        h3("4. Gate cells"),
-        p("When selecting cells in one plot, only those cells are visualized ",
-        "on the following plot. Once markers, the assay or the number of ",
-        "plots are changed, gates are cleared."),
-        h3("5. Observe the selected cells"),
-        p("After gating, the selected cells are visualized on the ",
-        "corresponding images by switching to the ",
-        em("Images"), " tab. By default, the first marker is selected. ",
-        "The user can change the displayed marker or press reset marker ",
-        "to switch to the markers used for gating. If a multi-channel ",
-        "image object is provided, the contrast of the image can be ",
-        "changed. The right panel visualizes the selected cells either ",
-        "by filling in the segmentation masks or by outlining the ",
-        "cells on the images."),
-        h3("6. Change samples"),
-        p("Samples can now be iteratively changed using the dropdown ",
-        "menu under ", em("General controls"), ". The gates will remain ",
-        "on the plots and can be adjusted for each sample."),
-        h3("7. Save the selected cells"),
-        p("Finally, the selected cells can be saved by clicking the download ",
-        "button next to the '?' symbol. The selected cells will be stored ",
-        "as a ", em("SingleCellExperiment"), " object in .rds format.",
-        "Per selection, the user can provide a ", em("Cell label"), 
-        " that will be stored in the ", em("colData"), " under the ", 
-        em("cytomapper_CellLabel"), " entry of the downloaded object.")
+        p("This help page provides an overview on the main functionality",
+        "that this app offers. The app provides full flexibility to change 
+        settings during each step.", "To see the full documentation, 
+        please refer to the help page found at", em("?cytoviewer"),"."),
+        h3("1. TO DO")
     )
 }
 
 # Create general observers for header
-#' @importFrom utils capture.output
 .create_general_observer <- function(input, si){
 
 
@@ -216,7 +185,6 @@
 
 
 # Helper function for legend construction 
-
 .show_legend <- function(input){
   legend_param <- list(margin = 3) #use default options from cytomapper
   
@@ -233,7 +201,6 @@
 }
 
 #  Helper function to construct image 
-
 .create_image <- function(input, object, mask,
                           image, img_id, cell_id, cur_markers, cur_bcg, cur_color,
                           ...){
@@ -317,8 +284,6 @@
 }
 
 # Visualize marker expression on images
-#' @importFrom svgPanZoom svgPanZoom renderSvgPanZoom
-#' @importFrom svglite stringSVG
 .imagePlot <- function(input, object, mask,
                        image, img_id, cell_id, ...){
     renderSvgPanZoom({
@@ -431,7 +396,6 @@
 
 
 # Download the images - via downloadHandler
-#' @importFrom archive archive_write_files
 .downloadSelection <- function(input, object, mask,
                                image, img_id, cell_id, ...){
     downloadHandler(
@@ -508,7 +472,6 @@
 
 
 ## Advanced controls - Cell outlining
-
 .create_outline_controls <- function(object, mask, input, session, ...){
   renderUI({
     if (input$outline){
@@ -592,7 +555,6 @@
 
 
 # Tiles functionality 
-
 .add_tiles_tab <- function(input, object, mask,
                            image, img_id, cell_id){
   renderUI({
@@ -770,8 +732,6 @@
 }
 
 # Visualize plotCells
-#' @importFrom svgPanZoom svgPanZoom renderSvgPanZoom
-#' @importFrom svglite stringSVG
 .cellsPlot <- function(input, object, mask,
                        image, img_id, cell_id, ...){
   renderSvgPanZoom({
@@ -787,7 +747,6 @@
 }
 
 ## Add plotCells tab
-#' @importFrom svgPanZoom svgPanZoomOutput
 .add_cells_tab <- function(input, object, mask,
                            image, img_id, cell_id){
   renderUI({
@@ -800,4 +759,3 @@
     }
     })
   }
-
