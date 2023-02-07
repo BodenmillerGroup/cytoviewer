@@ -179,7 +179,8 @@
                           numericInput(inputId = "scalebar", label = "Scale bar length", value = 20,
                                        min = 0, max = 100, step = 5),
                           checkboxInput(inputId = "show_legend","Show Legend", value = FALSE),
-                          checkboxInput(inputId = "show_title","Show Title", value = FALSE)
+                          checkboxInput(inputId = "show_title","Show Title", value = FALSE), 
+                          checkboxInput(inputId = "interpolate","Pixel-wise Interpolation", value = TRUE) 
                           ),
                  startExpanded = TRUE, icon = icon("sliders-h")
                           )

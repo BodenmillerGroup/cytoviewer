@@ -162,6 +162,7 @@
       return(input[[paste0("color_outline", i)]])})
     cur_vec <- unlist(cur_vec)
     if(!is.null(cur_vec)){
+      req(length(cur_vec) == length(input$select_outline))
       names(cur_vec) <- input$select_outline
     }
   }
@@ -218,6 +219,7 @@
     cur_basic_outline <- input$basic_color_outline
     cur_scale <- input$scalebar
     cur_thick <- input$thick
+    cur_interpolate <- input$interpolate
     cur_image <- image[input$sample]
     cur_legend <- .show_legend(input)
     cur_imagetitle <- .show_title(input)
@@ -237,6 +239,7 @@
                    image_title = cur_imagetitle,
                    thick = cur_thick,
                    scale_bar = list(length = cur_scale),
+                   interpolate = cur_interpolate,
                    ...)
       } else if (input$outline_by != "") { 
         
@@ -249,8 +252,6 @@
       cur_mask <- mask[mcols(mask)[[img_id]] == mcols(cur_image)[[img_id]]]
       cur_advanced_outline <- .select_outline_colors(input, object)
       cur_color[[input$outline_by]] <- cur_advanced_outline
-      
-      #browser()
       
       req(!identical(unique(colData(cur_object)[,img_id]), integer(0)))
       req(!identical(unique(colData(cur_object)[,img_id]), character(0)))
@@ -268,6 +269,7 @@
                    image_title = cur_imagetitle,
                    thick = cur_thick,
                    scale_bar = list(length = cur_scale),
+                   interpolate = cur_interpolate,
                    ...)
         
     }} else {
@@ -279,6 +281,7 @@
                  legend = cur_legend,
                  image_title = cur_imagetitle,
                  scale_bar = list(length = cur_scale),
+                 interpolate = cur_interpolate,
                  ...)   
     }
 }
@@ -325,6 +328,7 @@
     cur_basic_outline <- input$basic_color_outline
     cur_scale <- input$scalebar
     cur_thick <- input$thick
+    cur_interpolate <- input$interpolate
     cur_image <- image[input$sample]
     cur_legend <- .show_legend(input)
     cur_imagetitle <- .show_title(input)
@@ -344,6 +348,7 @@
                  image_title = cur_imagetitle,
                  thick = cur_thick,
                  scale_bar = list(length = cur_scale),
+                 interpolate = cur_interpolate,
                  return_plot = TRUE,
                  ...)
       
@@ -374,6 +379,7 @@
                  image_title = cur_imagetitle,
                  thick = cur_thick,
                  scale_bar = list(length = cur_scale),
+                 interpolate = cur_interpolate,
                  return_plot = TRUE,
                  ...)
       
@@ -386,6 +392,7 @@
                  legend = cur_legend,
                  image_title = cur_imagetitle,
                  scale_bar = list(length = cur_scale),
+                 interpolate = cur_interpolate,
                  return_plot = TRUE,
                  ...)   
     }
@@ -503,7 +510,7 @@
           updateSelectizeInput(session, inputId = "select_outline",
                                choices = unique(colData(object)[[input$outline_by]]),
                                server = TRUE,
-                               selected = unique(colData(object)[[input$outline_by]])) 
+                               selected = unique(colData(object)[[input$outline_by]][1])) 
           
         }
       })
@@ -616,7 +623,7 @@
         updateSelectizeInput(session, inputId = "color_by_selection",
                              choices = unique(colData(object)[[input$color_by]]),
                              server = TRUE,
-                             selected = unique(colData(object)[[input$color_by]]))
+                             selected = unique(colData(object)[[input$color_by]][1]))
       }})
     }
   })
