@@ -1,5 +1,5 @@
 Package: cytoviewer
-Version: 0.1.4
+Version: 0.1.5
 Title: A multi-channel image browser for R
 Description: 
     This shiny application allows users to interactively visualize multi-channel 
@@ -13,11 +13,7 @@ Authors@R:
       comment = c(ORCID = "0000-0002-4711-1176")),
       person("Nils", "Eling", role = c("aut"), 
       email = "nils.eling@dqbm.uzh.ch"))
-License: GPL (>= 2)
-Depends:
-    R (>= 4.0),
-    cytomapper,
-    SingleCellExperiment
+License: GPL (>= 3)
 Imports:
     shiny, 
     shinydashboard,
@@ -32,7 +28,11 @@ Imports:
     svglite,
     EBImage,
     SummarizedExperiment, 
-    methods
+    methods,
+    cytomapper,
+    SingleCellExperiment,
+    SpatialExperiment,
+    S4Vectors
 Suggests:
     BiocStyle,
     knitr,
@@ -43,5 +43,5 @@ biocViews: ImmunoOncology, Software, SingleCell, OneChannel, TwoChannel, Multipl
 VignetteBuilder: knitr
 URL: https://github.com/BodenmillerGroup/cytoviewer
 BugReports: https://github.com/BodenmillerGroup/cytoviewer/issues
-RoxygenNote: 7.2.2
+RoxygenNote: 7.2.3
 Encoding: UTF-8

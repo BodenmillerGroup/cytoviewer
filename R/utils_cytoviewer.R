@@ -205,7 +205,8 @@
 }
 
 # Helper function to apply image filter
-
+#' @importFrom cytomapper CytoImageList
+#' @importFrom S4Vectors endoapply mcols<-
 .filter_image <- function(input, image, ...){
   
   cur_image <- image[input$sample]
@@ -213,10 +214,9 @@
   cur_image <- CytoImageList(cur_image, on_disk = FALSE) #get image into memory
   
   if(input$gaussian_blur){
-    cur_image_fil <- lapply(seq_along(cur_image), function(x){
+    cur_image_fil <- endoapply(cur_image, function(x){
       gblur(cur_image[[x]], sigma = input$gaussian_blur_sigma)
       })
-    cur_image_fil <- as(cur_image_fil, "CytoImageList") 
     names(cur_image_fil) <- names(cur_image)
     mcols(cur_image_fil) <- mcols(cur_image)
     cur_image <- cur_image_fil
@@ -444,7 +444,7 @@
                         ...)
           dev.off()
           } else {
-            png(file = file)
+            png(filename = file)
             .create_image(input, object, mask,
                           image, img_id, cell_id, cur_markers, cur_bcg,
                           ...)
@@ -456,7 +456,7 @@
             .create_cells(input, object, mask, image, img_id, cell_id, ...)
             dev.off()
           } else {
-            png(file = file)
+            png(filename = file)
             .create_cells(input, object, mask, image, img_id, cell_id, ...)
             dev.off()
           }
@@ -486,7 +486,7 @@
              for(i in seq_along(cur_markers)){
               filename = paste0(input$filename1,"_",cur_markers[i],".png")
               
-              png(file = filename)
+              png(filename = filename)
               replayPlot(plot_list[[i]]$plot)
               dev.off()
               

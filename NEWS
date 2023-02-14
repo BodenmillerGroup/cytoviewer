@@ -9,3 +9,7 @@ Changes in version 0.1.1 (2022-11-18):
 Changes in version 0.1.2 (2022-11-28):
 
 + allow selecting of cell types
+
+Changes in version 0.1.5 (2023-02-14):
+
++ small fixes to solve check issues

@@ -30,6 +30,8 @@ values in the segmentation mask object (\code{mask}).}
 \item{img_id}{character specifying the \code{colData(object)} and
 \code{mcols(mask)} and/or \code{mcols(image)} entry, 
 in which the image IDs are stored.}
+
+\item{...}{Additional arguments for TODO}
 }
 \value{
 A Shiny app object for interactive multi-channel image visualization 
