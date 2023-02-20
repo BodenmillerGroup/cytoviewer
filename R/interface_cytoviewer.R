@@ -49,7 +49,7 @@
           notificationItem(
             text = radioButtons(inputId = "fileselection", 
                                 label = "Select image",
-                                choices = list("Composite","Tiles","Masks"), 
+                                choices = list("Composite","Channels","Masks"), 
                                 selected = "Composite"), 
             icon = icon(NULL),
             status = "info"
@@ -209,7 +209,7 @@
                    tabPanel("Composite",box(withSpinner(svgPanZoomOutput("imagePlot"), type = 6), 
                                             title = NULL, id = "expression", status = "primary", 
                                             width = 12, height = NULL)),
-                   tabPanel("Tiles", value = "tiles_tab", width = 12, withSpinner(uiOutput("tiles_tab"), type = 6)))),
+                   tabPanel("Channels", value = "tiles_tab", width = 12, withSpinner(uiOutput("tiles_tab"), type = 6)))),
         tabPanel("Cell-level", 
                  tabsetPanel(
                    tabPanel("Masks", value = "cells_tab", width = 12, withSpinner(uiOutput("cells_tab"), type = 6))))
