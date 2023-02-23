@@ -2,7 +2,7 @@
 # Helper functions to modify the server side of the shiny app
 # -----------------------------------------------------------------------------
 
-#' @importFrom cytomapper plotCells plotPixels channelNames
+#' @importFrom cytomapper plotCells plotPixels channelNames CytoImageList
 #' @importFrom SingleCellExperiment colData
 #' @importFrom SummarizedExperiment mcols 
 #' @importFrom viridis viridis
@@ -333,7 +333,7 @@
   
   cur_markers <- .select_markers(input)
   cur_markers <- cur_markers[cur_markers != ""]
-  
+
   plot_list <- list()
   plot_list <- lapply(seq_along(cur_markers), function(i){ 
     
