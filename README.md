@@ -33,6 +33,21 @@ To load the package in your R session, type the following:
 library(cytoviewer)
 ```
 
+## Usage
+
+```r
+library(cytoviewer)
+
+# Load example datasets 
+data("pancreasImages")
+data("pancreasMasks")
+data("pancreasSCE")
+
+# Use shiny with images, masks and SCE object
+app <- cytoviewer(image = pancreasImages, masks = pancreasMasks, object = pancreasSCE, img_id = "ImageNb", cell_id = "CellNb")
+shiny::runApp(app, launch.browser = TRUE)
+```
+
 ## Contributing
 
 For feature requests, please open an issue [here](https://github.com/BodenmillerGroup/cytoviewer/issues).

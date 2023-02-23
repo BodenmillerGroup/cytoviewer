@@ -17,6 +17,7 @@
 #'@param img_id character specifying the \code{colData(object)} and
 #'    \code{mcols(mask)} and/or \code{mcols(image)} entry, 
 #'    in which the image IDs are stored.
+#'    
 #'@return A Shiny app object for interactive multi-channel image visualization 
 #'and exploration
 #'
@@ -32,7 +33,7 @@
 #' data("pancreasSCE")
 #'
 #' # Use shiny with images
-#' app <- cytoviewer(image = pancreasImages, img_id = "ImageNb)
+#' app <- cytoviewer(image = pancreasImages, img_id = "ImageNb")
 #' shiny::runApp(app, launch.browser = TRUE)
 #' 
 #' # Use shiny with images and masks 
@@ -53,7 +54,6 @@
 #'
 #' @import shiny
 #' @import shinydashboard
-#' @importClassesFrom SpatialExperiment SpatialExperiment
 
 cytoviewer <- function(image,
                        mask = NULL,

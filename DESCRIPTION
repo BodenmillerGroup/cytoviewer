@@ -1,5 +1,5 @@
 Package: cytoviewer
-Version: 0.1.5
+Version: 0.1.6
 Title: A multi-channel image browser for R
 Description: 
     This shiny application allows users to interactively visualize multi-channel 
@@ -27,11 +27,9 @@ Imports:
     RColorBrewer,
     svglite,
     EBImage,
-    SummarizedExperiment, 
     methods,
     cytomapper,
     SingleCellExperiment,
-    SpatialExperiment,
     S4Vectors
 Suggests:
     BiocStyle,

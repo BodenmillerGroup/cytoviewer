@@ -13,3 +13,8 @@ Changes in version 0.1.2 (2022-11-28):
 Changes in version 0.1.5 (2023-02-14):
 
 + small fixes to solve check issues
+
+Changes in version 0.1.6 (2023-02-23):
+
++ public release of cytoviewer on GitHub
++ main functionality done

@@ -1,4 +1,10 @@
-# Check sce validity for shiny
+# Validity checks for shiny - TO DO
+
+#' @importFrom cytomapper channelNames
+#' @importFrom SingleCellExperiment colData
+#' @importFrom methods is
+#' @importFrom S4Vectors metadata
+
 .valid.sce.shiny <- function(object, img_id, cell_id, image, mask){
     if (!is(object, "SingleCellExperiment")) {
         stop("'object' is not of type 'SingleCellExperiment'.")

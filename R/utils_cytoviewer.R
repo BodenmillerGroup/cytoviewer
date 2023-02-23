@@ -4,7 +4,6 @@
 
 #' @importFrom cytomapper plotCells plotPixels channelNames CytoImageList
 #' @importFrom SingleCellExperiment colData
-#' @importFrom SummarizedExperiment mcols 
 #' @importFrom viridis viridis
 #' @importFrom archive archive_write_files
 #' @importFrom colourpicker colourInput
@@ -16,6 +15,7 @@
 #' @importFrom utils capture.output
 #' @importFrom EBImage gblur
 #' @importFrom methods as
+#' @importFrom S4Vectors endoapply mcols mcols<-
 
 
 # Generate help text
@@ -205,8 +205,6 @@
 }
 
 # Helper function to apply image filter
-#' @importFrom cytomapper CytoImageList
-#' @importFrom S4Vectors endoapply mcols<-
 .filter_image <- function(input, image, ...){
   
   cur_image <- image[input$sample]
@@ -311,12 +309,12 @@
 
 # Visualize marker expression on images
 .imagePlot <- function(input, object, mask,
-                       image, img_id, cell_id, ...){
+                       image, img_id, cell_id, 
+                       cur_markers, cur_bcg, ...){
     renderSvgPanZoom({
         suppressMessages(svgPanZoom(stringSVG(
-            .create_image(input, object, mask,
-                          image, img_id, cell_id, cur_markers, cur_bcg,
-                          ...)
+            .create_image(input, object, mask,image, img_id, cell_id, 
+                          cur_markers, cur_bcg, ...)
             ),
             zoomScaleSensitivity = 0.4, 
             maxZoom = 20,
@@ -427,7 +425,8 @@
 
 # Download the images - via downloadHandler
 .downloadSelection <- function(input, object, mask,
-                               image, img_id, cell_id, ...){
+                               image, img_id, cell_id, 
+                               cur_markers, cur_bcg, ...){
     downloadHandler(
     filename = function(){
       if(input$fileselection %in% c("Composite","Masks")){

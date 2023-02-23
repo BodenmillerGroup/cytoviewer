@@ -10,8 +10,7 @@
 # Create the application header
 .cytoviewer_header <- function(){
     cm_head <- dashboardHeader(
-        title = paste0("cytoviewer v","0.1"),
-                        #packageVersion("cytoviewer")),
+        title = paste0("cytoviewer v", packageVersion("cytoviewer")),
         titleWidth = 250,
         dropdownMenu(
             notificationItem(
@@ -177,15 +176,15 @@
         menuItem("General",
                  menuItem("Basic controls", 
                           menuItem("Image appearance",
-                          numericInput(inputId = "scalebar", label = "Scale bar length", value = 20,
-                                       min = 0, max = 100, step = 5),
+                          numericInput(inputId = "scalebar", label = "Scale bar length", value = 100,
+                                       min = 0, max = 1000, step = 5),
                           checkboxInput(inputId = "show_legend","Show Legend", value = FALSE),
                           checkboxInput(inputId = "show_title","Show Title", value = FALSE) 
                           ),
                           menuItem("Image filters",
                                    checkboxInput(inputId = "interpolate","Pixel-wise Interpolation", value = TRUE),
                                    fluidRow(column(2, style=c("margin-top:25px;margin-right:0px"), checkboxInput(inputId = "gaussian_blur", label = NULL, value = FALSE, width = "1000px")), 
-                                   column(10, style= "margin-left:0px",sliderInput(inputId = "gaussian_blur_sigma", label = "Gaussian filter",  min = 1, max = 5, value = 1, step = 1))),
+                                   column(10, style= "margin-left:0px",sliderInput(inputId = "gaussian_blur_sigma", label = "Gaussian filter",  min = 1, max = 3, value = 1, step = 0.1))),
                           startExpanded = FALSE)
                           ),
                  startExpanded = TRUE, icon = icon("sliders-h")
