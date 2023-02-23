@@ -176,8 +176,9 @@
         menuItem("General",
                  menuItem("Basic controls", 
                           menuItem("Image appearance",
-                          numericInput(inputId = "scalebar", label = "Scale bar length", value = 100,
-                                       min = 0, max = 1000, step = 5),
+                          numericInput(inputId = "scalebar", label = "Scale bar length", value = 20,
+                                      min = 0, max = 1000, step = 5),
+                          #uiOutput("scalebar_controls"),
                           checkboxInput(inputId = "show_legend","Show Legend", value = FALSE),
                           checkboxInput(inputId = "show_title","Show Title", value = FALSE) 
                           ),
