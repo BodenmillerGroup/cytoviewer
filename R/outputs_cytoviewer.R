@@ -12,7 +12,9 @@
   ## Sample selection 
   .create_interactive_observer(image, input, session)
   
-  #output$scalebar_controls <- .add_scalebar(input, object, mask,image, img_id, cell_id)
+  output$scalebar_controls <- renderUI({})
+  outputOptions(output, "scalebar_controls", suspendWhenHidden = FALSE)
+  output$scalebar_controls <- .add_scalebar(input, object, mask,image, img_id, cell_id)
   
   ## Session info 
   cur_sessionInfo <- sessionInfo()

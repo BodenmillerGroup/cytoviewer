@@ -207,6 +207,7 @@
 # Helper function to apply image filter
 .filter_image <- function(input, image, ...){
   
+  req(input$sample != "")
   cur_image <- image[input$sample]
   
   cur_image <- CytoImageList(cur_image, on_disk = FALSE) #get image into memory
@@ -228,7 +229,8 @@
                           ...){
     
   req(input$sample != "")
-
+  req(!is.null(input$scalebar))
+    
   # Marker and color control
     cur_markers <- .select_markers(input)
     cur_markers <- cur_markers[cur_markers != ""]
@@ -790,14 +792,13 @@
   }
 
 
-# ## Add scalebar tab
-# .add_scalebar <- function(input, object, mask,
-#                            image, img_id, cell_id){
-#   renderUI({
-#     cur_image <- .filter_image(input, image)
-#     cur_value <- round(dim(cur_image[[1]])[1]/3, digits=-1)
-#     numericInput(inputId = "scalebar", label = "Scale bar length", value = cur_value,
-#                          min = 0, max = 1000, step = 5)
-#   })
-# }
-
+# Add scalebar tab
+.add_scalebar <- function(input, object, mask,
+                           image, img_id, cell_id){
+  renderUI({
+    cur_image <- .filter_image(input, image)
+    cur_value <- round(dim(cur_image[[1]])[1]/4, digits=-1)
+    numericInput(inputId = "scalebar", label = "Scale bar length", value = cur_value,
+                         min = 0, max = 1000, step = 5)
+  })
+}
