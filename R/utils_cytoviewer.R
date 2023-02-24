@@ -208,13 +208,13 @@
 .filter_image <- function(input, image, ...){
   
   req(input$sample != "")
+  
   cur_image <- image[input$sample]
-  
   cur_image <- CytoImageList(cur_image, on_disk = FALSE) #get image into memory
-  
+  #browser()
   if(input$gaussian_blur){
     cur_image_fil <- endoapply(cur_image, function(x){
-      gblur(cur_image[[x]], sigma = input$gaussian_blur_sigma)
+      gblur(x, sigma = input$gaussian_blur_sigma)
       })
     names(cur_image_fil) <- names(cur_image)
     mcols(cur_image_fil) <- mcols(cur_image)
