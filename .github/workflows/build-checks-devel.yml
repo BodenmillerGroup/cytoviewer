@@ -2,14 +2,14 @@ name: build-checks-devel
 
 on:
   push:
-    branches: [ master ]
+    branches: [ main ]
   pull_request:
-    branches: [ master ]
+    branches: [ main ]
 
 jobs:
   R-CMD-check:
     runs-on: ubuntu-latest
-    container: rocker/r-ver:4.2
+    container: rocker/r-ver:devel
 
     steps:
       - uses: actions/checkout@v2
@@ -34,21 +34,6 @@ jobs:
          BiocManager::install(version = "devel", update = TRUE, ask = FALSE, force = TRUE) 
          remotes::install_deps(dependencies = TRUE, repos = BiocManager::repositories(), Ncpu = 2L)
         shell: Rscript {0}
-        
-      - name: Find PhantomJS path
-        id: phantomjs
-        run: |
-          echo "::set-output name=path::$(Rscript -e 'cat(shinytest:::phantom_paths()[[1]])')"
-      - name: Cache PhantomJS
-        uses: actions/cache@v2
-        with:
-          path: ${{ steps.phantomjs.outputs.path }}
-          key: ${{ matrix.config.os }}-phantomjs
-          restore-keys: ${{ matrix.config.os }}-phantomjs
-      - name: Install PhantomJS
-        run: >
-          Rscript
-          -e "if (!shinytest::dependenciesInstalled()) shinytest::installDependencies()"
         
       - name: Check
         run: |
