@@ -1,4 +1,4 @@
-# Validity checks for shiny - TO DO
+# Validity checks for shiny - TODO
 
 #' @importFrom cytomapper channelNames
 #' @importFrom SingleCellExperiment colData

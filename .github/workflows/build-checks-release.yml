@@ -2,9 +2,9 @@ name: build-checks-release
 
 on:
   push:
-    branches: [ master ]
+    branches: [ devel ]
   pull_request:
-    branches: [ master ]
+    branches: [ devel ]
 
 jobs:
   R-CMD-check:
@@ -24,7 +24,7 @@ jobs:
         run: |
           apt-get update 
           apt-get install -y --no-install-recommends apt-utils 
-          apt-get install -y --no-install-recommends zlib1g-dev libfftw3-dev libxml2-dev libxt-dev curl pandoc-citeproc libproj-dev libgdal-dev pandoc libmagick++-dev
+          apt-get install -y --no-install-recommends zlib1g-dev libfftw3-dev libxml2-dev libxt-dev curl pandoc-citeproc libproj-dev libgdal-dev pandoc libmagick++-dev libarchive-dev
           apt-get clean
           rm -rf /var/lib/apt/ilists/*
 
@@ -32,23 +32,7 @@ jobs:
         run: |
          install.packages("BiocManager")
          remotes::install_deps(dependencies = TRUE, repos = BiocManager::repositories(), Ncpu = 2L)
-         BiocManager::install("matrixStats", force = TRUE)
         shell: Rscript {0}
-        
-      - name: Find PhantomJS path
-        id: phantomjs
-        run: |
-          echo "::set-output name=path::$(Rscript -e 'cat(shinytest:::phantom_paths()[[1]])')"
-      - name: Cache PhantomJS
-        uses: actions/cache@v2
-        with:
-          path: ${{ steps.phantomjs.outputs.path }}
-          key: ${{ matrix.config.os }}-phantomjs
-          restore-keys: ${{ matrix.config.os }}-phantomjs
-      - name: Install PhantomJS
-        run: >
-          Rscript
-          -e "if (!shinytest::dependenciesInstalled()) shinytest::installDependencies()"
         
       - name: Check
         run: |

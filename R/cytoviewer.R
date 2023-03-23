@@ -18,6 +18,9 @@
 #'    \code{mcols(mask)} and/or \code{mcols(image)} entry, 
 #'    in which the image IDs are stored.
 #'    
+#'@section The input objects
+#'TODO - explain what happens when you use different input objects
+#'    
 #'@return A Shiny app object for interactive multi-channel image visualization 
 #'and exploration
 #'

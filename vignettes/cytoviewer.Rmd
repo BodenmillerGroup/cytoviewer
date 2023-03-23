@@ -38,6 +38,28 @@ library(cytoviewer)
 
 TODO
 
+The `cytoviewer` package builds on top of the `r Biocpkg("cytomapper")`
+Bioconductor package and extends the static visualization strategies provided by
+`cytomapper` via an interactive Shiny application. The `cytoviewer` package
+leverages the image handling, analysis and visualization strategies provided by
+the `r Biocpkg("EBImage")` Bioconductor package and offer interactive image
+visualization strategies in a similar fashion as `r Biocpkg("iSEE")` for
+single-cell data. In addition, building up on 
+`r Biocpkg("SingleCellExperiment")`, `r Biocpkg("SpatialExperiment")` and
+`cytomapper::CytoImageList` classes, the `cytoviewer` package integrates into
+the Bioconductor framework for single-cell and image analysis.
+
+# Installation
+
+```{r installation, eval=FALSE}
+if (!require("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+
+BiocManager::install("cytoviewer")
+```
+
+# Usage
+
 # Session info {.unnumbered}
 
 ```{r sessionInfo, echo=FALSE}

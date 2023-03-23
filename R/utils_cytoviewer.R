@@ -156,7 +156,10 @@
 
 
 # Helper function to select outline colors
-.select_outline_colors <- function(input, object, session, exprs_marker_update = TRUE){
+.select_outline_colors <- function(input, 
+                                    object, 
+                                    session, 
+                                    exprs_marker_update = TRUE){
   if (is.numeric(colData(object)[[input$outline_by]])) {
     req(input$numeric_color_outline)
     cur_vec <- viridis(100, option = input$numeric_color_outline)
@@ -200,7 +203,11 @@
 .show_title <- function(input){
   imagetitle_param <- list(margin = c(10,2)) #use default options from cytomapper
   
-  if(input$show_title){cur_imagetitle <- imagetitle_param}else{cur_imagetitle <- NULL}
+  if (input$show_title) {
+      cur_imagetitle <- imagetitle_param
+  } else {
+      cur_imagetitle <- NULL
+  }
   return(cur_imagetitle)
 }
 
@@ -464,7 +471,8 @@
         } else {
           cur_markers <- .select_markers(input)
           cur_markers <- cur_markers[cur_markers != ""]
-          plot_list <- .create_image_tiles(input, object, mask, image, img_id, cell_id)
+          plot_list <- .create_image_tiles(input, object, mask, image, 
+                                           img_id, cell_id)
           
           # save files into temporary directory
           twd <- setwd(tempdir())
@@ -474,7 +482,7 @@
           
           if(input$filename2 == "pdf"){
             for(i in seq_along(cur_markers)){
-            filename = paste0(input$filename1,"_",cur_markers[i],".pdf")
+            filename <- paste0(input$filename1,"_",cur_markers[i],".pdf")
             
             pdf(file = filename)
             replayPlot(plot_list[[i]]$plot)
@@ -485,7 +493,7 @@
             
           } else {
              for(i in seq_along(cur_markers)){
-              filename = paste0(input$filename1,"_",cur_markers[i],".png")
+              filename <- paste0(input$filename1,"_",cur_markers[i],".png")
               
               png(filename = filename)
               replayPlot(plot_list[[i]]$plot)
@@ -507,11 +515,14 @@
   renderUI({
     if (input$outline){
         wellPanel(
-          selectizeInput("outline_by", label = span("Outline by",style = "color: black; padding-top: 0px"), 
-                         choices = NULL, options = NULL, list(placeholder = 'Outline by', maxItems = 1,maxOptions = 10)
+          selectizeInput("outline_by", label = span("Outline by",
+                                    style = "color: black; padding-top: 0px"), 
+                         choices = NULL, options = NULL, 
+                list(placeholder = 'Outline by', maxItems = 1,maxOptions = 10)
           ),
           selectizeInput("select_outline",
-                         label = span("Select outline",style = "color: black; padding-top: 0px"),
+                         label = span("Select outline",
+                                      style = "color: black; padding-top: 0px"),
                          choices = NULL,
                          multiple = TRUE)
         )}})}
@@ -546,7 +557,9 @@
   renderUI({
     if (input$outline && is.null(input$select_outline)){
       wellPanel(
-        menuItem(span("Outline color control", style = "color: black;padding-top: 0px"), style = "color: black; padding-top: 0px",
+        menuItem(span("Outline color control", 
+                      style = "color: black;padding-top: 0px"), 
+                 style = "color: black; padding-top: 0px",
         colourInput(inputId = "basic_color_outline",
                     label = "General outline color",
                     value = "white")
@@ -557,12 +570,17 @@
   if(input$outline && !is.null(input$select_outline)){
     wellPanel(
       if(is.numeric(colData(object)[[input$outline_by]])){ 
-        menuItem(span("Outline color control", style = "color: black;padding-top: 0px"), style = "color: black; padding-top: 0px",
-                 radioButtons(inputId = "numeric_color_outline", label = "Color palettes",
+        menuItem(span("Outline color control", 
+                      style = "color: black;padding-top: 0px"), 
+                 style = "color: black; padding-top: 0px",
+                 radioButtons(inputId = "numeric_color_outline", 
+                              label = "Color palettes",
                               choices = list("viridis","inferno","plasma"), 
                               selected = "viridis"))
       }else{
-        menuItem(span("Outline color control", style = "color: black;padding-top: 0px"), style = "color: black; padding-top: 0px",
+        menuItem(span("Outline color control", 
+                      style = "color: black;padding-top: 0px"), 
+                 style = "color: black; padding-top: 0px",
                  lapply(seq_along(input$select_outline), function (i){
                    cur_col <- c(brewer.pal(12, "Paired"),
                                 brewer.pal(8, "Pastel2")[-c(3,5,8)],
@@ -579,7 +597,9 @@
   renderUI({
   if(input$outline){
     wellPanel(
-      menuItem(span("Outline thickness control", style = "color: black;padding-top: 0px"), style = "color: black; padding-top: 0px",
+      menuItem(span("Outline thickness control", 
+                    style = "color: black;padding-top: 0px"), 
+               style = "color: black; padding-top: 0px",
       checkboxInput(inputId = "thick", "Thick", value = FALSE)
       ))}})}
 
@@ -621,11 +641,14 @@
   renderUI({
     if (input$plotcells){
       wellPanel(
-        selectizeInput("color_by", label = span("Color by",style = "color: black; padding-top: 0px"), 
-                       choices = NULL, options = NULL, list(placeholder = 'Color by', maxItems = 1,maxOptions = 10)
+        selectizeInput("color_by", label = span("Color by",
+                                    style = "color: black; padding-top: 0px"), 
+                       choices = NULL, options = NULL, 
+                     list(placeholder = 'Color by', maxItems = 1,maxOptions = 10)
         ),
         selectizeInput("color_by_selection",
-                       label = span("Select color by",style = "color: black; padding-top: 0px"),
+                       label = span("Select color by",
+                            style = "color: black; padding-top: 0px"),
                        choices = NULL,
                        multiple = TRUE)
       )}})}
@@ -658,12 +681,16 @@
     if(input$plotcells && !is.null(input$color_by_selection)){
       wellPanel(
         if(is.numeric(colData(object)[[input$color_by]])){
-          menuItem(span("Color control", style = "color: black;padding-top: 0px"), style = "color: black; padding-top: 0px",
+          menuItem(span("Color control", 
+                        style = "color: black;padding-top: 0px"), 
+                   style = "color: black; padding-top: 0px",
                    radioButtons(inputId = "numeric_colorby", label = "Color palettes",
                                 choices = list("viridis","inferno","plasma"), 
                                 selected = "viridis"))
         }else{
-          menuItem(span("Color control", style = "color: black;padding-top: 0px"), style = "color: black; padding-top: 0px",
+          menuItem(span("Color control", 
+                        style = "color: black;padding-top: 0px"), 
+                   style = "color: black; padding-top: 0px",
                    lapply(seq_along(input$color_by_selection), function (i){
                      cur_col <- c(brewer.pal(12, "Paired"),
                                   brewer.pal(8, "Pastel2")[-c(3,5,8)],
@@ -678,7 +705,8 @@
         )}})}
 
 # Helper function to retrieve color by colors
-.select_colorby_color <- function(input, object, session, exprs_marker_update = TRUE){
+.select_colorby_color <- function(input, object, session, 
+                                  exprs_marker_update = TRUE){
   
   cur_list <- list()
   
