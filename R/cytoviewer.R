@@ -1,10 +1,11 @@
 #'cytoviewer - Shiny application to interactively browse multi-channel images
 #'
 #'This shiny application allows users to interactively visualize multi-channel 
-#'images and masks. The cytoviewer package is divided into image-level (Composite and Channels) 
-#'and cell-level visualization (Masks). It allows users to overlay individual images 
-#'with masks and integrates well with \code{SingleCellExperiment} and \code{SpatialExperiment} 
-#'objects for metadata visualization. 
+#'images and segmentation masks. The cytoviewer package is divided into 
+#'image-level (Composite and Channels) and cell-level visualization (Masks). 
+#'It allows users to overlay individual images with masks and integrates well 
+#'with \code{SingleCellExperiment} and \code{SpatialExperiment} objects for 
+#'metadata visualization. 
 #'
 #'@param image (optional) a \code{CytoImageList} object containing 
 #'    single or multi-channel \code{Image} objects.
@@ -19,7 +20,33 @@
 #'    in which the image IDs are stored.
 #'    
 #'@section The input objects
-#'TODO - explain what happens when you use different input objects
+#' 
+#' The functionality of \code{cytoviewer} depends on which input objects are user-provided.
+#' Below we describe the four use cases in respect to input objects and functionality. 
+#' 
+#' \emph{1. Usage of cytoviewer with images, masks and object} 
+#' 
+#' The full functionality of cytoviewer can be leveraged when 
+#' \code{image}, \code{mask} and \code{object} are provided. 
+#' This allows image-level visualization (Composite and Channels), 
+#' cell-level visualization, overlaying images with segmentation masks 
+#' as well as metadata visualization. 
+#' 
+#' \emph{2. Usage of cytoviewer with images only }
+#' 
+#' If only \code{image} is specified, image-level visualization (Composite and Channels) 
+#' is possible.
+#' 
+#' \emph{3. Usage of cytoviewer with images and masks }
+#' 
+#' Image-level visualization (Composite and Channels), overlaying of images with 
+#' masks and cell-level visualization is feasible when \code{image} and \code{mask} 
+#' are provided. 
+#' 
+#' \emph{4. Usage of cytoviewer with masks and object}
+#' 
+#' If \code{mask} and \code{object} are specified, cell-level visualization 
+#' as well as metadata visualization is possible.
 #'    
 #'@return A Shiny app object for interactive multi-channel image visualization 
 #'and exploration
@@ -35,37 +62,49 @@
 #' data("pancreasMasks")
 #' data("pancreasSCE")
 #'
-#' # Use shiny with images
-#' app <- cytoviewer(image = pancreasImages, img_id = "ImageNb")
+#' # Use cytoviewer with images, masks and object
+#' app <- cytoviewer(image = pancreasImages, mask = pancreasMasks, object = pancreasSCE, img_id = "ImageNb", cell_id = "CellNb")
 #' shiny::runApp(app, launch.browser = TRUE)
 #' 
-#' # Use shiny with images and masks 
-#' app <- cytoviewer(image = pancreasImages, masks = pancreasMasks, img_id = "ImageNb", cell_id = "CellNb")
+#' ## Other input variations (see "The input objects" section):
+#' # Use cytoviewer with images
+#' app <- cytoviewer(image = pancreasImages)
 #' shiny::runApp(app, launch.browser = TRUE)
 #' 
-#' # Use shiny with masks and SCE objects
-#' app <- cytoviewer(masks = pancreasMasks, object = pancreasSCE, img_id = "ImageNb", cell_id = "CellNb")
+#' # Use cytoviewer with images and masks 
+#' app <- cytoviewer(image = pancreasImages, mask = pancreasMasks, img_id = "ImageNb")
 #' shiny::runApp(app, launch.browser = TRUE)
 #' 
-#' # Use shiny with images, masks and SCE object
-#' app <- cytoviewer(image = pancreasImages, masks = pancreasMasks, object = pancreasSCE, img_id = "ImageNb", cell_id = "CellNb")
+#' # Use cytoviewer with masks and object
+#' app <- cytoviewer(mask = pancreasMasks, object = pancreasSCE, img_id = "ImageNb", cell_id = "CellNb")
 #' shiny::runApp(app, launch.browser = TRUE)
-#' 
 #'}
 #'
-#'@export
+#' @seealso 
+#' #' \code{\link[cytomapper]{plotPixels}} for the function underlying 
+#' image-level visualization
+#' 
+#' #' \code{\link[cytomapper]{plotCells}} for the function underlying 
+#' cell-level visualization
+#' 
+#' \code{\link[cytomapper]{cytomapperShiny}} for a shiny application that 
+#' visualizes gated cells on images
+#' 
+#' @author Lasse Meyer (\email{lasse.meyer@@dqbm.uzh.ch})
 #'
 #' @import shiny
 #' @import shinydashboard
+#' @export
 
-cytoviewer <- function(image,
+
+cytoviewer <- function(image = NULL,
                        mask = NULL,
                        object = NULL,
                        cell_id = NULL,
                        img_id = NULL) {
-    
-    # Validity checks - TO DO 
 
+  .valid.cytoviewer.shiny(image, mask, object, cell_id, img_id)
+  
     shiny_ui <- dashboardPage(
         header = .cytoviewer_header(),
         sidebar = .cytoviewer_sidebar(),

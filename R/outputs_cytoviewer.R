@@ -10,7 +10,7 @@
   
   # 1. General 
   ## Sample selection 
-  .create_interactive_observer(image, input, session)
+  .create_interactive_observer(image, mask, input, session)
   
   output$scalebar_controls <- renderUI({})
   outputOptions(output, "scalebar_controls", suspendWhenHidden = FALSE)
@@ -29,14 +29,14 @@
   output$imagePlot <- .imagePlot(input, object, mask, image, img_id, cell_id)
   
   ### Marker inputs 
-  .create_updateSelectizeInput(image, input, session)
+  .create_updateSelectizeInput(image, mask, input, session)
   
   ### Outline inputs
   output$Outline_controls <- .create_outline_controls(object, mask, input, session)
   .populate_outline_controls(object, input, session)
   output$Basic_color_outline <- .create_basic_color_outline(object, mask, input, session)
   output$Advanced_color_outline <- .create_advanced_color_outline(object, mask, input, session)
-  output$Outline_thickness <- .create_thickness_control(object, mask, input, session)
+  output$Outline_thickness <- .create_thickness_control(input, session)
   
   ## Tiles 
   output$tiles_tab <- .add_tiles_tab(input, object, mask, image, img_id, cell_id)
@@ -45,9 +45,13 @@
     
     cur_markers <- .select_markers(input)
     cur_markers <- cur_markers[cur_markers != ""]
+
+    #browser()
+    #req(length(.create_image_tiles(input, object, mask, image, img_id, cell_id)) == length(cur_markers))
+    #print(length(cur_markers))
+    #print(length(.create_image_tiles(input, object, mask, image, img_id, cell_id)))
     
     lapply(seq_along(cur_markers), function(cur_plot){
-      #req(length(.create_image_tiles(input, object, mask, image, img_id, cell_id)) == length(cur_markers))
       output[[paste0("tile", cur_plot)]] <- renderPlot(.create_image_tiles(input, object, mask, image, img_id, cell_id)[[cur_plot]]$plot)
     })
   })

@@ -32,8 +32,7 @@
 
 # Create general observers for header
 .create_general_observer <- function(input, si){
-
-
+  
     # Return session info
     observeEvent(input$SessionInfo, {
         showModal(modalDialog(
@@ -56,12 +55,13 @@
 }
 
 # Create interactive observers
-.create_interactive_observer <- function(image, input, session){
+.create_interactive_observer <- function(image, mask, input, session){
 
     # Next Image Observer
     observeEvent(input$next.sample, {
-        img_IDs <- names(image)
-        cur_index <- match(input$sample, img_IDs)
+      #browser()
+      img_IDs <- if(!is.null(names(image))) names(image) else names(mask)
+      cur_index <- match(input$sample, img_IDs)
         updated_index <- ifelse(cur_index == length(img_IDs), 1, cur_index + 1)
     
         # return updated img_id 
@@ -75,8 +75,8 @@
 
     # Previous Image Observer
     observeEvent(input$previous.sample, {
-        img_IDs <- names(image)
-        cur_index <- match(input$sample, img_IDs)
+      img_IDs <- if(!is.null(names(image))) names(image) else names(mask)
+      cur_index <- match(input$sample, img_IDs)
         updated_index <- ifelse(cur_index == 1,  length(img_IDs), cur_index - 1)
     
         # return updated img_id
@@ -90,14 +90,17 @@
 }
 
 # Create updateSelectizeInput objects
-.create_updateSelectizeInput <- function(image, input, session){
-    # Store image IDs and marker names
-    img_IDs <- names(image)
-    markers <- channelNames(image)
-
+.create_updateSelectizeInput <- function(image, mask, input, session){
+  
+  img_IDs <- if(!is.null(names(image))) names(image) else names(mask)
+  
+  # Store image IDs
     updateSelectizeInput(session, inputId = "sample",
                         choices = unique(img_IDs),
                         selected = unique(img_IDs)[1])
+    
+  # Store marker names 
+    markers <- if(!is.null(names(image))) channelNames(image) else c("")
     updateSelectizeInput(session, inputId = "marker1",
                         choices = markers,
                         server = TRUE,
@@ -216,9 +219,9 @@
   
   req(input$sample != "")
   
+  if(!is.null(image)){
   cur_image <- image[input$sample]
   cur_image <- CytoImageList(cur_image, on_disk = FALSE) #get image into memory
-  #browser()
   if(input$gaussian_blur){
     cur_image_fil <- endoapply(cur_image, function(x){
       gblur(x, sigma = input$gaussian_blur_sigma)
@@ -228,6 +231,7 @@
     cur_image <- cur_image_fil
   }
   return(cur_image)
+  }
 }
 
 #  Helper function to construct image 
@@ -253,7 +257,7 @@
     cur_image <- .filter_image(input, image)
     cur_legend <- .show_legend(input)
     cur_imagetitle <- .show_title(input)
-
+    
     if (input$outline && !is.null(input$outline_by)){
       if(input$outline_by == "") {
         cur_mask <- mask[mcols(mask)[[img_id]] == mcols(cur_image)[[img_id]]]
@@ -271,7 +275,8 @@
                    scale_bar = list(length = cur_scale),
                    interpolate = cur_interpolate,
                    ...)
-      } else if (input$outline_by != "") { 
+      
+        } else if (input$outline_by != "") { 
         
         if (is.numeric(colData(object)[[input$outline_by]])) {
         cur_object <- object
@@ -337,6 +342,7 @@
 .create_image_tiles <- function(input, object, mask, image, img_id, cell_id, ...){
   
   req(input$sample != "")
+  req(!is.null(input$scalebar))
   
   cur_markers <- .select_markers(input)
   cur_markers <- cur_markers[cur_markers != ""]
@@ -530,7 +536,15 @@
 
 .populate_outline_controls <- function(object, input, session){
   observeEvent(input$outline, {
-    if (input$outline) {
+    
+    if (input$outline && is.null(object)) {
+      updateSelectizeInput(session, inputId = "outline_by",
+                           choices = c(""),
+                           server = TRUE,
+                           selected = "")
+    }
+    
+    if (input$outline && !is.null(object)) {
       updateSelectizeInput(session, inputId = "outline_by",
                            choices = names(colData(object)),
                            server = TRUE,
@@ -593,7 +607,7 @@
       )}})}
 
 
-.create_thickness_control <- function(object, mask, input, session, ...){
+.create_thickness_control <- function(input, session, ...){
   renderUI({
   if(input$outline){
     wellPanel(
@@ -618,7 +632,6 @@
 
     # Generate separate boxes
     box_list <- lapply(seq_along(cur_markers), function(cur_plot) {
-
       cur_val <- (cur_plot * 2) - 1
 
       box(withSpinner(plotOutput(paste0("tile", cur_plot)), type = 6), #can use svgPanZoomOutput() for zoom-able images?
@@ -655,7 +668,15 @@
 
 .populate_colorby_controls <- function(object, input, session){
   observeEvent(input$plotcells, {
-    if (input$plotcells) {
+    
+    if (input$plotcells && is.null(object)) {
+      updateSelectizeInput(session, inputId = "color_by",
+                           choices = c(""),
+                           server = TRUE,
+                           selected = "")
+    }
+    
+    if (input$plotcells && !is.null(object)) {
       updateSelectizeInput(session, inputId = "color_by",
                            choices = names(colData(object)),
                            server = TRUE,
@@ -769,8 +790,7 @@
   cur_color <- .select_colorby_color(input, object)
   cur_object <- .subset_object(input, object)
 
-  cur_image <- image[input$sample]
-  cur_mask <- mask[mcols(mask)[[img_id]] == mcols(cur_image)[[img_id]]]
+  cur_mask <- mask[input$sample]
   cur_object <- cur_object[, colData(cur_object)[[img_id]] %in% mcols(cur_mask)[,img_id]]
   
   req(!identical(unique(colData(cur_object)[,img_id]), integer(0)))
@@ -824,8 +844,13 @@
 .add_scalebar <- function(input, object, mask,
                            image, img_id, cell_id){
   renderUI({
+    if(!is.null(image)){
     cur_image <- .filter_image(input, image)
     cur_value <- round(dim(cur_image[[1]])[1]/4, digits=-1)
+    }else{ 
+      cur_value <- round(dim(mask[[1]])[1]/4, digits=-1)
+      }
+    
     numericInput(inputId = "scalebar", label = "Scale bar length", value = cur_value,
                          min = 0, max = 1000, step = 5)
   })
