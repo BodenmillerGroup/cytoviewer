@@ -1,5 +1,10 @@
 # cytoviewer
 
+<!-- badges: start -->
+[![codecov](https://codecov.io/gh/BodenmillerGroup/cytoviewer/branch/devel/graph/badge.svg)](https://app.codecov.io/gh/BodenmillerGroup/cytoviewer/tree/devel)
+[![docs](https://github.com/BodenmillerGroup/cytomapper/workflows/docs/badge.svg?branch=devel)](https://github.com/BodenmillerGroup/cytoviewer/actions?query=workflow%3Adocs)
+<!-- badges: end -->
+
 An interactive multi-channel image viewer for R. 
 
 This shiny application allows users to interactively visualize multi-channel 
@@ -7,6 +12,13 @@ images and masks. The `cytoviewer` package is divided into image-level (Composit
 and cell-level visualization (Masks). It allows users to overlay individual images 
 with masks and integrates well with [SingleCellExperiment](https://bioconductor.org/packages/release/bioc/html/SingleCellExperiment.html) 
 and [SpatialExperiment](https://bioconductor.org/packages/release/bioc/html/SingleCellExperiment.html) objects for metadata visualization. 
+
+## Check status
+
+| Bioc branch | Checks |
+|:-----------:|:------:|
+| Release     |[![build-check-release](https://github.com/BodenmillerGroup/cytoviewer/workflows/build-checks-release/badge.svg)](https://github.com/BodenmillerGroup/cytoviewer/actions?query=workflow%3Abuild-checks-release)|
+| Devel       |[![build-check-devel](https://github.com/BodenmillerGroup/cytoviewer/workflows/build-checks-devel/badge.svg)](https://github.com/BodenmillerGroup/cytoviewer/actions?query=workflow%3Abuild-checks-devel)|
 
 
 ## Requirements
