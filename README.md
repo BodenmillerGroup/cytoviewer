@@ -16,15 +16,22 @@ It builds on data objects and functions contained in the [cytomapper](https://bi
 
 ## Installation 
 
-Please note that `cytoviewer` is under active development.
-
-The development version of the `cytoviewer` package can be installed from Github 
-using `remotes` in R as follows:
+The `cytoviewer` package can be installed from `Bioconductor` via:
 
 ```r
-# install.packages("remotes")
+if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
 
-remotes::install_github("BodenmillerGroup/cytoviewer", build_vignettes = TRUE, dependencies = TRUE)
+BiocManager::install("cytoviewer")
+```
+
+The development version of `cytoviewer` can be installed from Github via:
+
+```r
+if (!requireNamespace("remotes", quietly = TRUE))
+    install.packages("remotes")
+
+remotes::install_github("BodenmillerGroup/cytoviewer")
 ```
 
 To load the package in your R session, type the following:
@@ -32,7 +39,6 @@ To load the package in your R session, type the following:
 ```r
 library(cytoviewer)
 ```
-
 ## Usage
 
 ```r
@@ -53,6 +59,12 @@ shiny::runApp(app, launch.browser = TRUE)
 For feature requests, please open an issue [here](https://github.com/BodenmillerGroup/cytoviewer/issues).
 
 Alternatively, feel free to fork the repository, add your changes and issue a pull request.
+
+## Citation 
+
+A manuscript is in preparation.
+
+If you are using `cytoviewer` in your work, please reach out to inquire how to best cite the tool.
 
 ## Authors
 
