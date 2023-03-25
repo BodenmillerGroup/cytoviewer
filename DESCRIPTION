@@ -3,14 +3,15 @@ Version: 0.99.0
 Title: A interactive multi-channel image viewer for R
 Description: 
     This shiny application allows users to interactively visualize multi-channel 
-    images and segmentation masks. The cytoviewer package is divided into image-level (Composite and Tiles) 
-    and cell-level visualization (Masks). It allows users to overlay individual images 
-    with masks and integrates well with SingleCellExperiment/SpatialExperiment objects 
-    for metadata visualization. 
+    images and segmentation masks. The cytoviewer package is divided into 
+    image-level (Composite and Tiles) and cell-level visualization (Masks). 
+    It allows users to overlay individual images with masks, integrates well 
+    with SingleCellExperiment/SpatialExperiment objects for metadata 
+    visualization and supports image downloads.
 Authors@R: 
     c(person("Lasse", "Meyer", role = c("aut", "cre"), 
       email = "lasse.meyer@dqbm.uzh.ch",
-      comment = c(ORCID = "0000-0002-4711-1176")),
+      comment = c(ORCID = "0000-0002-1660-1199")),
       person("Nils", "Eling", role = c("aut"), 
       email = "nils.eling@dqbm.uzh.ch"))
 License: GPL (>= 3)

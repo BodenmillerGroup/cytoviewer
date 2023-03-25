@@ -790,7 +790,14 @@
   cur_color <- .select_colorby_color(input, object)
   cur_object <- .subset_object(input, object)
 
-  cur_mask <- mask[input$sample]
+  
+  if(!is.null(image)){
+    cur_image <- image[input$sample]
+    cur_mask <- mask[mcols(mask)[[img_id]] == mcols(cur_image)[[img_id]]]
+  }else{
+    cur_mask <- mask[input$sample]
+  }
+  
   cur_object <- cur_object[, colData(cur_object)[[img_id]] %in% mcols(cur_mask)[,img_id]]
   
   req(!identical(unique(colData(cur_object)[,img_id]), integer(0)))
