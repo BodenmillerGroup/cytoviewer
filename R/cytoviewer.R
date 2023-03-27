@@ -58,7 +58,8 @@
 #'
 #' library(cytoviewer)
 #' 
-#' # Load example datasets 
+#' # Load example datasets from cytomapper
+#' library(cytomapper)
 #' data("pancreasImages")
 #' data("pancreasMasks")
 #' data("pancreasSCE")

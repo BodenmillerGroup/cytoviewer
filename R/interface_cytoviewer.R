@@ -48,7 +48,7 @@
           notificationItem(
             text = radioButtons(inputId = "fileselection", 
                                 label = "Select image",
-                                choices = list("Composite","Channels","Masks"), 
+                                choices = list("Composite","Channels","Mask"), 
                                 selected = "Composite"), 
             icon = icon(NULL),
             status = "info"
@@ -210,7 +210,7 @@
                    tabPanel("Channels", value = "tiles_tab", width = 12, withSpinner(uiOutput("tiles_tab"), type = 6)))),
         tabPanel("Cell-level", 
                  tabsetPanel(
-                   tabPanel("Masks", value = "cells_tab", width = 12, withSpinner(uiOutput("cells_tab"), type = 6))))
+                   tabPanel("Mask", value = "cells_tab", width = 12, withSpinner(uiOutput("cells_tab"), type = 6))))
       ))
     return(cm_body)
     }

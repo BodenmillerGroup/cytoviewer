@@ -23,10 +23,44 @@
     tagList(
         h3("Using the Shiny application"),
         p("This help page provides an overview on the main functionality",
-        "that this app offers. The app provides full flexibility to change 
-        settings during each step.", "To see the full documentation, 
-        please refer to the help page found at", em("?cytoviewer"),"."),
-        h3("1. TO DO")
+        "that this app offers. For each step, user-defined adjustments are 
+        possible.", "To see the full documentation and more details, 
+        please refer to the help page found at", strong("?cytoviewer")," 
+        and to the", strong("package vignette"), "."),
+        h3("Interface"),
+        p("The cytoviewer interface is divided into a", 
+        strong("Header, Sidebar and Body"), "section.", 
+        "The Header includes package version information, access to session 
+        information and this help page as well as a dropdown-menu for image downloads.", 
+        "The Body features a Tabset-Panel layout allowing the user to switch between 
+        three image modes:", strong("Image-level (Composite and Channels) and Cell-level (Mask).")),
+        h3("Image-level visualization"),
+        p("Image visualization control is split into", em("basic and advanced controls"),".",
+        "Basic controls supports the selection of up to six markers/channels
+        for image display. Each marker has color control settings that allow
+        the user to set contrast, brightness, gamma and select a channel color.
+        In the advanced controls part, the user can choose to overlay the
+        displayed images with provided segmentation masks. Outline color and
+        mask thickness can be adjusted by the user. Moreover, the masks can be
+        outlined by cell-specific metadata provided in colData slot of the
+        object."), 
+        h3("Cell-level visualization"),
+        p("Cell visualization has",em("basic controls."),"
+        Here, the user can choose to display the provided segmentation masks.
+        If an object is provided, the masks can be colored by cell-specific
+        metadata."),
+        h3("General controls"),
+        p("General controls is subdivided into an", em("Image appearance and 
+        Image filters"), "part.", "In the Image appearance section, the user can adjust 
+        the scale bar length and include legend/image titles, 
+        while the Image filters section allows to control pixel-wise interpolation 
+        (default) and apply a Gaussian filter."),
+        h3("Image download"), 
+        p("The cytoviewer package supports fast and uncomplicated image downloads. 
+        Download controls are part of the", em("Header"), ".", "The user can 
+        specify a file name, select the image of interest (Composite, Channels, Mask) 
+        and the file format (pdf, png). Upon clicking the download button, 
+        a pop-window should appear where the user can specify the download location.")
     )
 }
 
@@ -260,6 +294,9 @@
     
     if (input$outline && !is.null(input$outline_by)){
       if(input$outline_by == "") {
+        
+        req(img_id)
+        
         cur_mask <- mask[mcols(mask)[[img_id]] == mcols(cur_image)[[img_id]]]
         
         plotPixels(image = cur_image,
@@ -278,6 +315,8 @@
       
         } else if (input$outline_by != "") { 
         
+          req(img_id, cell_id)
+          
         if (is.numeric(colData(object)[[input$outline_by]])) {
         cur_object <- object
         } else {
@@ -371,6 +410,9 @@
     
     if (input$outline && !is.null(input$outline_by)){
       if(input$outline_by == "") {
+        
+        req(img_id)
+        
       cur_mask <- mask[mcols(mask)[[img_id]] == mcols(cur_image)[[img_id]]]
       
       plot_list[[i]] <- plotPixels(image = cur_image,
@@ -389,6 +431,8 @@
                  ...)
       
     } else if (input$outline_by != "") {
+      
+      req(img_id, cell_id)
       
       if(is.numeric(colData(object)[[input$outline_by]])){
         cur_object <- object

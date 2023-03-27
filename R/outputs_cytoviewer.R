@@ -45,11 +45,6 @@
     
     cur_markers <- .select_markers(input)
     cur_markers <- cur_markers[cur_markers != ""]
-
-    #browser()
-    #req(length(.create_image_tiles(input, object, mask, image, img_id, cell_id)) == length(cur_markers))
-    #print(length(cur_markers))
-    #print(length(.create_image_tiles(input, object, mask, image, img_id, cell_id)))
     
     lapply(seq_along(cur_markers), function(cur_plot){
       output[[paste0("tile", cur_plot)]] <- renderPlot(.create_image_tiles(input, object, mask, image, img_id, cell_id)[[cur_plot]]$plot)

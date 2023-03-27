@@ -70,14 +70,14 @@ Highly multiplexed imaging allows simultaneous spatially and single-cell
 resolved detection of dozens of biological molecules (e.g. proteins) in
 their native tissue context. As a result, these technologies allow an
 in-depth analysis of complex systems and diseases such as the tumor
-microenvironment **[add citation]** and type 1 diabetes progression
-**[add citation]**.
+microenvironment [@Jackson2020] and type 1 diabetes progression
+[@Damond2019].
 
-Imaging-based spatial proteomics methods **[add citation]** can be
-broadly divided into fluorescent cyclic approaches such as tissue-based
-cyclic immunofluorescence (t-CyCIF) [@Lin2018] and one-step mass-tag
-based approaches such as multiplexed ion beam imaging (MIBI)
-[@Angelo2014] and IMC [@Giesen2014].
+Imaging-based spatial proteomics methods [@Moffitt2022] can be broadly
+divided into fluorescent cyclic approaches such as tissue-based cyclic
+immunofluorescence (t-CyCIF) [@Lin2018] and one-step mass-tag based
+approaches such as multiplexed ion beam imaging (MIBI) [@Angelo2014] and
+IMC [@Giesen2014].
 
 Of note, the instructions below will focus on the visualization and
 exploration of **IMC data** as an example. However, data from other
@@ -103,19 +103,19 @@ imaging data in general, computational tools are of key importance.
 The main analysis steps, irrespective of the biological question,
 include 1) Visual inspection of images for quality control, 2) Image
 pre-processing and segmentation and 3) Single-cell and spatial analysis
-**[add citation]**.
+[@Windhager2021].
 
 A comprehensive end-to-end workflow for multiplexed image processing and
-analysis **[cite]** with detailed information for every analysis step
-can be found [here]()
+analysis with detailed information for every analysis step can be found
+[here](https://bodenmillergroup.github.io/IMCDataAnalysis/).
 
 Importantly, the `cytoviewer` package can support, simplify and improve
 any of these analysis steps with its easy-to-use interactive
 visualization interface in R.
 
 Below we will showcase an [example workflow](#ExampleWorkflow) that
-highlights the different functionalities and potential application
-fields of `cytoviewer`.
+highlights the different functionality and potential application fields
+of `cytoviewer`.
 
 ## Application overview
 
@@ -128,7 +128,7 @@ visualization and supports [image downloads](#Download).
 
 ### Data input format {#DataInputFormat}
 
-The `cytoviewer` package combines objects of the
+The `cytoviewer` package combines objects of
 `r Biocpkg("SingleCellExperiment")`, `r Biocpkg("SpatialExperiment")`
 and `cytomapper::CytoImageList` classes (from `r Biocpkg("cytomapper")`)
 to visualize image- and cell-level information.
@@ -145,8 +145,8 @@ one-channel images containing integer values, which represent the cell
 ids or background.
 
 Thirdly, the `object` entry refers to a `SingleCellExperiment` or
-`SpatialExperiment` class object that cell-specific metadata in the
-`colData` slot.
+`SpatialExperiment` class object that contains cell-specific metadata in
+the `colData` slot.
 
 Lastly, to match information between the `CytoImageList` objects and the
 `SingleCellExperiment`/`SpatialExperiment` object, two additional spots
@@ -157,7 +157,7 @@ can be specified:
     `elementMetadata` (of the `CytoImageList` object) entry that
     contains the image identifiers. These image ids have to match
     between the `SingleCellExperiment`/ `SpatialExperiment` object and
-    the `CytoImageList` object.
+    the `CytoImageList` objects.
 
 -   `cell_id`: a single character indicating the `colData` entry that
     contains the cell identifiers. These should be integer values
@@ -195,10 +195,9 @@ overlaying of images with segmentation masks and
 If `mask` and `object` are specified, [cell-level](#CellLevel)
 visualization as well as metadata visualization is possible.
 
-
 # Example workflow {#ExampleWorkflow}
 
-## Installation 
+## Installation
 
 The `cytoviewer` package can be installed from `Bioconductor` via:
 
@@ -209,7 +208,8 @@ if (!requireNamespace("BiocManager", quietly = TRUE))
 BiocManager::install("cytoviewer")
 ```
 
-The development version of `cytoviewer` can be installed from Github via:
+The development version of `cytoviewer` can be installed from Github
+via:
 
 ```{r devel-install, eval=FALSE}
 if (!requireNamespace("remotes", quietly = TRUE))
@@ -226,28 +226,30 @@ library(cytoviewer)
 
 ## Example dataset
 
-For visualization purposes, we will use a toy dataset provided 
-by the `r Biocpkg("cytomapper")` package. 
+For visualization purposes, we will use a toy dataset provided by the
+`r Biocpkg("cytomapper")` package.
 
-The dataset contains 3 images of $100\mu{m}$ x $100\mu{m}$ dimensions 
-with 362 segmented cells and pixel-intensities for 5 proteins: H3, CD99, PIN, 
-CD8a, and CDH. It is a small subset from a Type 1 Diabetes dataset **(cite)**. 
+The dataset contains 3 images of $100\mu{m}$ x $100\mu{m}$ dimensions
+with 362 segmented cells and pixel-intensities for 5 proteins: H3, CD99,
+PIN, CD8a, and CDH. It is a small subset from a Type 1 Diabetes dataset
+[@Damond2019].
 
 Pixel-level intensities for all 5 markers (5 channels) are stored in the
 `pancreasImages` object.
 
-The corresponding segmentation masks are stored in the `pancreasMasks` 
-object. 
+The corresponding segmentation masks are stored in the `pancreasMasks`
+object.
 
-All cell-specific metadata are stored in the `colData` slot of the 
-corresponding `SingleCellExperiment` object: `pancreasSCE`. 
+All cell-specific metadata are stored in the `colData` slot of the
+corresponding `SingleCellExperiment` object: `pancreasSCE`.
 
-For more detailed information on the dataset, please refer to the 
-respective documentation (e.g. via `?pancreasImages` or the vignette of the
-`r Biocpkg("cytomapper")` package). 
+For more detailed information on the dataset, please refer to the
+respective documentation (e.g. via `?pancreasImages` or the vignette of
+the `r Biocpkg("cytomapper")` package).
 
 ```{r dataset}
 # Load example datasets 
+library(cytomapper)
 data("pancreasImages")
 data("pancreasMasks")
 data("pancreasSCE")
@@ -257,13 +259,100 @@ pancreasMasks
 pancreasSCE
 ```
 
-## Interface
+## Function call
+
+Here as an example, we call `cytoviewer` with `image`, `mask` and
+`object` data to leverage all provided functionality.
+
+This setting allows [image-level](#ImageLevel) visualization (Composite
+and Channels), [cell-level](#CellLevel) visualization, overlaying images
+with segmentation masks as well as metadata visualization.
+
+For further details, please refer to the `?cytoviewer` manual or the
+`Help page` within the shiny application.
+
+```{r cytoviewer}
+if(interactive()){
+
+# Use cytoviewer with images, masks and object
+app <- cytoviewer(image = pancreasImages, mask = pancreasMasks, object = pancreasSCE, img_id = "ImageNb", cell_id = "CellNb")
+shiny::runApp(app, launch.browser = TRUE)
+
+}
+```
+
+## Interface {#Interface}
+
+The `cytoviewer` interface is divided into a **Header**, **Sidebar** and
+**Body** section (see Figure below).
+
+The **Header** includes package version information, access to session
+information and the help page as well as a dropdown-menu for [image
+downloads](#Download).
+
+The **Body** features a Tabset-Panel layout allowing the user to switch between
+three image modes: [Image-level](#ImageLevel) (Composite and Channels)
+and [Cell-level](#CellLevel) (Mask). Furthermore, the Composite and Mask
+tabs have zoom controls.
+
+The **Sidebar** panel is subdivided into four sections: *Sample selection*, 
+*Image-level*, *Cell-level* and [*General*](#General)
+controls.
+
+![cytoviewer_interface](cytoviewer_vignette.png)
 
 ## Image-level visualization {#ImageLevel}
 
+Image visualization control is split into *basic* and *advanced controls*.
+
+*Basic controls* supports the selection of up to six markers/channels
+for `image` display. Each marker has color control settings that allow
+the user to set contrast, brightness, gamma and select a channel color.
+
+In the *advanced controls* part, the user can choose to overlay the
+displayed images with provided segmentation `masks`. Outline color and
+mask thickness can be adjusted by the user. Moreover, the masks can be
+outlined by cell-specific metadata provided in `colData` slot of the
+`object`.
+
+Of note, for categorical and continuous metadata entries the user can
+choose between discrete colors and continuous color palettes (viridis,
+inferno, plasma), respectively.
+
 ## Cell-level visualization {#CellLevel}
 
+Cell visualization has *basic controls*.
+
+Here, the user can choose to display the provided segmentation `masks`.
+If an `object` is provided, the masks can be colored by cell-specific
+metadata.
+
+Please note again that for categorical and continuous metadata entries
+the user can choose between discrete colors and continuous color
+palettes (viridis, inferno, plasma), respectively.
+
+## General controls {#General}
+
+General controls is subdivided into an *Image appearance* and 
+*Image filters* part.
+
+In the *Image appearance* section, the user can adjust the scale bar
+length and include legend/image titles, while the *Image filters*
+section allows to control pixel-wise interpolation (default) and apply a
+Gaussian filter.
+
 ## Image download {#Download}
+
+The `cytoviewer` package supports fast and uncomplicated image
+downloads.
+
+Download controls are part of the **Header** (see Section
+[Interface](#Interface)).
+
+The user can specify a file name, select the image of interest
+(Composite, Channels, Mask) and the file format (pdf, png). Upon
+clicking the download button, a pop-window should appear where the user
+can specify the download location.
 
 # Session info {.unnumbered}
 
