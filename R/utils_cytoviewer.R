@@ -678,7 +678,7 @@
     box_list <- lapply(seq_along(cur_markers), function(cur_plot) {
       cur_val <- (cur_plot * 2) - 1
 
-      box(withSpinner(plotOutput(paste0("tile", cur_plot)), type = 6), #can use svgPanZoomOutput() for zoom-able images?
+      box(withSpinner(plotOutput(paste0("tile", cur_plot)), type = 6),
           title = paste(cur_markers[cur_plot]),
           status = "primary",
           width = 4)

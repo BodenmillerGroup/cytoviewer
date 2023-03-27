@@ -1,6 +1,4 @@
-# Validity checks for cytoviewer
-
-test_that("cytoviewer: standard input testing works", {
+test_that("cytoviewer: validity check testing works", {
   
   # Load datasets 
   library(cytomapper)
@@ -130,4 +128,25 @@ test_that("cytoviewer: standard input testing works", {
   expect_error(cytoviewer(mask = pancreasMasks, object = cur_object_3, img_id = "ImageNb", cell_id = "CellNb"), 
                regexp = "Cell ids should only contain numeric integer values.",
                fixed = TRUE)
+})
+
+
+test_that("cytoviewer: auxiliary functions works", {
+  
+  #General help
+  cur_out <-.general_help()
+  expect_length(cur_out, 12)
+  expect_equal(unlist(cur_out[[1]]$children), "Using the Shiny application")
+  expect_true(is.character(unlist(cur_out[[2]]$children)))
+  expect_equal(unlist(cur_out[[3]]$children), "Interface")
+  expect_true(is.character(unlist(cur_out[[4]]$children)))
+  expect_equal(unlist(cur_out[[5]]$children), "Image-level visualization")
+  expect_true(is.character(unlist(cur_out[[6]]$children)))
+  expect_equal(unlist(cur_out[[7]]$children), "Cell-level visualization")
+  expect_true(is.character(unlist(cur_out[[8]]$children)))
+  expect_equal(unlist(cur_out[[9]]$children), "General controls")
+  expect_true(is.character(unlist(cur_out[[10]]$children)))
+  expect_equal(unlist(cur_out[[11]]$children), "Image download")
+  expect_true(is.character(unlist(cur_out[[12]]$children)))
+  
 })
