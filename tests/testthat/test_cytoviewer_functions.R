@@ -43,14 +43,20 @@ test_that("cytoviewer: validity check testing works", {
   cur_object <- pancreasSCE
   colData(cur_object)[["ImageNb"]] <- NULL
   
-  expect_error(cytoviewer(image = pancreasImages, object = cur_object, img_id = "ImageNb", cell_id = "CellNb"), 
+  expect_error(cytoviewer(image = pancreasImages, 
+                          object = cur_object, 
+                          img_id = "ImageNb", 
+                          cell_id = "CellNb"), 
                regexp = "'img_id' and/or 'cell_id' not in 'colData(object)'.",
                fixed = TRUE)
   
   colData(cur_object)[["ImageNb"]] <- colData(pancreasSCE)[["ImageNb"]]
   colData(cur_object)[["CellNb"]] <- NULL
   
-  expect_error(cytoviewer(image = pancreasImages, object = cur_object, img_id = "ImageNb", cell_id = "CellNb"), 
+  expect_error(cytoviewer(image = pancreasImages, 
+                          object = cur_object, 
+                          img_id = "ImageNb", 
+                          cell_id = "CellNb"), 
                regexp = "'img_id' and/or 'cell_id' not in 'colData(object)'.",
                fixed = TRUE)
   
@@ -63,12 +69,16 @@ test_that("cytoviewer: validity check testing works", {
   cur_object_2 <- pancreasSCE
   rownames(cur_object_2)[1] <- "HistoneH3"
   
-  expect_error(cytoviewer(image = pancreasImages, object = cur_object_2, cell_id = "CellNb"), 
+  expect_error(cytoviewer(image = pancreasImages, 
+                          object = cur_object_2, 
+                          cell_id = "CellNb"), 
                regexp = "The 'channelNames' of the images need to match the rownames of the 
            'object'.",
                fixed = TRUE)
 
-  expect_error(cytoviewer(image = pancreasImages, object = cur_object_2, cell_id = "CellNb"), 
+  expect_error(cytoviewer(image = pancreasImages, 
+                          object = cur_object_2, 
+                          cell_id = "CellNb"), 
                regexp = "The 'channelNames' of the images need to match the rownames of the 
            'object'.",
                fixed = TRUE)
@@ -76,11 +86,17 @@ test_that("cytoviewer: validity check testing works", {
   cur_object_3 <- pancreasSCE
   colData(cur_object_3)[["ImageNb"]][1] <- 4
   
-  expect_error(cytoviewer(image = pancreasImages, object = cur_object_3, img_id = "ImageNb", cell_id = "CellNb"), 
+  expect_error(cytoviewer(image = pancreasImages, 
+                          object = cur_object_3, 
+                          img_id = "ImageNb", 
+                          cell_id = "CellNb"), 
                regexp = "Please provide a unique 'image' for every sample stored in 'object'.",
                fixed = TRUE)
   
-  expect_error(cytoviewer(mask = pancreasMasks, object = cur_object_3, img_id = "ImageNb", cell_id = "CellNb"), 
+  expect_error(cytoviewer(mask = pancreasMasks, 
+                          object = cur_object_3, 
+                          img_id = "ImageNb", 
+                          cell_id = "CellNb"), 
                regexp = "Please provide a unique 'mask' for every sample stored in 'object'.",
                fixed = TRUE)
   
@@ -98,34 +114,45 @@ test_that("cytoviewer: validity check testing works", {
                fixed = TRUE)
   
   
-  expect_error(cytoviewer(image = pancreasImages, mask = pancreasImages, img_id = "ImageNb"), 
+  expect_error(cytoviewer(image = pancreasImages, 
+                          mask = pancreasImages, 
+                          img_id = "ImageNb"), 
                regexp = "Segmentation masks must only contain one channel.",
                fixed = TRUE)
   
   cur_mask <- pancreasMasks
   imageData(cur_mask[[1]])[1,1] <- 8.24
   
-  expect_error(cytoviewer(image = pancreasImages, mask = cur_mask, img_id = "ImageNb"), 
+  expect_error(cytoviewer(image = pancreasImages, 
+                          mask = cur_mask, 
+                          img_id = "ImageNb"), 
                regexp = "Segmentation masks must only contain integer values.",
                fixed = TRUE)
   
   cur_mask_2 <- pancreasMasks
   mcols(cur_mask_2)[["ImageNb"]] <- c(1,1,2)
   
-  expect_error(cytoviewer(image = pancreasImages, mask = cur_mask_2, img_id = "ImageNb"), 
+  expect_error(cytoviewer(image = pancreasImages, 
+                          mask = cur_mask_2, 
+                          img_id = "ImageNb"), 
                regexp = "Entries in the 'mcols(mask)[,img_id]' slot are not unique.",
                fixed = TRUE)
   
   mcols(cur_mask_2)[["ImageNb"]] <- NULL
   
-  expect_error(cytoviewer(image = pancreasImages, mask = cur_mask_2, img_id = "ImageNb"), 
+  expect_error(cytoviewer(image = pancreasImages, 
+                          mask = cur_mask_2, 
+                          img_id = "ImageNb"), 
                regexp = "'img_id' not in 'mcols(mask)'.",
                fixed = TRUE)
   
   cur_object_3 <- pancreasSCE
   colData(cur_object_3)[["CellNb"]] <- as.character(colData(cur_object_3)[["CellNb"]])
   
-  expect_error(cytoviewer(mask = pancreasMasks, object = cur_object_3, img_id = "ImageNb", cell_id = "CellNb"), 
+  expect_error(cytoviewer(mask = pancreasMasks, 
+                          object = cur_object_3, 
+                          img_id = "ImageNb", 
+                          cell_id = "CellNb"), 
                regexp = "Cell ids should only contain numeric integer values.",
                fixed = TRUE)
 })

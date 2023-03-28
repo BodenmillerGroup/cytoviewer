@@ -193,10 +193,197 @@ test_that("cytoviewer: plot input 3 testing works", {
     img_id <- "ImageNb"
     cell_id <- "CellNb"
     
-    # Plot output (Images + Masks + Object)
+    # Plot output (Images + Masks + Object - Categorical)
+    expect_silent(.create_image(input, object, mask, image, img_id, cell_id))
+    
+  })
+  
+}) 
+
+
+test_that("cytoviewer: plot input 4 testing works", {
+  
+  # Load datasets 
+  library(cytomapper)
+  data("pancreasImages")
+  data("pancreasMasks")
+  data("pancreasSCE")
+  
+  testServer(app = cytoviewer(image = pancreasImages, mask = pancreasMasks, object = pancreasSCE, img_id = "ImageNb", cell_id = "CellNb"), {
+    
+    session$setInputs(sample = "E34_imc", 
+                      marker1 = "H3", marker2 = "CD99", marker3 = "PIN", marker4 = "CD8a", marker5 = "CDH", marker6 = "",
+                      view1 = TRUE, view2 = FALSE, view3 = FALSE, view4 = FALSE, view5 = FALSE, view6 = FALSE,
+                      contrast1 = 1, contrast2 = 1, contrast3 = 1, contrast4 = 1, contrast5 = 1, contrast6 = 1,
+                      brightness1 = 1, brightness2 = 1, brightness3 = 1, brightness4 = 1, brightness5 = 1, brightness6 = 1,
+                      gamma1 = 1, gamma2 = 1, gamma3 = 1, gamma4 = 1, gamma5 = 1, gamma6 = 1,
+                      color1 = "#FF00FF", color2 = "#00FFFF", color3 = "#FFFF00", color4 = "#FF0000", color5 = "#00FF00", color6 = "black",
+                      show_legend = TRUE, 
+                      show_title = TRUE,
+                      gaussian_blur = TRUE, 
+                      gaussian_blur_sigma = 2,
+                      scalebar = 20,
+                      thick = FALSE, 
+                      interpolate = TRUE,
+                      outline = TRUE, 
+                      outline_by = "Area",
+                      numeric_color_outline = "viridis"
+    )
+    
+    image <- pancreasImages[1]
+    mask <- pancreasMasks[1]
+    object <- pancreasSCE
+    img_id <- "ImageNb"
+    cell_id <- "CellNb"
+
+    # Plot output (Images + Masks + Object - Numeric + Title + Legend + Gaussian Blur)
     expect_silent(.create_image(input, object, mask, image, img_id, cell_id))
     
   })
   
 })  
+
+
+test_that("cytoviewer: plot input 5 testing works", {
   
+  # Load datasets 
+  library(cytomapper)
+  data("pancreasImages")
+  data("pancreasMasks")
+  data("pancreasSCE")
+  
+  testServer(app = cytoviewer(image = pancreasImages, mask = pancreasMasks, object = pancreasSCE, img_id = "ImageNb", cell_id = "CellNb"), {
+    
+    session$setInputs(sample = "E34_imc", 
+                      marker1 = "H3", marker2 = "CD99", marker3 = "PIN", marker4 = "CD8a", marker5 = "CDH", marker6 = "",
+                      view1 = TRUE, view2 = FALSE, view3 = FALSE, view4 = FALSE, view5 = FALSE, view6 = FALSE,
+                      contrast1 = 1, contrast2 = 1, contrast3 = 1, contrast4 = 1, contrast5 = 1, contrast6 = 1,
+                      brightness1 = 1, brightness2 = 1, brightness3 = 1, brightness4 = 1, brightness5 = 1, brightness6 = 1,
+                      gamma1 = 1, gamma2 = 1, gamma3 = 1, gamma4 = 1, gamma5 = 1, gamma6 = 1,
+                      color1 = "#FF00FF", color2 = "#00FFFF", color3 = "#FFFF00", color4 = "#FF0000", color5 = "#00FF00", color6 = "black",
+                      show_legend = FALSE, 
+                      show_title = FALSE,
+                      gaussian_blur = FALSE, 
+                      scalebar = 20,
+                      thick = FALSE, 
+                      interpolate = TRUE,
+                      outline = TRUE, 
+                      outline_by = ""
+    )
+    
+    image <- pancreasImages[1]
+    mask <- pancreasMasks[1]
+    object <- NULL
+    img_id <- "ImageNb"
+    cell_id <- "CellNb"
+
+    # Plot output (Images + Masks (- Object) - outline is TRUE but no object)
+    expect_silent(.create_image(input, object, mask, image, img_id, cell_id))
+    
+  })
+  
+})  
+
+
+test_that("cytoviewer: plot input 6 testing works", {
+  
+  # Load datasets 
+  library(cytomapper)
+  data("pancreasImages")
+  data("pancreasMasks")
+  data("pancreasSCE")
+  
+  testServer(app = cytoviewer(image = pancreasImages, mask = pancreasMasks, object = pancreasSCE, img_id = "ImageNb", cell_id = "CellNb"), {
+    
+    session$setInputs(sample = "E34_imc", 
+                      show_legend = FALSE, 
+                      show_title = FALSE,
+                      gaussian_blur = FALSE, 
+                      scalebar = 20,
+                      interpolate = TRUE,
+                      plotcells = TRUE, 
+                      color_by = "CellType",
+                      color_by_selection = "celltype_C",
+                      color_by1 = "blue",
+                      missing_colorby = "white"
+    )
+    
+    image <- pancreasImages[1]
+    mask <- pancreasMasks[1]
+    object <- pancreasSCE
+    img_id <- "ImageNb"
+    cell_id <- "CellNb"
+
+    # Plot cells output (Images + Masks + Object - Categorical)
+    expect_silent(.create_cells(input, object, mask, image, img_id, cell_id))
+    
+  })
+  
+})  
+
+test_that("cytoviewer: plot input 7 testing works", {
+  
+  # Load datasets 
+  library(cytomapper)
+  data("pancreasImages")
+  data("pancreasMasks")
+  data("pancreasSCE")
+  
+  testServer(app = cytoviewer(image = pancreasImages, mask = pancreasMasks, object = pancreasSCE, img_id = "ImageNb", cell_id = "CellNb"), {
+    
+    session$setInputs(sample = "E34_mask", 
+                      show_legend = FALSE, 
+                      show_title = FALSE,
+                      gaussian_blur = FALSE, 
+                      scalebar = 20,
+                      interpolate = TRUE,
+                      plotcells = TRUE, 
+                      color_by = "Area",
+                      color_by_selection = "Area",
+                      numeric_colorby = "viridis"
+    )
+    image <- NULL
+    mask <- pancreasMasks[1]
+    object <- pancreasSCE
+    img_id <- "ImageNb"
+    cell_id <- "CellNb"
+
+    # Plot cells output (Masks + Object - No Image - Numeric without image)
+    expect_silent(.create_cells(input, object, mask, image, img_id, cell_id))
+    
+  })
+  
+})  
+
+
+test_that("cytoviewer: plot input 8 testing works", {
+  
+  # Load datasets 
+  library(cytomapper)
+  data("pancreasImages")
+  data("pancreasMasks")
+  data("pancreasSCE")
+  
+  testServer(app = cytoviewer(image = pancreasImages, mask = pancreasMasks, object = pancreasSCE, img_id = "ImageNb", cell_id = "CellNb"), {
+    
+    session$setInputs(sample = "E34_imc", 
+                      show_legend = FALSE, 
+                      show_title = FALSE,
+                      gaussian_blur = FALSE, 
+                      scalebar = 20,
+                      interpolate = TRUE,
+                      plotcells = TRUE,
+                      color_by = ""
+    )
+    
+    image <- pancreasImages[1]
+    mask <- pancreasMasks[1]
+    object <- NULL
+    img_id <- "ImageNb"
+    
+    # Plot cells output (Images + Masks but no object)
+    expect_silent(.create_cells(input, object, mask, image, img_id, cell_id))
+    
+  })
+  
+})  

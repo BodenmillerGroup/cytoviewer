@@ -31,11 +31,14 @@
         p("The cytoviewer interface is divided into a", 
         strong("Header, Sidebar and Body"), "section.", 
         "The Header includes package version information, access to session 
-        information and this help page as well as a dropdown-menu for image downloads.", 
-        "The Body features a Tabset-Panel layout allowing the user to switch between 
-        three image modes:", strong("Image-level (Composite and Channels) and Cell-level (Mask).")),
+        information and this help page as well as a dropdown-menu for image 
+        downloads.", "The Body features a Tabset-Panel layout allowing the user 
+        to switch between three image modes:", strong("Image-level 
+                                                      (Composite and Channels) 
+                                                      and Cell-level (Mask).")),
         h3("Image-level visualization"),
-        p("Image visualization control is split into", em("basic and advanced controls"),".",
+        p("Image visualization control is split into", 
+          em("basic and advanced controls"),".",
         "Basic controls supports the selection of up to six markers/channels
         for image display. Each marker has color control settings that allow
         the user to set contrast, brightness, gamma and select a channel color.
@@ -51,15 +54,15 @@
         metadata."),
         h3("General controls"),
         p("General controls is subdivided into an", em("Image appearance and 
-        Image filters"), "part.", "In the Image appearance section, the user can adjust 
-        the scale bar length and include legend/image titles, 
+        Image filters"), "part.", "In the Image appearance section, the user can 
+        adjust the scale bar length and include legend/image titles, 
         while the Image filters section allows to control pixel-wise interpolation 
         (default) and apply a Gaussian filter."),
         h3("Image download"), 
         p("The cytoviewer package supports fast and uncomplicated image downloads. 
         Download controls are part of the", em("Header"), ".", "The user can 
-        specify a file name, select the image of interest (Composite, Channels, Mask) 
-        and the file format (pdf, png). Upon clicking the download button, 
+        specify a file name, select the image of interest (Composite, Channels, 
+        Mask) and the file format (pdf, png). Upon clicking the download button, 
         a pop-window should appear where the user can specify the download location.")
     )
 }
@@ -230,7 +233,7 @@
 
 # Helper function for legend construction 
 .show_legend <- function(input){
-  legend_param <- list(margin = 3) #use default options from cytomapper
+  legend_param <- list(margin = 3) #use default from cytomapper
   
   if(input$show_legend){cur_legend <- legend_param}else{cur_legend <- NULL}
   return(cur_legend)
@@ -238,7 +241,7 @@
 
 # Helper function for image title 
 .show_title <- function(input){
-  imagetitle_param <- list(margin = c(10,2)) #use default options from cytomapper
+  imagetitle_param <- list(margin = c(10,2)) #use default from cytomapper
   
   if (input$show_title) {
       cur_imagetitle <- imagetitle_param
@@ -270,8 +273,7 @@
 
 #  Helper function to construct image 
 .create_image <- function(input, object, mask,
-                          image, img_id, cell_id, cur_markers, cur_bcg, cur_color,
-                          ...){
+                          image, img_id, cell_id,...){
     
   req(input$sample != "")
   req(!is.null(input$scalebar))
@@ -362,12 +364,10 @@
 
 # Visualize marker expression on images
 .imagePlot <- function(input, object, mask,
-                       image, img_id, cell_id, 
-                       cur_markers, cur_bcg, ...){
+                       image, img_id, cell_id, ...){
     renderSvgPanZoom({
         suppressMessages(svgPanZoom(stringSVG(
-            .create_image(input, object, mask,image, img_id, cell_id, 
-                          cur_markers, cur_bcg, ...)
+            .create_image(input, object, mask,image, img_id, cell_id, ...)
             ),
             zoomScaleSensitivity = 0.4, 
             maxZoom = 20,
@@ -378,7 +378,8 @@
 
 
 ## Image tiles function draft 
-.create_image_tiles <- function(input, object, mask, image, img_id, cell_id, ...){
+.create_image_tiles <- function(input, object, mask, image, 
+                                img_id, cell_id, ...){
   
   req(input$sample != "")
   req(!is.null(input$scalebar))
@@ -437,7 +438,8 @@
       if(is.numeric(colData(object)[[input$outline_by]])){
         cur_object <- object
       }else{
-        cur_object <- object[,colData(object)[[input$outline_by]] %in% input$select_outline]
+        cur_object <- object[,colData(object)[[input$outline_by]] %in% 
+                               input$select_outline]
       }
       
       cur_mask <- mask[mcols(mask)[[img_id]] == mcols(cur_image)[[img_id]]]
@@ -484,8 +486,7 @@
 
 # Download the images - via downloadHandler
 .downloadSelection <- function(input, object, mask,
-                               image, img_id, cell_id, 
-                               cur_markers, cur_bcg, ...){
+                               image, img_id, cell_id, ...){
     downloadHandler(
     filename = function(){
       if(input$fileselection %in% c("Composite","Masks")){
@@ -498,13 +499,13 @@
         if(input$filename2 == "pdf"){
           pdf(file = file)
           .create_image(input, object, mask,
-                        image, img_id, cell_id, cur_markers, cur_bcg,
+                        image, img_id, cell_id,
                         ...)
           dev.off()
           } else {
             png(filename = file)
             .create_image(input, object, mask,
-                          image, img_id, cell_id, cur_markers, cur_bcg,
+                          image, img_id, cell_id,
                           ...)
             dev.off()
           }
@@ -701,7 +702,8 @@
         selectizeInput("color_by", label = span("Color by",
                                     style = "color: black; padding-top: 0px"), 
                        choices = NULL, options = NULL, 
-                     list(placeholder = 'Color by', maxItems = 1,maxOptions = 10)
+                     list(placeholder = 'Color by', maxItems = 1,
+                          maxOptions = 10)
         ),
         selectizeInput("color_by_selection",
                        label = span("Select color by",
@@ -749,7 +751,8 @@
           menuItem(span("Color control", 
                         style = "color: black;padding-top: 0px"), 
                    style = "color: black; padding-top: 0px",
-                   radioButtons(inputId = "numeric_colorby", label = "Color palettes",
+                   radioButtons(inputId = "numeric_colorby", 
+                                label = "Color palettes",
                                 choices = list("viridis","inferno","plasma"), 
                                 selected = "viridis"))
         }else{
@@ -823,7 +826,7 @@
 .create_cells <- function(input, object, mask,
                           image, img_id, cell_id, ...){
   
-  req(img_id, cell_id)
+  req(img_id)
 
   cur_scale <- input$scalebar
   cur_legend <- .show_legend(input)
@@ -842,10 +845,15 @@
     cur_mask <- mask[input$sample]
   }
   
+  if(!is.null(object)){
   cur_object <- cur_object[, colData(cur_object)[[img_id]] %in% mcols(cur_mask)[,img_id]]
-  
   req(!identical(unique(colData(cur_object)[,img_id]), integer(0)))
   req(!identical(unique(colData(cur_object)[,img_id]), character(0)))
+  }else{
+    cell_id <- "placeholder"
+  }
+  
+  req(cell_id)
   
   plotCells(mask = cur_mask,
             img_id = img_id,
@@ -902,7 +910,7 @@
       cur_value <- round(dim(mask[[1]])[1]/4, digits=-1)
       }
     
-    numericInput(inputId = "scalebar", label = "Scale bar length", value = cur_value,
-                         min = 0, max = 1000, step = 5)
+    numericInput(inputId = "scalebar", label = "Scale bar length", 
+                 value = cur_value, min = 0, max = 1000, step = 5)
   })
 }
