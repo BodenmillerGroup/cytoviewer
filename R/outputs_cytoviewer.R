@@ -48,7 +48,8 @@
   
   observe({
     
-    cur_markers <- .select_markers(input)
+    cur_markers_function <- .select_markers_reactive(input)
+    cur_markers <-  cur_markers_function()
     cur_markers <- cur_markers[cur_markers != ""]
     
     lapply(seq_along(cur_markers), function(cur_plot){

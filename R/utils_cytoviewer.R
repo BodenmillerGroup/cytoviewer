@@ -165,18 +165,22 @@
 }
 
 # Helper function to select markers
-.select_markers <- function(input, exprs_marker_update = TRUE){
-    cur_markers <- c(input$marker1, input$marker2, input$marker3, 
-                     input$marker4, input$marker5, input$marker6)
-    
+.select_markers_reactive <- function(input, exprs_marker_update = TRUE){
+  cur_markers <- reactive({
     cur_views <- c(input$view1, input$view2, input$view3, 
                    input$view4, input$view5, input$view6)
+   
+    cur_markers <- isolate(c(input$marker1, input$marker2, input$marker3, 
+                     input$marker4, input$marker5, input$marker6))
     
     names(cur_markers) <- cur_views
     
     cur_markers[names(cur_markers) == "FALSE"] <- ""
     
+    cur_markers <- cur_markers[cur_markers != ""]
+    
     return(cur_markers)
+  })
 }
 
 # Helper function to select colors
@@ -188,7 +192,8 @@
                      c("black", input$color5),
                      c("black", input$color6))
   
-  cur_markers <- .select_markers(input)
+  cur_markers_function <- .select_markers_reactive(input)
+  cur_markers <- cur_markers_function()
   names(cur_colors) <- cur_markers
 
   return(cur_colors)
@@ -217,7 +222,8 @@
 
 # Helper function to define bcg parameter when using plotPixels()
 .select_contrast <- function(input){
-    cur_markers <- .select_markers(input)
+  cur_markers_function <- .select_markers_reactive(input)
+  cur_markers <- cur_markers_function()
     
     cur_bcg <- list(c(input$brightness1, input$contrast1, input$gamma1),
                     c(input$brightness2, input$contrast2, input$gamma2),
@@ -279,12 +285,14 @@
   req(!is.null(input$scalebar))
     
   # Marker and color control
-    cur_markers <- .select_markers(input)
-    cur_markers <- cur_markers[cur_markers != ""]
+    cur_markers_function <- .select_markers_reactive(input)
+    cur_markers <- cur_markers_function()
+    
     cur_bcg <- .select_contrast(input)
-    cur_bcg <- cur_bcg[names(cur_bcg) != ""]
+    cur_bcg <- cur_bcg[!is.na(names(cur_bcg))]
+
     cur_color <- .select_colors(input)
-    cur_color <- cur_color[names(cur_color) != ""]
+    cur_color <- cur_color[!is.na(names(cur_color))]
     
     cur_basic_outline <- input$basic_color_outline
     cur_scale <- input$scalebar
@@ -350,6 +358,7 @@
         
     }} else {
       req(length(cur_markers) != 0)
+      #browser()
       plotPixels(image = cur_image,
                  colour_by = cur_markers,
                  colour = cur_color,
@@ -377,15 +386,15 @@
 }
 
 
-## Image tiles function draft 
+## Image tiles function
 .create_image_tiles <- function(input, object, mask, image, 
                                 img_id, cell_id, ...){
   
   req(input$sample != "")
   req(!is.null(input$scalebar))
   
-  cur_markers <- .select_markers(input)
-  cur_markers <- cur_markers[cur_markers != ""]
+  cur_markers_function <- .select_markers_reactive(input)
+  cur_markers <- cur_markers_function()
 
   plot_list <- list()
   plot_list <- lapply(seq_along(cur_markers), function(i){ 
@@ -396,10 +405,11 @@
     markers <- markers[markers != ""]
     
     # Coloring
-    cur_color <- .select_colors(input)
-    cur_color <- cur_color[names(cur_color) != ""]
     cur_bcg <- .select_contrast(input)
-    cur_bcg <- cur_bcg[names(cur_bcg) != ""]
+    cur_bcg <- cur_bcg[!is.na(names(cur_bcg))]
+    
+    cur_color <- .select_colors(input)
+    cur_color <- cur_color[!is.na(names(cur_color))]
     
     cur_basic_outline <- input$basic_color_outline
     cur_scale <- input$scalebar
@@ -520,8 +530,8 @@
             dev.off()
           }
         } else {
-          cur_markers <- .select_markers(input)
-          cur_markers <- cur_markers[cur_markers != ""]
+          cur_markers_function <- .select_markers_reactive(input)
+          cur_markers <- cur_markers_function()
           plot_list <- .create_image_tiles(input, object, mask, image, 
                                            img_id, cell_id)
           
@@ -668,8 +678,8 @@
 .add_tiles_tab <- function(input, object, mask,
                            image, img_id, cell_id){
   renderUI({
-    cur_markers <- .select_markers(input)
-    cur_markers <- cur_markers[cur_markers != ""]
+    cur_markers_function <- .select_markers_reactive(input)
+    cur_markers <- cur_markers_function()
     
     req(length(cur_markers) == length(unique(cur_markers)))
     
