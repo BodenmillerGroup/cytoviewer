@@ -15,8 +15,9 @@ Authors@R:
       email = "lasse.meyer@dqbm.uzh.ch",
       comment = c(ORCID = "0000-0002-1660-1199")),
       person("Nils", "Eling", role = c("aut"), 
-      email = "nils.eling@dqbm.uzh.ch"))
-License: GPL (>= 3)
+      email = "nils.eling@dqbm.uzh.ch",
+      comment = c(ORCID = "0000-0002-4711-1176")))
+License: GPL-3
 Imports:
     shiny, 
     shinydashboard,
