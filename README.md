@@ -2,7 +2,7 @@
 
 <!-- badges: start -->
 [![codecov](https://codecov.io/gh/BodenmillerGroup/cytoviewer/branch/devel/graph/badge.svg)](https://app.codecov.io/gh/BodenmillerGroup/cytoviewer/tree/devel)
-[![docs](https://github.com/BodenmillerGroup/cytomapper/workflows/docs/badge.svg?branch=devel)](https://github.com/BodenmillerGroup/cytoviewer/actions?query=workflow%3Adocs)
+[![docs](https://github.com/BodenmillerGroup/cytoviewer/actions/workflows/docs.yml/badge.svg)](https://github.com/BodenmillerGroup/cytoviewer/actions/workflows/docs.yml)
 <!-- badges: end -->
 
 An interactive multi-channel image viewer for R. 
