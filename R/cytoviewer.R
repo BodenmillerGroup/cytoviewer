@@ -55,7 +55,7 @@
 #'
 #'@examples
 #'# Load example datasets from cytomapper
-#' library(cytomapper)
+#' library(cytomapper, quietly = TRUE)
 #' data("pancreasImages")
 #' data("pancreasMasks")
 #' data("pancreasSCE")
@@ -97,10 +97,10 @@
 #'}
 #'
 #' @seealso 
-#' #' \code{\link[cytomapper]{plotPixels}} for the function underlying 
+#' \code{\link[cytomapper]{plotPixels}} for the function underlying 
 #' image-level visualization
 #' 
-#' #' \code{\link[cytomapper]{plotCells}} for the function underlying 
+#' \code{\link[cytomapper]{plotCells}} for the function underlying 
 #' cell-level visualization
 #' 
 #' \code{\link[cytomapper]{cytomapperShiny}} for a shiny application that 
