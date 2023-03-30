@@ -44,19 +44,23 @@
   output$Outline_thickness <- .create_thickness_control(input, session)
   
   ## Tiles 
-  output$tiles_tab <- .add_tiles_tab(input, object, mask, image, img_id, cell_id)
+  output$tiles_tab <- .add_tiles_tab(input, object, mask, image,img_id, cell_id)
   
   observe({
     
     cur_markers <- .select_markers(input)
     cur_markers <- cur_markers[cur_markers != ""]
     
+    channels <- reactiveValues()
+    channels$length_output <- length(cur_markers)
+    
     lapply(seq_along(cur_markers), function(cur_plot){
       output[[paste0("tile", cur_plot)]] <- renderPlot(
         .create_image_tiles(input, 
                             object, 
                             mask, 
-                            image, 
+                            image,
+                            channels,
                             img_id, 
                             cell_id)[[cur_plot]]$plot)
     })
