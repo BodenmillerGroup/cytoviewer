@@ -44,7 +44,8 @@
   output$Outline_thickness <- .create_thickness_control(input, session)
   
   ## Tiles 
-  output$tiles_tab <- .add_tiles_tab(input, object, mask, image,img_id, cell_id)
+  output$tiles_tab <- .add_tiles_tab(input, object, mask, image, 
+                                     img_id, cell_id)
   
   observe({
     
