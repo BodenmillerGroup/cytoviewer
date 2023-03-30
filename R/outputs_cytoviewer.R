@@ -72,6 +72,8 @@
     
   output$cells_tab <- .add_cells_tab(input, object, mask, image, 
                                      img_id, cell_id)
+  
   output$cellsPlot <- .cellsPlot(input, object, mask, image, 
                                  img_id, cell_id, ...)
+  
 }

@@ -96,7 +96,6 @@
 
     # Next Image Observer
     observeEvent(input$next.sample, {
-      #browser()
       img_IDs <- if(!is.null(names(image))) names(image) else names(mask)
       cur_index <- match(input$sample, img_IDs)
         updated_index <- ifelse(cur_index == length(img_IDs), 1, cur_index + 1)
@@ -709,7 +708,8 @@
                        label = span("Select color by",
                             style = "color: black; padding-top: 0px"),
                        choices = NULL,
-                       multiple = TRUE)
+                       multiple = TRUE), 
+        actionButton("render_cells",label = "Render image")
       )}})}
 
 .populate_colorby_controls <- function(object, input, session){
@@ -738,7 +738,8 @@
                              choices = unique(colData(object)[[input$color_by]]),
                              server = TRUE,
                              selected = unique(colData(object)[[input$color_by]][1]))
-      }})
+      }
+        })
     }
   })
 }
@@ -826,6 +827,9 @@
 .create_cells <- function(input, object, mask,
                           image, img_id, cell_id, ...){
   
+  cells_plot <- eventReactive(input$render_cells, {
+  #cells_plot <- reactiveValues() 
+  #observeEvent(input$render_cells, {
   req(img_id)
 
   cur_scale <- input$scalebar
@@ -853,8 +857,7 @@
     cell_id <- "placeholder"
   }
   
-  req(cell_id)
-  
+  #cells_plot$plot <- 
   plotCells(mask = cur_mask,
             img_id = img_id,
             object = cur_object,
@@ -866,14 +869,15 @@
             image_title = cur_imagetitle,
             scale_bar = list(length = cur_scale),
             ...)
-    
+  })
+  
+  cells_plot()
 }
 
 # Visualize plotCells
 .cellsPlot <- function(input, object, mask,
                        image, img_id, cell_id, ...){
   renderSvgPanZoom({
-    
     suppressMessages(svgPanZoom(stringSVG(
       .create_cells(input, object, mask, image, img_id, cell_id, ...)
     ),
@@ -896,7 +900,8 @@
           width = 12)
     }
     })
-  }
+}
+
 
 
 # Add scalebar tab
