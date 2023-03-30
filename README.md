@@ -55,6 +55,7 @@ library(cytoviewer)
 
 ```r
 library(cytoviewer)
+library(cytomapper)
 
 # Load example datasets 
 data("pancreasImages")
@@ -62,7 +63,7 @@ data("pancreasMasks")
 data("pancreasSCE")
 
 # Use shiny with images, masks and SCE object
-app <- cytoviewer(image = pancreasImages, masks = pancreasMasks, object = pancreasSCE, img_id = "ImageNb", cell_id = "CellNb")
+app <- cytoviewer(image = pancreasImages, mask = pancreasMasks, object = pancreasSCE, img_id = "ImageNb", cell_id = "CellNb")
 shiny::runApp(app, launch.browser = TRUE)
 ```
 
