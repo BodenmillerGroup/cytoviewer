@@ -251,23 +251,41 @@
   return(cur_imagetitle)
 }
 
+
+
+# Helper function to select image
+.load_image <- function(input, image, ...){
+  
+  image_object <- reactiveValues()
+  
+  observe({
+    cur_image <- image[input$sample]
+    cur_image <- CytoImageList(cur_image, on_disk = FALSE) #get image into memory
+    
+    image_object$cur_image <- cur_image 
+  })   
+  
+  return(image_object))
+}
+
 # Helper function to apply image filter
-.filter_image <- function(input, image, ...){
+.filter_image <- function(input, image, image_object, ...){
   
   req(input$sample != "")
   
   if(!is.null(image)){
-  cur_image <- image[input$sample]
-  cur_image <- CytoImageList(cur_image, on_disk = FALSE) #get image into memory
-  if(input$gaussian_blur){
-    cur_image_fil <- endoapply(cur_image, function(x){
-      gblur(x, sigma = input$gaussian_blur_sigma)
+    #image_object$cur_image()
+    image_object <- .load_image(image,input,...)
+
+    if(input$gaussian_blur){
+      cur_image_fil <- endoapply(cur_image, function(x){
+        gblur(x, sigma = input$gaussian_blur_sigma)
       })
-    names(cur_image_fil) <- names(cur_image)
-    mcols(cur_image_fil) <- mcols(cur_image)
-    cur_image <- cur_image_fil
-  }
-  return(cur_image)
+      names(cur_image_fil) <- names(cur_image)
+      mcols(cur_image_fil) <- mcols(cur_image)
+      cur_image <- cur_image_fil
+    }
+    return(cur_image)
   }
 }
 
