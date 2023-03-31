@@ -378,7 +378,7 @@
 
 
 ## Image tiles function draft 
-.create_image_tiles <- function(input, object, mask, image, 
+.create_image_tiles <- function(input, object, mask, image, channels,
                                 img_id, cell_id, ...){
   
   req(input$sample != "")
@@ -386,6 +386,8 @@
   
   cur_markers <- .select_markers(input)
   cur_markers <- cur_markers[cur_markers != ""]
+  
+  req(channels$length_output == length(cur_markers))
 
   plot_list <- list()
   plot_list <- lapply(seq_along(cur_markers), function(i){ 
@@ -674,7 +676,7 @@
     req(length(cur_markers) == length(unique(cur_markers)))
     
     cur_row <- ceiling(length(cur_markers) / 3)
-
+    
     # Generate separate boxes
     box_list <- lapply(seq_along(cur_markers), function(cur_plot) {
       cur_val <- (cur_plot * 2) - 1
