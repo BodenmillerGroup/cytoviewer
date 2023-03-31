@@ -276,24 +276,26 @@
     
   req(input$sample != "")
   req(!is.null(input$scalebar))
-    
-  # Marker and color control
-    cur_markers <- .select_markers(input)
-    cur_markers <- cur_markers[cur_markers != ""]
-    cur_bcg <- .select_contrast(input)
-    cur_bcg <- cur_bcg[names(cur_bcg) != ""]
-    cur_color <- .select_colors(input)
-    cur_color <- cur_color[names(cur_color) != ""]
-    
-    cur_basic_outline <- input$basic_color_outline
-    cur_scale <- input$scalebar
-    cur_thick <- input$thick
-    cur_interpolate <- input$interpolate
-    cur_image <- .filter_image(input, image)
-    cur_legend <- .show_legend(input)
-    cur_imagetitle <- .show_title(input)
-    
+  
     if (input$outline && !is.null(input$outline_by)){
+      masks_plot <- eventReactive(input$render_masks, {
+        
+        # Marker and color control
+        cur_markers <- .select_markers(input)
+        cur_markers <- cur_markers[cur_markers != ""]
+        cur_bcg <- .select_contrast(input)
+        cur_bcg <- cur_bcg[names(cur_bcg) != ""]
+        cur_color <- .select_colors(input)
+        cur_color <- cur_color[names(cur_color) != ""]
+        
+        cur_basic_outline <- input$basic_color_outline
+        cur_scale <- isolate(input$scalebar)
+        cur_thick <- input$thick
+        cur_interpolate <- input$interpolate
+        cur_image <- .filter_image(input, image)
+        cur_legend <- .show_legend(input)
+        cur_imagetitle <- .show_title(input)
+        
       if(input$outline_by == "") {
         
         req(img_id)
@@ -346,9 +348,30 @@
                    scale_bar = list(length = cur_scale),
                    interpolate = cur_interpolate,
                    ...)
-        
-    }} else {
+        }}, ignoreNULL = FALSE)
+      
+      masks_plot()
+      
+    } else {
+      
+      # Marker and color control
+      cur_markers <- .select_markers(input)
+      cur_markers <- cur_markers[cur_markers != ""]
+      cur_bcg <- .select_contrast(input)
+      cur_bcg <- cur_bcg[names(cur_bcg) != ""]
+      cur_color <- .select_colors(input)
+      cur_color <- cur_color[names(cur_color) != ""]
+      
+      cur_basic_outline <- input$basic_color_outline
+      cur_scale <- input$scalebar
+      cur_thick <- input$thick
+      cur_interpolate <- input$interpolate
+      cur_image <- .filter_image(input, image)
+      cur_legend <- .show_legend(input)
+      cur_imagetitle <- .show_title(input)
+      
       req(length(cur_markers) != 0)
+      
       plotPixels(image = cur_image,
                  colour_by = cur_markers,
                  colour = cur_color,
@@ -394,23 +417,24 @@
     markers[seq != i] <- ""
     markers <- markers[markers != ""]
     
-    # Coloring
-    cur_color <- .select_colors(input)
-    cur_color <- cur_color[names(cur_color) != ""]
-    cur_bcg <- .select_contrast(input)
-    cur_bcg <- cur_bcg[names(cur_bcg) != ""]
-    
-    cur_basic_outline <- input$basic_color_outline
-    cur_scale <- input$scalebar
-    cur_thick <- input$thick
-    cur_interpolate <- input$interpolate
-    cur_image <- .filter_image(input, image)
-    cur_legend <- .show_legend(input)
-    cur_imagetitle <- .show_title(input)
-    
     if (input$outline && !is.null(input$outline_by)){
-      if(input$outline_by == "") {
+      masks_channels_plot <- eventReactive(input$render_masks, {
         
+        # Coloring
+        cur_color <- .select_colors(input)
+        cur_color <- cur_color[names(cur_color) != ""]
+        cur_bcg <- .select_contrast(input)
+        cur_bcg <- cur_bcg[names(cur_bcg) != ""]
+        
+        cur_basic_outline <- input$basic_color_outline
+        cur_scale <- input$scalebar
+        cur_thick <- input$thick
+        cur_interpolate <- input$interpolate
+        cur_image <- .filter_image(input, image)
+        cur_legend <- .show_legend(input)
+        cur_imagetitle <- .show_title(input)
+        
+      if(input$outline_by == "") {
         req(img_id)
         
       cur_mask <- mask[mcols(mask)[[img_id]] == mcols(cur_image)[[img_id]]]
@@ -433,6 +457,7 @@
     } else if (input$outline_by != "") {
       
       req(img_id, cell_id)
+      req(!is.null(input$select_outline))
       
       if(is.numeric(colData(object)[[input$outline_by]])){
         cur_object <- object
@@ -463,8 +488,25 @@
                  interpolate = cur_interpolate,
                  return_plot = TRUE,
                  ...)
+    }}, ignoreNULL = FALSE)
       
-    }} else {
+      masks_channels_plot() 
+    
+      } else {
+      # Coloring
+      cur_color <- .select_colors(input)
+      cur_color <- cur_color[names(cur_color) != ""]
+      cur_bcg <- .select_contrast(input)
+      cur_bcg <- cur_bcg[names(cur_bcg) != ""]
+      
+      cur_basic_outline <- input$basic_color_outline
+      cur_scale <- input$scalebar
+      cur_thick <- input$thick
+      cur_interpolate <- input$interpolate
+      cur_image <- .filter_image(input, image)
+      cur_legend <- .show_legend(input)
+      cur_imagetitle <- .show_title(input)
+      
       req(length(cur_markers) != 0)
       plot_list[[i]] <- plotPixels(image = cur_image,
                  colour_by = markers,
@@ -574,7 +616,8 @@
                          label = span("Select outline",
                                       style = "color: black; padding-top: 0px"),
                          choices = NULL,
-                         multiple = TRUE)
+                         multiple = TRUE),
+          actionButton("render_masks",label = "Render image",style = paste0("background-color: #3C8DBC; color: white"))
         )}})}
 
 
@@ -709,7 +752,7 @@
                             style = "color: black; padding-top: 0px"),
                        choices = NULL,
                        multiple = TRUE), 
-        actionButton("render_cells",label = "Render image")
+        actionButton("render_cells",label = "Render image",style = paste0("background-color: #3C8DBC; color: white"))
       )}})}
 
 .populate_colorby_controls <- function(object, input, session){
@@ -746,32 +789,40 @@
 
 .create_colorby_color <- function(object, mask, input, session, ...){
   renderUI({
-    if(input$plotcells && !is.null(input$color_by_selection)){
-      wellPanel(
-        if(is.numeric(colData(object)[[input$color_by]])){
-          menuItem(span("Color control", 
-                        style = "color: black;padding-top: 0px"), 
-                   style = "color: black; padding-top: 0px",
-                   radioButtons(inputId = "numeric_colorby", 
-                                label = "Color palettes",
-                                choices = list("viridis","inferno","plasma"), 
-                                selected = "viridis"))
-        }else{
-          menuItem(span("Color control", 
-                        style = "color: black;padding-top: 0px"), 
-                   style = "color: black; padding-top: 0px",
-                   lapply(seq_along(input$color_by_selection), function (i){
-                     cur_col <- c(brewer.pal(12, "Paired"),
-                                  brewer.pal(8, "Pastel2")[-c(3,5,8)],
-                                  brewer.pal(12, "Set3")[-c(2,3,8,9,11,12)])
-                     colourInput(inputId = paste0("color_by",i),
-                                 label = input$color_by_selection[i],
-                                 value = cur_col[i])}),
-                   colourInput(inputId = "missing_colorby", 
-                               label = "Missing color",
-                               value = "white"))
-        }
-        )}})}
+    if(input$plotcells && is.null(input$color_by_selection)){
+    wellPanel(
+      menuItem(span("Color control", 
+                    style = "color: black;padding-top: 0px"), 
+               style = "color: black; padding-top: 0px",
+               colourInput(inputId = "missing_colorby", 
+                           label = "Missing color",
+                           value = "gray")))}
+  else if(input$plotcells && !is.null(input$color_by_selection)){
+    wellPanel(
+      if(is.numeric(colData(object)[[input$color_by]])){
+        menuItem(span("Color control", 
+                      style = "color: black;padding-top: 0px"), 
+                 style = "color: black; padding-top: 0px",
+                 radioButtons(inputId = "numeric_colorby", 
+                              label = "Color palettes",
+                              choices = list("viridis","inferno","plasma"), 
+                              selected = "viridis"))
+      }else{
+        menuItem(span("Color control", 
+                      style = "color: black;padding-top: 0px"), 
+                 style = "color: black; padding-top: 0px",
+                 lapply(seq_along(input$color_by_selection), function (i){
+                   cur_col <- c(brewer.pal(12, "Paired"),
+                                brewer.pal(8, "Pastel2")[-c(3,5,8)],
+                                brewer.pal(12, "Set3")[-c(2,3,8,9,11,12)])
+                   colourInput(inputId = paste0("color_by",i),
+                               label = input$color_by_selection[i],
+                               value = cur_col[i])}),
+                 colourInput(inputId = "missing_colorby", 
+                             label = "Missing color",
+                             value = "gray"))
+      }
+    )}})}
 
 # Helper function to retrieve color by colors
 .select_colorby_color <- function(input, object, session, 
@@ -827,6 +878,8 @@
 .create_cells <- function(input, object, mask,
                           image, img_id, cell_id, ...){
   
+  req(input$sample != "") 
+  
   cells_plot <- eventReactive(input$render_cells, {
   #cells_plot <- reactiveValues() 
   #observeEvent(input$render_cells, {
@@ -869,7 +922,7 @@
             image_title = cur_imagetitle,
             scale_bar = list(length = cur_scale),
             ...)
-  })
+  }, ignoreNULL = FALSE)
   
   cells_plot()
 }
