@@ -290,7 +290,15 @@
     cur_scale <- input$scalebar
     cur_thick <- input$thick
     cur_interpolate <- input$interpolate
-    cur_image <- .filter_image(input, image)
+    
+    cur_image <- reactive({
+      cur_image <- image[input$sample]
+      cur_image <- CytoImageList(cur_image, on_disk = FALSE)
+      return(cur_image)
+    })
+    
+    cur_image <- cur_image()
+    
     cur_legend <- .show_legend(input)
     cur_imagetitle <- .show_title(input)
     
@@ -407,7 +415,14 @@
     cur_scale <- input$scalebar
     cur_thick <- input$thick
     cur_interpolate <- input$interpolate
-    cur_image <- .filter_image(input, image)
+    
+    cur_image <- reactive({
+      cur_image <- image[input$sample]
+      cur_image <- CytoImageList(cur_image, on_disk = FALSE)
+      return(cur_image)
+    })
+    cur_image <- cur_image()
+    
     cur_legend <- .show_legend(input)
     cur_imagetitle <- .show_title(input)
     
