@@ -102,7 +102,6 @@ how to best cite the tool.
 
 ## Authors
 
-[Lasse Meyer](https://github.com/lassedochreden) lasse.meyer 'at'
-dqbm.uzh.ch
+[Lasse Meyer](https://github.com/lassedochreden) lasse.meyer 'at' uzh.ch
 
 [Nils Eling](https://github.com/nilseling) nils.eling 'at' dqbm.uzh.ch

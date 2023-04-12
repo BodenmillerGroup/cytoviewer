@@ -12,7 +12,7 @@ Description:
     supports image downloads.
 Authors@R: 
     c(person("Lasse", "Meyer", role = c("aut", "cre"), 
-      email = "lasse.meyer@dqbm.uzh.ch",
+      email = "lasse.meyer@uzh.ch",
       comment = c(ORCID = "0000-0002-1660-1199")),
       person("Nils", "Eling", role = c("aut"), 
       email = "nils.eling@dqbm.uzh.ch",
