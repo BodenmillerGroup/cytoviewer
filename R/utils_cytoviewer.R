@@ -251,24 +251,51 @@
   return(cur_imagetitle)
 }
 
+# Helper function to get image into memory
+.get_image <- function(input, image, ...){
+  
+  req(input$sample != "")
+  
+  cur_image <- reactive({
+    cur_image <- image[input$sample]
+    cur_image <- CytoImageList(cur_image, on_disk = FALSE)
+    return(cur_image)
+    })
+  
+  return(cur_image())
+  
+}
+
 # Helper function to apply image filter
 .filter_image <- function(input, image, ...){
   
   req(input$sample != "")
   
   if(!is.null(image)){
-  cur_image <- image[input$sample]
-  cur_image <- CytoImageList(cur_image, on_disk = FALSE) #get image into memory
-  if(input$gaussian_blur){
-    cur_image_fil <- endoapply(cur_image, function(x){
-      gblur(x, sigma = input$gaussian_blur_sigma)
+    cur_image <- .get_image(input, image)
+    if(input$gaussian_blur){
+      cur_image_fil <- endoapply(cur_image, function(x){
+        gblur(x, sigma = input$gaussian_blur_sigma)
       })
-    names(cur_image_fil) <- names(cur_image)
-    mcols(cur_image_fil) <- mcols(cur_image)
-    cur_image <- cur_image_fil
+      names(cur_image_fil) <- names(cur_image)
+      mcols(cur_image_fil) <- mcols(cur_image)
+      cur_image <- cur_image_fil
+    }
+    return(cur_image)
   }
-  return(cur_image)
-  }
+}
+
+# Helper function to get mask into memory
+.get_mask <- function(input, mask, img_id, cur_image){
+  
+  cur_mask <- reactive({
+    cur_mask <- mask[mcols(mask)[[img_id]] == mcols(cur_image)[[img_id]]]
+    cur_mask <- CytoImageList(cur_mask, on_disk = FALSE)
+    return(cur_mask)
+  })
+  
+  return(cur_mask())
+  
 }
 
 #  Helper function to construct image 
@@ -290,7 +317,9 @@
     cur_scale <- input$scalebar
     cur_thick <- input$thick
     cur_interpolate <- input$interpolate
+    
     cur_image <- .filter_image(input, image)
+    
     cur_legend <- .show_legend(input)
     cur_imagetitle <- .show_title(input)
     
@@ -299,7 +328,7 @@
         
         req(img_id)
         
-        cur_mask <- mask[mcols(mask)[[img_id]] == mcols(cur_image)[[img_id]]]
+        cur_mask <- .get_mask(input, mask, img_id, cur_image)
         
         plotPixels(image = cur_image,
                    mask = cur_mask,
@@ -324,8 +353,8 @@
         } else {
         cur_object <- object[,colData(object)[[input$outline_by]] %in% input$select_outline]
         }
-      
-      cur_mask <- mask[mcols(mask)[[img_id]] == mcols(cur_image)[[img_id]]]
+          
+      cur_mask <- .get_mask(input, mask, img_id, cur_image)
       cur_advanced_outline <- .select_outline_colors(input, object)
       cur_color[[input$outline_by]] <- cur_advanced_outline
       
@@ -407,7 +436,9 @@
     cur_scale <- input$scalebar
     cur_thick <- input$thick
     cur_interpolate <- input$interpolate
+    
     cur_image <- .filter_image(input, image)
+    
     cur_legend <- .show_legend(input)
     cur_imagetitle <- .show_title(input)
     
@@ -416,9 +447,9 @@
         
         req(img_id)
         
-      cur_mask <- mask[mcols(mask)[[img_id]] == mcols(cur_image)[[img_id]]]
-      
-      plot_list[[i]] <- plotPixels(image = cur_image,
+        cur_mask <- .get_mask(input, mask, img_id, cur_image)
+        
+        plot_list[[i]] <- plotPixels(image = cur_image,
                  mask = cur_mask,
                  img_id = img_id,
                  colour_by = markers,
@@ -444,7 +475,7 @@
                                input$select_outline]
       }
       
-      cur_mask <- mask[mcols(mask)[[img_id]] == mcols(cur_image)[[img_id]]]
+      cur_mask <- .get_mask(input, mask, img_id, cur_image)
       cur_advanced_outline <- .select_outline_colors(input, object)
       cur_color[[input$outline_by]] <- cur_advanced_outline
       
