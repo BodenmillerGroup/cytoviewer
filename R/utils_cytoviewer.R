@@ -409,15 +409,16 @@
 ## Image tiles function draft 
 .create_image_tiles <- function(input, object, mask, image, channels,
                                 img_id, cell_id, ...){
-  
   req(input$sample != "")
   req(!is.null(input$scalebar))
   
   cur_markers <- .select_markers(input)
   cur_markers <- cur_markers[cur_markers != ""]
   
-  req(channels$length_output == length(cur_markers))
-
+  if (!is.null(channels)) {
+    req(channels$length_output == length(cur_markers))
+    }
+  
   plot_list <- list()
   plot_list <- lapply(seq_along(cur_markers), function(i){ 
     
@@ -522,7 +523,7 @@
                                image, img_id, cell_id, ...){
     downloadHandler(
     filename = function(){
-      if(input$fileselection %in% c("Composite","Masks")){
+      if(input$fileselection %in% c("Composite","Mask")){
         paste0(input$filename1, ".",input$filename2)
       } else {
         paste0(input$filename1,".zip")
@@ -542,7 +543,7 @@
                           ...)
             dev.off()
           }
-        } else if(input$fileselection == "Masks"){
+        } else if(input$fileselection == "Mask"){
           if(input$filename2 == "pdf"){
             pdf(file = file)
             .create_cells(input, object, mask, image, img_id, cell_id, ...)
@@ -556,7 +557,7 @@
           cur_markers <- .select_markers(input)
           cur_markers <- cur_markers[cur_markers != ""]
           plot_list <- .create_image_tiles(input, object, mask, image, 
-                                           img_id, cell_id)
+                                           channels = NULL, img_id, cell_id)
           
           # save files into temporary directory
           twd <- setwd(tempdir())
