@@ -30,3 +30,6 @@ Changes in version 0.99.1 (2023-04-12):
 
 Changes in version 0.99.2 (2023-04-13):
 + image download fix
+
+Changes in version 0.99.3 (2023-04-18):
++ add initial color control for cell-level
