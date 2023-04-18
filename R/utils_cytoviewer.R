@@ -778,7 +778,15 @@
 
 .create_colorby_color <- function(object, mask, input, session, ...){
   renderUI({
-    if(input$plotcells && !is.null(input$color_by_selection)){
+    if(input$plotcells && is.null(input$color_by_selection)){
+      wellPanel(
+        menuItem(span("Color control", 
+                      style = "color: black;padding-top: 0px"), 
+                 style = "color: black; padding-top: 0px",
+                 colourInput(inputId = "missing_colorby", 
+                             label = "Missing color",
+                             value = "gray")))}
+    else if(input$plotcells && !is.null(input$color_by_selection)){
       wellPanel(
         if(is.numeric(colData(object)[[input$color_by]])){
           menuItem(span("Color control", 
@@ -801,9 +809,9 @@
                                  value = cur_col[i])}),
                    colourInput(inputId = "missing_colorby", 
                                label = "Missing color",
-                               value = "white"))
+                               value = "gray"))
         }
-        )}})}
+      )}})}
 
 # Helper function to retrieve color by colors
 .select_colorby_color <- function(input, object, session, 
