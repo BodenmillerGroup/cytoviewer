@@ -1,3 +1,5 @@
+<img src="vignettes/cytoviewer_sticker.png" align="right" alt="" width="100" />
+
 # cytoviewer
 
 <!-- badges: start -->
