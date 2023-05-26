@@ -97,10 +97,13 @@ issue a pull request.
 
 ## Citation
 
-A manuscript is in preparation.
+If you are using `cytoviewer` in your work, please cite the released preprint as:
 
-If you are using `cytoviewer` in your work, please reach out to inquire
-how to best cite the tool.
+```
+Lasse Meyer, Nils Eling, and Bernd Bodenmiller (2023). cytoviewer: an R/Bioconductor package for interactive 
+visualization and exploration of highly multiplexed imaging data, biorxiv, doi.org/10.1101/2023.05.24.542115
+```
+
 
 ## Authors
 
