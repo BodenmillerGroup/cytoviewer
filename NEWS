@@ -33,3 +33,6 @@ Changes in version 0.99.2 (2023-04-13):
 
 Changes in version 0.99.3 (2023-04-18):
 + add initial color control for cell-level
+
+Changes in version 1.0.0 (2023-05-26):
++ version bump for bioconductor and biorxiv release
