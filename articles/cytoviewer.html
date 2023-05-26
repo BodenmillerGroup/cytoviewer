@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">cytoviewer</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.99.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.0</span>
       </span>
     </div>
 
@@ -83,7 +83,7 @@ ZurichInstitute for Molecular Health Sciences, ETH
 Zurich<br><a class="author_email" href="mailto:#"></a><a href="mailto:nils.eling@dqbm.uzh.ch" class="email">nils.eling@dqbm.uzh.ch</a>
       </address>
                   
-            <h4 data-toc-skip class="date">26 April 2023</h4>
+            <h4 data-toc-skip class="date">26 May 2023</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/BodenmillerGroup/cytoviewer/blob/HEAD/vignettes/cytoviewer.Rmd" class="external-link"><code>vignettes/cytoviewer.Rmd</code></a></small>
       <div class="hidden name"><code>cytoviewer.Rmd</code></div>
@@ -351,7 +351,7 @@ manual or the <code>Help page</code> within the shiny application.</p>
 <span></span>
 <span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/interactive.html" class="external-link">interactive</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  </span>
-<span>  <span class="fu">shiny</span><span class="fu">::</span><span class="fu"><a href="https://shiny.rstudio.com/reference/shiny/latest/runApp.html" class="external-link">runApp</a></span><span class="op">(</span><span class="va">app</span>, launch.browser <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span>  <span class="fu">shiny</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/shiny/man/runApp.html" class="external-link">runApp</a></span><span class="op">(</span><span class="va">app</span>, launch.browser <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span></span>
 <span>  <span class="op">}</span></span></code></pre></div>
 </div>
@@ -448,71 +448,72 @@ can specify the download location.</p>
 <span><span class="co">## [8] base     </span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## other attached packages:</span></span>
-<span><span class="co">##  [1] cytomapper_1.11.2           SingleCellExperiment_1.21.1</span></span>
-<span><span class="co">##  [3] SummarizedExperiment_1.29.1 Biobase_2.59.0             </span></span>
-<span><span class="co">##  [5] GenomicRanges_1.51.4        GenomeInfoDb_1.35.17       </span></span>
-<span><span class="co">##  [7] IRanges_2.33.1              S4Vectors_0.37.7           </span></span>
-<span><span class="co">##  [9] BiocGenerics_0.45.3         MatrixGenerics_1.11.1      </span></span>
-<span><span class="co">## [11] matrixStats_0.63.0          EBImage_4.41.2             </span></span>
-<span><span class="co">## [13] cytoviewer_0.99.3           BiocStyle_2.27.2           </span></span>
+<span><span class="co">##  [1] cytomapper_1.12.0           SingleCellExperiment_1.22.0</span></span>
+<span><span class="co">##  [3] SummarizedExperiment_1.30.1 Biobase_2.60.0             </span></span>
+<span><span class="co">##  [5] GenomicRanges_1.52.0        GenomeInfoDb_1.36.0        </span></span>
+<span><span class="co">##  [7] IRanges_2.34.0              S4Vectors_0.38.1           </span></span>
+<span><span class="co">##  [9] BiocGenerics_0.46.0         MatrixGenerics_1.12.0      </span></span>
+<span><span class="co">## [11] matrixStats_0.63.0          EBImage_4.42.0             </span></span>
+<span><span class="co">## [13] cytoviewer_1.0.0            BiocStyle_2.28.0           </span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## loaded via a namespace (and not attached):</span></span>
 <span><span class="co">##   [1] bitops_1.0-7              gridExtra_2.3            </span></span>
-<span><span class="co">##   [3] rlang_1.1.0               magrittr_2.0.3           </span></span>
+<span><span class="co">##   [3] rlang_1.1.1               magrittr_2.0.3           </span></span>
 <span><span class="co">##   [5] svgPanZoom_0.3.4          shinydashboard_0.7.2     </span></span>
-<span><span class="co">##   [7] compiler_4.3.0            DelayedMatrixStats_1.21.0</span></span>
+<span><span class="co">##   [7] compiler_4.3.0            DelayedMatrixStats_1.22.0</span></span>
 <span><span class="co">##   [9] png_0.1-8                 systemfonts_1.0.4        </span></span>
 <span><span class="co">##  [11] fftwtools_0.9-11          vctrs_0.6.2              </span></span>
 <span><span class="co">##  [13] stringr_1.5.0             pkgconfig_2.0.3          </span></span>
-<span><span class="co">##  [15] SpatialExperiment_1.9.5   fastmap_1.1.1            </span></span>
-<span><span class="co">##  [17] magick_2.7.4              XVector_0.39.0           </span></span>
-<span><span class="co">##  [19] ellipsis_0.3.2            fontawesome_0.5.1        </span></span>
-<span><span class="co">##  [21] scuttle_1.9.4             utf8_1.2.3               </span></span>
-<span><span class="co">##  [23] promises_1.2.0.1          rmarkdown_2.21           </span></span>
-<span><span class="co">##  [25] ggbeeswarm_0.7.1          ragg_1.2.5               </span></span>
-<span><span class="co">##  [27] purrr_1.0.1               xfun_0.39                </span></span>
-<span><span class="co">##  [29] beachmat_2.15.2           zlibbioc_1.45.0          </span></span>
-<span><span class="co">##  [31] cachem_1.0.7              jsonlite_1.8.4           </span></span>
-<span><span class="co">##  [33] later_1.3.0               rhdf5filters_1.11.3      </span></span>
-<span><span class="co">##  [35] DelayedArray_0.25.0       Rhdf5lib_1.21.1          </span></span>
-<span><span class="co">##  [37] BiocParallel_1.33.12      terra_1.7-29             </span></span>
-<span><span class="co">##  [39] jpeg_0.1-10               tiff_0.1-11              </span></span>
-<span><span class="co">##  [41] parallel_4.3.0            R6_2.5.1                 </span></span>
-<span><span class="co">##  [43] bslib_0.4.2               stringi_1.7.12           </span></span>
-<span><span class="co">##  [45] RColorBrewer_1.1-3        limma_3.55.10            </span></span>
-<span><span class="co">##  [47] jquerylib_0.1.4           Rcpp_1.0.10              </span></span>
-<span><span class="co">##  [49] bookdown_0.33             knitr_1.42               </span></span>
-<span><span class="co">##  [51] R.utils_2.12.2            nnls_1.4                 </span></span>
-<span><span class="co">##  [53] httpuv_1.6.9              Matrix_1.5-4             </span></span>
-<span><span class="co">##  [55] tidyselect_1.2.0          viridis_0.6.2            </span></span>
-<span><span class="co">##  [57] abind_1.4-5               yaml_2.3.7               </span></span>
-<span><span class="co">##  [59] codetools_0.2-19          miniUI_0.1.1.1           </span></span>
-<span><span class="co">##  [61] lattice_0.21-8            tibble_3.2.1             </span></span>
-<span><span class="co">##  [63] shiny_1.7.4               evaluate_0.20            </span></span>
-<span><span class="co">##  [65] archive_1.1.5             desc_1.4.2               </span></span>
-<span><span class="co">##  [67] shinycssloaders_1.0.0     pillar_1.9.0             </span></span>
-<span><span class="co">##  [69] BiocManager_1.30.20       generics_0.1.3           </span></span>
-<span><span class="co">##  [71] sp_1.6-0                  rprojroot_2.0.3          </span></span>
-<span><span class="co">##  [73] RCurl_1.98-1.12           ggplot2_3.4.2            </span></span>
-<span><span class="co">##  [75] sparseMatrixStats_1.11.1  munsell_0.5.0            </span></span>
-<span><span class="co">##  [77] scales_1.2.1              xtable_1.8-4             </span></span>
-<span><span class="co">##  [79] glue_1.6.2                tools_4.3.0              </span></span>
-<span><span class="co">##  [81] colourpicker_1.2.0        locfit_1.5-9.7           </span></span>
-<span><span class="co">##  [83] fs_1.6.2                  rhdf5_2.43.5             </span></span>
-<span><span class="co">##  [85] grid_4.3.0                edgeR_3.41.9             </span></span>
-<span><span class="co">##  [87] DropletUtils_1.19.3       colorspace_2.1-0         </span></span>
-<span><span class="co">##  [89] GenomeInfoDbData_1.2.10   raster_3.6-20            </span></span>
-<span><span class="co">##  [91] beeswarm_0.4.0            HDF5Array_1.27.0         </span></span>
-<span><span class="co">##  [93] vipor_0.4.5               cli_3.6.1                </span></span>
-<span><span class="co">##  [95] textshaping_0.3.6         fansi_1.0.4              </span></span>
-<span><span class="co">##  [97] viridisLite_0.4.1         svglite_2.1.1            </span></span>
-<span><span class="co">##  [99] dplyr_1.1.2               gtable_0.3.3             </span></span>
-<span><span class="co">## [101] R.methodsS3_1.8.2         sass_0.4.5               </span></span>
-<span><span class="co">## [103] digest_0.6.31             dqrng_0.3.0              </span></span>
-<span><span class="co">## [105] rjson_0.2.21              htmlwidgets_1.6.2        </span></span>
-<span><span class="co">## [107] R.oo_1.25.0               memoise_2.0.1            </span></span>
-<span><span class="co">## [109] htmltools_0.5.5           pkgdown_2.0.7            </span></span>
-<span><span class="co">## [111] lifecycle_1.0.3           mime_0.12</span></span></code></pre>
+<span><span class="co">##  [15] SpatialExperiment_1.10.0  crayon_1.5.2             </span></span>
+<span><span class="co">##  [17] fastmap_1.1.1             magick_2.7.4             </span></span>
+<span><span class="co">##  [19] XVector_0.40.0            ellipsis_0.3.2           </span></span>
+<span><span class="co">##  [21] fontawesome_0.5.1         scuttle_1.10.1           </span></span>
+<span><span class="co">##  [23] utf8_1.2.3                promises_1.2.0.1         </span></span>
+<span><span class="co">##  [25] rmarkdown_2.21            ggbeeswarm_0.7.2         </span></span>
+<span><span class="co">##  [27] ragg_1.2.5                purrr_1.0.1              </span></span>
+<span><span class="co">##  [29] xfun_0.39                 beachmat_2.16.0          </span></span>
+<span><span class="co">##  [31] zlibbioc_1.46.0           cachem_1.0.8             </span></span>
+<span><span class="co">##  [33] jsonlite_1.8.4            later_1.3.1              </span></span>
+<span><span class="co">##  [35] rhdf5filters_1.12.1       DelayedArray_0.26.3      </span></span>
+<span><span class="co">##  [37] Rhdf5lib_1.22.0           BiocParallel_1.34.2      </span></span>
+<span><span class="co">##  [39] terra_1.7-29              jpeg_0.1-10              </span></span>
+<span><span class="co">##  [41] tiff_0.1-11               parallel_4.3.0           </span></span>
+<span><span class="co">##  [43] R6_2.5.1                  bslib_0.4.2              </span></span>
+<span><span class="co">##  [45] stringi_1.7.12            RColorBrewer_1.1-3       </span></span>
+<span><span class="co">##  [47] limma_3.56.1              jquerylib_0.1.4          </span></span>
+<span><span class="co">##  [49] Rcpp_1.0.10               bookdown_0.34            </span></span>
+<span><span class="co">##  [51] knitr_1.43                R.utils_2.12.2           </span></span>
+<span><span class="co">##  [53] nnls_1.4                  httpuv_1.6.11            </span></span>
+<span><span class="co">##  [55] Matrix_1.5-4              tidyselect_1.2.0         </span></span>
+<span><span class="co">##  [57] viridis_0.6.3             abind_1.4-5              </span></span>
+<span><span class="co">##  [59] yaml_2.3.7                codetools_0.2-19         </span></span>
+<span><span class="co">##  [61] miniUI_0.1.1.1            lattice_0.21-8           </span></span>
+<span><span class="co">##  [63] tibble_3.2.1              shiny_1.7.4              </span></span>
+<span><span class="co">##  [65] evaluate_0.21             archive_1.1.5            </span></span>
+<span><span class="co">##  [67] desc_1.4.2                shinycssloaders_1.0.0    </span></span>
+<span><span class="co">##  [69] pillar_1.9.0              BiocManager_1.30.20      </span></span>
+<span><span class="co">##  [71] generics_0.1.3            sp_1.6-0                 </span></span>
+<span><span class="co">##  [73] rprojroot_2.0.3           RCurl_1.98-1.12          </span></span>
+<span><span class="co">##  [75] ggplot2_3.4.2             sparseMatrixStats_1.12.0 </span></span>
+<span><span class="co">##  [77] munsell_0.5.0             scales_1.2.1             </span></span>
+<span><span class="co">##  [79] xtable_1.8-4              glue_1.6.2               </span></span>
+<span><span class="co">##  [81] tools_4.3.0               colourpicker_1.2.0       </span></span>
+<span><span class="co">##  [83] locfit_1.5-9.7            fs_1.6.2                 </span></span>
+<span><span class="co">##  [85] rhdf5_2.44.0              grid_4.3.0               </span></span>
+<span><span class="co">##  [87] edgeR_3.42.2              DropletUtils_1.20.0      </span></span>
+<span><span class="co">##  [89] colorspace_2.1-0          GenomeInfoDbData_1.2.10  </span></span>
+<span><span class="co">##  [91] raster_3.6-20             beeswarm_0.4.0           </span></span>
+<span><span class="co">##  [93] HDF5Array_1.28.1          vipor_0.4.5              </span></span>
+<span><span class="co">##  [95] cli_3.6.1                 textshaping_0.3.6        </span></span>
+<span><span class="co">##  [97] fansi_1.0.4               viridisLite_0.4.2        </span></span>
+<span><span class="co">##  [99] S4Arrays_1.0.4            svglite_2.1.1            </span></span>
+<span><span class="co">## [101] dplyr_1.1.2               gtable_0.3.3             </span></span>
+<span><span class="co">## [103] R.methodsS3_1.8.2         sass_0.4.6               </span></span>
+<span><span class="co">## [105] digest_0.6.31             dqrng_0.3.0              </span></span>
+<span><span class="co">## [107] rjson_0.2.21              htmlwidgets_1.6.2        </span></span>
+<span><span class="co">## [109] R.oo_1.25.0               memoise_2.0.1            </span></span>
+<span><span class="co">## [111] htmltools_0.5.5           pkgdown_2.0.7            </span></span>
+<span><span class="co">## [113] lifecycle_1.0.3           mime_0.12</span></span></code></pre>
 </div>
 <div class="section level2">
 <h2 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
