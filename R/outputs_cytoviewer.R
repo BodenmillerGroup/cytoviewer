@@ -36,7 +36,7 @@
   ### Outline inputs
   output$Outline_controls <- .create_outline_controls(object, mask, input, 
                                                       session)
-  .populate_outline_controls(object, input, session)
+  .populate_outline_controls(object, image, mask, img_id, input, session)
   output$Basic_color_outline <- .create_basic_color_outline(object, mask, input, 
                                                             session)
   output$Advanced_color_outline <- .create_advanced_color_outline(object, mask, 
@@ -71,7 +71,7 @@
   # 3. Cell-level
   output$Colorby_controls <- .create_colorby_controls(object, mask, 
                                                       input, session)
-  .populate_colorby_controls(object, input, session)
+  .populate_colorby_controls(object, image, mask, input, img_id, session)
   output$Colorby_colors <- .create_colorby_color(object, mask, 
                                                  input, session, ...)
     

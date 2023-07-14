@@ -613,7 +613,7 @@
         )}})}
 
 
-.populate_outline_controls <- function(object, input, session){
+.populate_outline_controls <- function(object, image, mask, img_id, input, session){
   observeEvent(input$outline, {
     
     if (input$outline && is.null(object)) {
@@ -628,6 +628,7 @@
                            choices = names(colData(object)),
                            server = TRUE,
                            selected = "")
+
       observeEvent(input$outline_by, { 
         if(is.numeric(colData(object)[[input$outline_by]])){
           updateSelectizeInput(session, inputId = "select_outline",
@@ -635,10 +636,14 @@
                                server = TRUE,
                                selected = input$outline_by) 
         }else{
+          
+          cur_image <- .filter_image(input, image)
+          cur_object <- object[,colData(object)[,img_id] %in% mcols(cur_image)[,img_id]]
+          
           updateSelectizeInput(session, inputId = "select_outline",
-                               choices = unique(colData(object)[[input$outline_by]]),
+                               choices = unique(colData(cur_object)[[input$outline_by]]),
                                server = TRUE,
-                               selected = unique(colData(object)[[input$outline_by]][1])) 
+                               selected = unique(colData(cur_object)[[input$outline_by]][1])) 
           
         }
       })
@@ -729,7 +734,7 @@
 
 ## Advanced controls - Cell outlining
 
-.create_colorby_controls <- function(object, mask, input, session, ...){
+.create_colorby_controls <- function(object, mask, input, session, cur_image,...){
   renderUI({
     if (input$plotcells){
       wellPanel(
@@ -746,7 +751,7 @@
                        multiple = TRUE)
       )}})}
 
-.populate_colorby_controls <- function(object, input, session){
+.populate_colorby_controls <- function(object, image, mask, input, img_id, session){
   observeEvent(input$plotcells, {
     
     if (input$plotcells && is.null(object)) {
@@ -768,10 +773,20 @@
                                server = TRUE,
                                selected = input$color_by)
         }else{
-        updateSelectizeInput(session, inputId = "color_by_selection",
-                             choices = unique(colData(object)[[input$color_by]]),
+          
+          if(!is.null(image)){
+            cur_image <- .filter_image(input, image)
+            cur_mask <- mask[mcols(mask)[[img_id]] == mcols(cur_image)[[img_id]]]
+          }else{
+            cur_mask <- mask[input$sample]
+          }
+          
+          cur_object <- object[,colData(object)[,img_id] %in% mcols(cur_mask)[,img_id]]  
+        
+          updateSelectizeInput(session, inputId = "color_by_selection",
+                             choices = unique(colData(cur_object)[[input$color_by]]),
                              server = TRUE,
-                             selected = unique(colData(object)[[input$color_by]][1]))
+                             selected = unique(colData(cur_object)[[input$color_by]][1]))
       }})
     }
   })
@@ -882,7 +897,7 @@
 
   
   if(!is.null(image)){
-    cur_image <- image[input$sample]
+    cur_image <- .filter_image(input, image)
     cur_mask <- mask[mcols(mask)[[img_id]] == mcols(cur_image)[[img_id]]]
   }else{
     cur_mask <- mask[input$sample]
