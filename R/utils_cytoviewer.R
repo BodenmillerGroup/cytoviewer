@@ -138,6 +138,7 @@
     
   # Store marker names 
     markers <- if(!is.null(names(image))) channelNames(image) else c("")
+    
     updateSelectizeInput(session, inputId = "marker1",
                         choices = markers,
                         server = TRUE,
@@ -162,7 +163,7 @@
                          choices = markers,
                          server = TRUE,
                          selected = "")
-}
+  }
 
 # Helper function to select markers
 .select_markers <- function(input, exprs_marker_update = TRUE){
@@ -200,7 +201,8 @@
                                     object, 
                                     session, 
                                     exprs_marker_update = TRUE){
-  if (is.numeric(colData(object)[[input$outline_by]])) {
+  cur_entries <- length(unique(colData(object)[[input$outline_by]]))
+  if (is.numeric(colData(object)[[input$outline_by]]) && cur_entries > 23L) {
     req(input$numeric_color_outline)
     cur_vec <- viridis(100, option = input$numeric_color_outline)
   }else{
@@ -308,6 +310,13 @@
   # Marker and color control
     cur_markers <- .select_markers(input)
     cur_markers <- cur_markers[cur_markers != ""]
+    
+    if(length(cur_markers) > 1){
+    validate(
+      need(!any(duplicated(cur_markers)), 
+           "NOTE: Please only select unique markers.")
+    )}
+    
     cur_bcg <- .select_contrast(input)
     cur_bcg <- cur_bcg[names(cur_bcg) != ""]
     cur_color <- .select_colors(input)
@@ -348,18 +357,33 @@
         
           req(img_id, cell_id)
           
-        if (is.numeric(colData(object)[[input$outline_by]])) {
+          cur_entries <- length(unique(colData(object)[[input$outline_by]]))
+          
+        if (is.numeric(colData(object)[[input$outline_by]]) && cur_entries > 23L) {
         cur_object <- object
         } else {
-        cur_object <- object[,colData(object)[[input$outline_by]] %in% input$select_outline]
+          cur_object <- object[,colData(object)[[input$outline_by]] %in% input$select_outline]
         }
           
       cur_mask <- .get_mask(input, mask, img_id, cur_image)
       cur_advanced_outline <- .select_outline_colors(input, object)
       cur_color[[input$outline_by]] <- cur_advanced_outline
       
+      if (is.logical(colData(object)[[input$outline_by]])){
+        cur_object <- object[,as.numeric(colData(object)[[input$outline_by]]) %in% input$select_outline]
+        
+        req(!is.null(cur_color[[input$outline_by]]))
+        names(cur_color[[input$outline_by]]) <- as.logical(as.numeric(input$select_outline))
+        }
+      
       req(!identical(unique(colData(cur_object)[,img_id]), integer(0)))
       req(!identical(unique(colData(cur_object)[,img_id]), character(0)))
+
+      validate(
+        need(mcols(cur_image)[[img_id]] %in% cur_object[[img_id]], 
+             "NOTE: Your [Select outline] choices are not featured 
+             in the current image.")
+      )
       
       plotPixels(image = cur_image,
                    mask = cur_mask,
@@ -419,6 +443,12 @@
     req(channels$length_output == length(cur_markers))
     }
   
+  if(length(cur_markers) > 1){
+    validate(
+      need(!any(duplicated(cur_markers)), 
+           "NOTE: Please only select unique markers.")
+    )}
+  
   plot_list <- list()
   plot_list <- lapply(seq_along(cur_markers), function(i){ 
     
@@ -469,7 +499,9 @@
       
       req(img_id, cell_id)
       
-      if(is.numeric(colData(object)[[input$outline_by]])){
+      cur_entries <- length(unique(colData(object)[[input$outline_by]]))
+      
+      if(is.numeric(colData(object)[[input$outline_by]]) && cur_entries > 23L){
         cur_object <- object
       }else{
         cur_object <- object[,colData(object)[[input$outline_by]] %in% 
@@ -481,6 +513,12 @@
       cur_color[[input$outline_by]] <- cur_advanced_outline
       
       req(!identical(unique(colData(cur_object)[,img_id]), integer(0)))
+      
+      validate(
+        need(mcols(cur_image)[[img_id]] %in% cur_object[[img_id]], 
+             "NOTE: Your [Select outline] choices are not featured 
+             in the current image.")
+      )
       
       plot_list[[i]] <- plotPixels(image = cur_image,
                  mask = cur_mask,
@@ -629,7 +667,8 @@
                            server = TRUE,
                            selected = "")
       observeEvent(input$outline_by, { 
-        if(is.numeric(colData(object)[[input$outline_by]])){
+        cur_entries <- length(unique(colData(object)[[input$outline_by]]))
+        if(is.numeric(colData(object)[[input$outline_by]]) && cur_entries > 23L){
           updateSelectizeInput(session, inputId = "select_outline",
                                choices = input$outline_by,
                                server = TRUE,
@@ -661,8 +700,9 @@
 .create_advanced_color_outline <- function(object, mask, input, session, ...){
   renderUI({
   if(input$outline && !is.null(input$select_outline)){
+    cur_entries <- length(unique(colData(object)[[input$outline_by]]))
     wellPanel(
-      if(is.numeric(colData(object)[[input$outline_by]])){ 
+      if(is.numeric(colData(object)[[input$outline_by]]) && cur_entries > 23L){ 
         menuItem(span("Outline color control", 
                       style = "color: black;padding-top: 0px"), 
                  style = "color: black; padding-top: 0px",
@@ -679,7 +719,7 @@
                                 brewer.pal(8, "Pastel2")[-c(3,5,8)],
                                 brewer.pal(12, "Set3")[-c(2,3,8,9,11,12)])
                    colourInput(inputId = paste0("color_outline",i),
-                               label = input$select_outline[i],
+                               label = as.logical(as.numeric(input$select_outline[i])),
                                value = cur_col[i])
                  }))
       }
@@ -762,7 +802,8 @@
                            server = TRUE,
                            selected = "")
       observeEvent(input$color_by, { 
-        if(is.numeric(colData(object)[[input$color_by]])){
+        cur_entries <- length(unique(colData(object)[[input$color_by]]))
+        if(is.numeric(colData(object)[[input$color_by]]) && cur_entries > 23L){
           updateSelectizeInput(session, inputId = "color_by_selection",
                                choices = input$color_by,
                                server = TRUE,
@@ -788,8 +829,9 @@
                              label = "Missing color",
                              value = "gray")))}
     else if(input$plotcells && !is.null(input$color_by_selection)){
+      cur_entries <- length(unique(colData(object)[[input$color_by]]))
       wellPanel(
-        if(is.numeric(colData(object)[[input$color_by]])){
+        if(is.numeric(colData(object)[[input$color_by]]) && cur_entries > 23L){
           menuItem(span("Color control", 
                         style = "color: black;padding-top: 0px"), 
                    style = "color: black; padding-top: 0px",
@@ -822,7 +864,10 @@
   cur_list <- list()
   
   if (input$color_by != "" && !is.null(input$color_by_selection)) {
-    if (is.numeric(colData(object)[[input$color_by]])) {
+    
+    cur_entries <- length(unique(colData(object)[[input$color_by]]))
+    
+    if (is.numeric(colData(object)[[input$color_by]]) && cur_entries > 23L) {
       req(input$numeric_colorby)
       cur_list[[input$color_by]] <- viridis(100, option = input$numeric_colorby)
       } else {
@@ -856,11 +901,14 @@
 
 # Helper function to subset object 
 .subset_object <- function(input, object){
-  if(input$color_by != "" && !is.numeric(colData(object)[[input$color_by]])){
+  cur_entries <- length(unique(colData(object)[[input$color_by]]))
+  if(input$color_by != "" && !is.numeric(colData(object)[[input$color_by]]) 
+     && cur_entries <= 23L){
     req(input$color_by_selection)
     object <- object[, colData(object)[[input$color_by]] %in% input$color_by_selection]
-  }else{object <- object}
-  
+  }else{
+    object <- object
+    }
   return(object)
 }
 
@@ -889,15 +937,35 @@
   }
   
   if(!is.null(object)){
+  
   cur_object <- cur_object[, colData(cur_object)[[img_id]] %in% mcols(cur_mask)[,img_id]]
+  
+  validate(
+    need(mcols(cur_mask)[[img_id]] %in% cur_object[[img_id]], 
+         "NOTE: Your [Select color by] choices are not featured 
+             in the current image.")
+  )
+  
+  cur_entries <- length(unique(colData(object)[[input$color_by]]))
+  
+  if(is.numeric(colData(object)[[input$color_by]]) && cur_entries <= 23L){
+    validate(
+      need(input$color_by_selection %in% cur_object[[img_id]], 
+           "NOTE: Your [Select color by] choices are not featured 
+             in the current image.")
+    )
+  }
+    
+    
   req(!identical(unique(colData(cur_object)[,img_id]), integer(0)))
   req(!identical(unique(colData(cur_object)[,img_id]), character(0)))
+  
   }else{
     cell_id <- "placeholder"
   }
   
   req(cell_id)
-  
+
   plotCells(mask = cur_mask,
             img_id = img_id,
             object = cur_object,
