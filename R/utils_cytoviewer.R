@@ -96,7 +96,6 @@
 
     # Next Image Observer
     observeEvent(input$next.sample, {
-      #browser()
       img_IDs <- if(!is.null(names(image))) names(image) else names(mask)
       cur_index <- match(input$sample, img_IDs)
         updated_index <- ifelse(cur_index == length(img_IDs), 1, cur_index + 1)
@@ -237,7 +236,9 @@
 .show_legend <- function(input){
   legend_param <- list(margin = 3) #use default from cytomapper
   
-  if(input$show_legend){cur_legend <- legend_param}else{cur_legend <- NULL}
+  if(input$show_legend) { cur_legend <- legend_param 
+  } else { cur_legend <- NULL }
+  
   return(cur_legend)
 }
 
@@ -333,7 +334,7 @@
     cur_imagetitle <- .show_title(input)
     
     if (input$outline && !is.null(input$outline_by)){
-      if(input$outline_by == "") {
+      if (input$outline_by == "") {
         
         req(img_id)
         
@@ -355,30 +356,38 @@
       
         } else if (input$outline_by != "") { 
         
-          req(img_id, cell_id)
+        req(img_id, cell_id) 
           
-          cur_entries <- length(unique(colData(object)[[input$outline_by]]))
-          
+        validate(
+          need(is.null(dim(colData(object)[[input$outline_by]])), 
+               "NOTE: The current [Outline by] choice can not be visualized 
+               because it has more than one dimension in 
+               colData(object)[[Outline by]].")
+        )
+
+        cur_entries <- length(unique(colData(object)[[input$outline_by]]))
         if (is.numeric(colData(object)[[input$outline_by]]) && cur_entries > 23L) {
         cur_object <- object
         } else {
-          cur_object <- object[,colData(object)[[input$outline_by]] %in% input$select_outline]
-        }
-          
-      cur_mask <- .get_mask(input, mask, img_id, cur_image)
-      cur_advanced_outline <- .select_outline_colors(input, object)
-      cur_color[[input$outline_by]] <- cur_advanced_outline
-      
-      if (is.logical(colData(object)[[input$outline_by]])){
-        cur_object <- object[,as.numeric(colData(object)[[input$outline_by]]) %in% input$select_outline]
-        
-        req(!is.null(cur_color[[input$outline_by]]))
-        names(cur_color[[input$outline_by]]) <- as.logical(as.numeric(input$select_outline))
+          cur_object <- object[,colData(object)[[input$outline_by]] 
+                               %in% input$select_outline]
         }
       
-      req(!identical(unique(colData(cur_object)[,img_id]), integer(0)))
-      req(!identical(unique(colData(cur_object)[,img_id]), character(0)))
+          cur_mask <- .get_mask(input, mask, img_id, cur_image)
+          cur_advanced_outline <- .select_outline_colors(input, object)
+          cur_color[[input$outline_by]] <- cur_advanced_outline
+      
+          if (is.logical(colData(object)[[input$outline_by]])) {
+            cur_object <- object[,as.numeric(colData(object)[[input$outline_by]]) 
+                                 %in% input$select_outline]
+            
+            req(!is.null(cur_color[[input$outline_by]]))
+            names(cur_color[[input$outline_by]]) <- as.logical(as.numeric(input$select_outline))
+            }
 
+          req(!identical(unique(colData(cur_object)[,img_id]), integer(0)))
+          req(!identical(unique(colData(cur_object)[,img_id]), character(0)))
+          
       validate(
         need(mcols(cur_image)[[img_id]] %in% cur_object[[img_id]], 
              "NOTE: Your [Select outline] choices are not featured 
@@ -430,7 +439,7 @@
 }
 
 
-## Image tiles function draft 
+## Image tiles function
 .create_image_tiles <- function(input, object, mask, image, channels,
                                 img_id, cell_id, ...){
   req(input$sample != "")
@@ -497,22 +506,31 @@
       
     } else if (input$outline_by != "") {
       
-      req(img_id, cell_id)
+      req(img_id, cell_id) 
       
       cur_entries <- length(unique(colData(object)[[input$outline_by]]))
       
-      if(is.numeric(colData(object)[[input$outline_by]]) && cur_entries > 23L){
+      if (is.numeric(colData(object)[[input$outline_by]]) && cur_entries > 23L) {
         cur_object <- object
-      }else{
-        cur_object <- object[,colData(object)[[input$outline_by]] %in% 
-                               input$select_outline]
+      } else {
+        cur_object <- object[,colData(object)[[input$outline_by]] 
+                             %in% input$select_outline]
       }
       
       cur_mask <- .get_mask(input, mask, img_id, cur_image)
       cur_advanced_outline <- .select_outline_colors(input, object)
       cur_color[[input$outline_by]] <- cur_advanced_outline
       
+      if (is.logical(colData(object)[[input$outline_by]])) {
+        cur_object <- object[,as.numeric(colData(object)[[input$outline_by]]) 
+                             %in% input$select_outline]
+        
+        req(!is.null(cur_color[[input$outline_by]]))
+        names(cur_color[[input$outline_by]]) <- as.logical(as.numeric(input$select_outline))
+      }
+      
       req(!identical(unique(colData(cur_object)[,img_id]), integer(0)))
+      req(!identical(unique(colData(cur_object)[,img_id]), character(0)))
       
       validate(
         need(mcols(cur_image)[[img_id]] %in% cur_object[[img_id]], 
@@ -667,6 +685,13 @@
                            server = TRUE,
                            selected = "")
       observeEvent(input$outline_by, { 
+        validate(
+          need(is.null(dim(colData(object)[[input$outline_by]])), 
+               "NOTE: The current [Outline by] choice can not be visualized 
+               because it has more than one dimension in 
+               colData(object)[[Outline by]].")
+        )
+        
         cur_entries <- length(unique(colData(object)[[input$outline_by]]))
         if(is.numeric(colData(object)[[input$outline_by]]) && cur_entries > 23L){
           updateSelectizeInput(session, inputId = "select_outline",
@@ -719,7 +744,9 @@
                                 brewer.pal(8, "Pastel2")[-c(3,5,8)],
                                 brewer.pal(12, "Set3")[-c(2,3,8,9,11,12)])
                    colourInput(inputId = paste0("color_outline",i),
-                               label = as.logical(as.numeric(input$select_outline[i])),
+                               label = if (is.logical(colData(object)[[input$outline_by]])) {
+                                 as.logical(as.numeric(input$select_outline[i]))
+                                 } else { input$select_outline[i] },
                                value = cur_col[i])
                  }))
       }
@@ -802,6 +829,14 @@
                            server = TRUE,
                            selected = "")
       observeEvent(input$color_by, { 
+        
+        validate(
+          need(is.null(dim(colData(object)[[input$color_by]])), 
+               "NOTE: The current [Color by] choice can not be visualized 
+               because it has more than one dimension in 
+               colData(object)[[Color by]].")
+        )
+        
         cur_entries <- length(unique(colData(object)[[input$color_by]]))
         if(is.numeric(colData(object)[[input$color_by]]) && cur_entries > 23L){
           updateSelectizeInput(session, inputId = "color_by_selection",
@@ -848,7 +883,9 @@
                                   brewer.pal(8, "Pastel2")[-c(3,5,8)],
                                   brewer.pal(12, "Set3")[-c(2,3,8,9,11,12)])
                      colourInput(inputId = paste0("color_by",i),
-                                 label = input$color_by_selection[i],
+                                 label = if (is.logical(colData(object)[[input$color_by]])) {
+                                   as.logical(as.numeric(input$color_by_selection[i]))
+                                 } else { input$color_by_selection[i] },
                                  value = cur_col[i])}),
                    colourInput(inputId = "missing_colorby", 
                                label = "Missing color",
@@ -924,11 +961,17 @@
   cur_imagetitle <- .show_title(input)
   cur_missingcolor <- input$missing_colorby
   
+  validate(
+    need(is.null(dim(colData(object)[[input$color_by]])), 
+         "NOTE: The current [Color by] choice can not be visualized 
+               because it has more than one dimension in 
+               colData(object)[[Color by]].")
+  )
+  
   cur_colorby <- .select_colorby(input)
   cur_color <- .select_colorby_color(input, object)
   cur_object <- .subset_object(input, object)
 
-  
   if(!is.null(image)){
     cur_image <- image[input$sample]
     cur_mask <- mask[mcols(mask)[[img_id]] == mcols(cur_image)[[img_id]]]
@@ -939,6 +982,14 @@
   if(!is.null(object)){
   
   cur_object <- cur_object[, colData(cur_object)[[img_id]] %in% mcols(cur_mask)[,img_id]]
+
+  if (is.logical(colData(object)[[input$color_by]])) {
+    cur_object <- object[,as.numeric(colData(object)[[input$color_by]]) 
+                         %in% input$color_by_selection]
+    
+    req(!is.null(cur_color[[input$color_by]]))
+    names(cur_color[[input$color_by]]) <- as.logical(as.numeric(input$color_by_selection))
+  }  
   
   validate(
     need(mcols(cur_mask)[[img_id]] %in% cur_object[[img_id]], 
@@ -948,24 +999,30 @@
   
   cur_entries <- length(unique(colData(object)[[input$color_by]]))
   
-  if(is.numeric(colData(object)[[input$color_by]]) && cur_entries <= 23L){
-    validate(
-      need(input$color_by_selection %in% cur_object[[img_id]], 
-           "NOTE: Your [Select color by] choices are not featured 
-             in the current image.")
-    )
+  if (input$color_by != ""){
+    if (is.numeric(colData(object)[[input$color_by]]) && cur_entries > 23L) {
+      cur_object <- cur_object
+    } else {
+      cur_object <- cur_object[,colData(cur_object)[[input$color_by]] 
+                         %in% input$color_by_selection]
+      
+      validate(
+        need(input$color_by_selection %in% colData(cur_object)[[input$color_by]], 
+             "NOTE: Your [Select color by] choices are not featured 
+             in the current image."))
+      
+    }
   }
-    
-    
+  
   req(!identical(unique(colData(cur_object)[,img_id]), integer(0)))
   req(!identical(unique(colData(cur_object)[,img_id]), character(0)))
   
-  }else{
+  } else {
     cell_id <- "placeholder"
   }
   
   req(cell_id)
-
+  
   plotCells(mask = cur_mask,
             img_id = img_id,
             object = cur_object,
