@@ -943,12 +943,14 @@
 
 # Helper function to subset object 
 .subset_object <- function(input, object){
+  if (!is.null(object)) {
   cur_entries <- length(unique(colData(object)[[input$color_by]]))
-  if(input$color_by != "" && !is.numeric(colData(object)[[input$color_by]]) 
-     && cur_entries <= 23L){
+  if (input$color_by != "" && !is.numeric(colData(object)[[input$color_by]]) 
+     && cur_entries <= 23L) {
     req(input$color_by_selection)
-    object <- object[, colData(object)[[input$color_by]] %in% input$color_by_selection]
-  }else{
+    object <- object[, colData(object)[[input$color_by]] %in% 
+                       input$color_by_selection]
+  }} else {
     object <- object
     }
   return(object)
@@ -966,17 +968,18 @@
   cur_imagetitle <- .show_title(input)
   cur_missingcolor <- input$missing_colorby
   
+  if(!is.null(object)){
   validate(
     need(is.null(dim(colData(object)[[input$color_by]])), 
          "NOTE: The current [Color by] choice can not be visualized 
                because it has more than one dimension in 
-               colData(object)[[Color by]].")
-  )
+               colData(object)[[Color by]]."))
+    }
   
   cur_colorby <- .select_colorby(input)
   cur_color <- .select_colorby_color(input, object)
   cur_object <- .subset_object(input, object)
-
+  
   if(!is.null(image)){
     cur_image <- image[input$sample]
     cur_mask <- mask[mcols(mask)[[img_id]] == mcols(cur_image)[[img_id]]]
@@ -985,7 +988,7 @@
   }
   
   if(!is.null(object)){
-  
+    
   cur_object <- cur_object[, colData(cur_object)[[img_id]] %in% mcols(cur_mask)[,img_id]]
 
   if (is.logical(colData(object)[[input$color_by]])) {
