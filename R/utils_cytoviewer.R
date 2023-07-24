@@ -364,7 +364,7 @@
                because it has more than one dimension in 
                colData(object)[[Outline by]].")
         )
-
+        
         cur_entries <- length(unique(colData(object)[[input$outline_by]]))
         if (is.numeric(colData(object)[[input$outline_by]]) && cur_entries > 23L) {
         cur_object <- object
@@ -372,16 +372,17 @@
           cur_object <- object[,colData(object)[[input$outline_by]] 
                                %in% input$select_outline]
         }
-      
-          cur_mask <- .get_mask(input, mask, img_id, cur_image)
-          cur_advanced_outline <- .select_outline_colors(input, object)
-          cur_color[[input$outline_by]] <- cur_advanced_outline
-      
+        
+        cur_mask <- .get_mask(input, mask, img_id, cur_image)
+        cur_advanced_outline <- .select_outline_colors(input, object)
+        cur_color[[input$outline_by]] <- cur_advanced_outline
+
           if (is.logical(colData(object)[[input$outline_by]])) {
             cur_object <- object[,as.numeric(colData(object)[[input$outline_by]]) 
                                  %in% input$select_outline]
             
             req(!is.null(cur_color[[input$outline_by]]))
+            req(any(as.numeric(colData(cur_object)[[input$outline_by]]) %in% input$select_outline))
             names(cur_color[[input$outline_by]]) <- as.logical(as.numeric(input$select_outline))
             }
 
@@ -526,6 +527,7 @@
                              %in% input$select_outline]
         
         req(!is.null(cur_color[[input$outline_by]]))
+        req(any(as.numeric(colData(object)[[input$outline_by]]) %in% input$select_outline))
         names(cur_color[[input$outline_by]]) <- as.logical(as.numeric(input$select_outline))
       }
       
@@ -745,6 +747,7 @@
                                 brewer.pal(12, "Set3")[-c(2,3,8,9,11,12)])
                    colourInput(inputId = paste0("color_outline",i),
                                label = if (is.logical(colData(object)[[input$outline_by]])) {
+                                 req(any(as.numeric(colData(object)[[input$outline_by]]) %in% input$select_outline))
                                  as.logical(as.numeric(input$select_outline[i]))
                                  } else { input$select_outline[i] },
                                value = cur_col[i])
@@ -884,6 +887,8 @@
                                   brewer.pal(12, "Set3")[-c(2,3,8,9,11,12)])
                      colourInput(inputId = paste0("color_by",i),
                                  label = if (is.logical(colData(object)[[input$color_by]])) {
+                                   req(any(as.numeric(colData(object)[[input$color_by]]) 
+                                           %in% input$color_by_selection))
                                    as.logical(as.numeric(input$color_by_selection[i]))
                                  } else { input$color_by_selection[i] },
                                  value = cur_col[i])}),
@@ -986,9 +991,14 @@
   if (is.logical(colData(object)[[input$color_by]])) {
     cur_object <- object[,as.numeric(colData(object)[[input$color_by]]) 
                          %in% input$color_by_selection]
-    
     req(!is.null(cur_color[[input$color_by]]))
+    req(any(as.numeric(colData(object)[[input$color_by]]) %in% input$color_by_selection))
     names(cur_color[[input$color_by]]) <- as.logical(as.numeric(input$color_by_selection))
+    
+    validate(
+      need(input$color_by_selection %in% as.numeric(colData(cur_object)[[input$color_by]]), 
+           "NOTE: Your [Select color by] choices are not featured 
+             in the current image."))                                                 
   }  
   
   validate(
@@ -1002,6 +1012,8 @@
   if (input$color_by != ""){
     if (is.numeric(colData(object)[[input$color_by]]) && cur_entries > 23L) {
       cur_object <- cur_object
+    } else if (is.logical(colData(object)[[input$color_by]])) { 
+      cur_object <- cur_object 
     } else {
       cur_object <- cur_object[,colData(cur_object)[[input$color_by]] 
                          %in% input$color_by_selection]
