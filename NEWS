@@ -36,3 +36,6 @@ Changes in version 0.99.3 (2023-04-18):
 
 Changes in version 1.0.0 (2023-05-26):
 + version bump for bioconductor and biorxiv release
+
+Changes in version 1.0.1 (2023-07-24): 
++ added validation messages and fixes for metadata overlay
