@@ -155,6 +155,18 @@ test_that("cytoviewer: validity check testing works", {
                           cell_id = "CellNb"), 
                regexp = "Cell ids should only contain numeric integer values.",
                fixed = TRUE)
+  
+  cur_image_3 <- pancreasImages
+  names(cur_image_3) <- NULL
+  expect_error(cytoviewer(image = cur_image_3), 
+               regexp = "Please specify the 'names' of the 'image' object.",
+               fixed = TRUE)
+  
+  cur_mask_3 <- pancreasMasks
+  names(cur_mask_3) <- NULL
+  expect_error(cytoviewer(image = pancreasImages, mask = cur_mask_3, img_id = "ImageNb"), 
+               regexp = "Please specify the 'names' of the 'mask' object.",
+               fixed = TRUE)
 })
 
 
