@@ -64,6 +64,16 @@
     stop("Please specify the 'channelNames' of the 'image' object.")
   }
   
+  if (!is.null(image) && 
+      is.null(names(image))){
+    stop("Please specify the 'names' of the 'image' object.")
+  }
+  
+  if (!is.null(mask) && 
+      is.null(names(mask))){
+    stop("Please specify the 'names' of the 'mask' object.")
+  }
+  
   if (!is.null(image) && !is.null(object)){
     
     if (!identical(channelNames(image), rownames(object))) {

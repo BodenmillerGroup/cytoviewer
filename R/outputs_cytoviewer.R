@@ -32,7 +32,7 @@
   
   ### Marker inputs 
   .create_updateSelectizeInput(image, mask, input, session)
-  
+    
   ### Outline inputs
   output$Outline_controls <- .create_outline_controls(object, mask, input, 
                                                       session)
