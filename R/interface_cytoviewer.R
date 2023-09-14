@@ -223,6 +223,13 @@
                           uiOutput("Colorby_colors")), 
                  startExpanded = TRUE, icon = icon("shapes")
                  ),
+        menuItem("Points-level", 
+                 menuItem("Basic controls",
+                          checkboxInput("plotpoints", "Show points-level plot", 
+                                        value = FALSE, width = NULL),
+                          uiOutput("graph_controls")), 
+                 startExpanded = TRUE, icon = icon("circle-nodes")
+        ),
         menuItem("General",
                  menuItem("Basic controls", 
                           menuItem("Image appearance",
@@ -253,7 +260,12 @@
         tags$style(
           "#sidebarItemExpanded {
             overflow: auto;
-            max-height: 100vh}")
+            max-height: 100vh}", 
+          HTML("
+        .wellpanel_custom {
+          background-color: #367FA9;
+        }
+      "))
         )
     return(cm_side)
 }
@@ -274,7 +286,11 @@
         tabPanel("Cell-level", 
                  tabsetPanel(
                    tabPanel("Mask", value = "cells_tab", width = 12, 
-                            withSpinner(uiOutput("cells_tab"), type = 6))))
+                            withSpinner(uiOutput("cells_tab"), type = 6)))),
+        tabPanel("Points-level", 
+                 tabsetPanel(
+                   tabPanel("Graph", value = "graph_tab", width = 12, 
+                            withSpinner(uiOutput("graph_tab"), type = 6))))
       ))
     return(cm_body)
     }

@@ -79,4 +79,16 @@
                                      img_id, cell_id)
   output$cellsPlot <- .cellsPlot(input, object, mask, image, 
                                  img_id, cell_id, ...)
+  
+  #4. Points-level 
+  output$graph_tab <- .add_graph_tab(input, image, mask, object, img_id, ...)
+  
+  output$graphPlot <- .graphPlot(input, image, mask, object, img_id, ...)
+  
+  output$graph_controls <- .create_graph_controls(input, image, mask, object, img_id, ...)
+
+  .populate_graph_controls(session, object, input)
+  
+  output$fine_graph_controls <- .create_fine_graph_controls(input, image, mask, object, img_id, ...)
+    
 }

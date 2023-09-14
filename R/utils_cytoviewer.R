@@ -1097,3 +1097,163 @@
                  value = cur_value, min = 0, max = 1000, step = 5)
   })
 }
+
+# plotSpatial functionality 
+
+## Add plotSpatial tab
+
+.add_graph_tab <- function(input, image, mask, object, img_id, ...){
+  renderUI({
+    if(input$plotpoints){
+      box(withSpinner(plotOutput("graphPlot"),type = 6), 
+          title = NULL, 
+          id = "expression",
+          status = "primary",
+          width = 12)
+    }
+  })
+    
+}
+
+## Visualize graphs
+.graphPlot <- function(input, image, mask, object, img_id, ...){
+  # renderSvgPanZoom({
+  # 
+  #   suppressMessages(svgPanZoom(
+  #     .create_graph(input, object, mask, img_id, ...),
+  #   zoomScaleSensitivity = 0.4,
+  #   maxZoom = 20,
+  #   controlIconsEnabled = TRUE,
+  #   viewBox = FALSE))
+  # })
+  
+  renderPlot(.create_graph(input, image, mask, object, img_id, ...))
+
+}
+
+## Create graph plot 
+
+.create_graph <- function(input, image, mask, object, img_id, ...){
+  
+  req(img_id)
+  
+  # Subset object 
+  if(!is.null(image)){
+    cur_image <- image[input$sample]
+    cur_mask <- mask[mcols(mask)[[img_id]] == mcols(cur_image)[[img_id]]]
+  }else{
+    cur_mask <- mask[input$sample]
+  }
+  
+  cur_object <- object[, colData(object)[[img_id]] %in% mcols(cur_mask)[,img_id]]
+  
+  if(!input$spatial_graph == ""){
+    cur_graph <- input$spatial_graph
+    cur_edges <- TRUE
+    cur_directed <- input$directed
+    cur_nodes_first <- input$nodes_first
+  }else{
+    cur_graph <- NULL
+    cur_edges <- cur_nodes_first <- cur_directed <- FALSE
+  }
+  
+  req(!is.null(cur_directed))
+  req(!is.null(cur_nodes_first))
+  
+  plotSpatial(cur_object, 
+              img_id = img_id, 
+              scales = "free",
+              colPairName = cur_graph,
+              draw_edges = cur_edges,
+              directed = cur_directed,
+              nodes_first = cur_nodes_first,
+              node_color_fix = input$node_color_fix,
+              node_size_fix = input$node_size_fix,
+              node_shape_fix = input$node_shape_fix
+              )
+  
+}
+
+
+## Create graph interface basic controls 
+.create_graph_controls <- function(input, image, mask, object, img_id, ...){
+  
+  shape_names <- c("circle", "square", "diamond", "triangle", 
+                   "plus", "cross", "asterisk")
+  
+  renderUI({
+    if (input$plotpoints){
+      wellPanel(
+        selectizeInput("spatial_graph", label = span("Spatial graph",
+                                                style = "color: black; padding-top: 0px"), 
+                       choices = NULL, options = NULL, 
+                       list(placeholder = 'Spatial graph', maxItems = 1,
+                            maxOptions = 10)
+                       ),
+        uiOutput("fine_graph_controls"),
+        menuItem(span("Node control", 
+                      style = "color: black;padding-top: 0px"), 
+                 style = "color: black; padding-top: 0px",
+        menuItem(span("Color control", 
+                      style = "color: black;padding-top: 0px"), 
+                 style = "color: black; padding-top: 0px",
+                 colourInput(inputId = "node_color_fix", 
+                             label = NULL,
+                             value = "grey")),
+      menuItem(span("Size control", 
+                    style = "color: black;padding-top: 0px"), 
+               style = "color: black; padding-top: 0px",
+               numericInput(inputId = "node_size_fix", 
+                           label = NULL, 
+                           min = 1, max = 10, 
+                           value = 1)),
+      menuItem(span("Shape control", 
+                    style = "color: black;padding-top: 0px"), 
+               style = "color: black; padding-top: 0px",
+               selectInput(inputId = "node_shape_fix", 
+                           label = NULL, 
+                           choices = shape_names, 
+                           selected = "circle"
+                            )))
+      )
+    }})}
+
+
+
+.populate_graph_controls <- function(session, object, input){
+  observeEvent(input$plotpoints, {
+    
+    if (input$plotpoints) {
+      updateSelectizeInput(session, inputId = "spatial_graph",
+                           choices = colPairNames(object),
+                           server = TRUE,
+                           selected = "")
+    }})}
+
+.create_fine_graph_controls <- function(input, image, mask, object, img_id, ...){
+  renderUI({
+    if(!input$spatial_graph == ""){
+      wellPanel(
+        checkboxInput("directed", "Directed layout", 
+                      value = FALSE, width = NULL),
+        checkboxInput("nodes_first", "Nodes first", 
+                      value = FALSE, width = NULL),
+        menuItem(span("Edge control", 
+                      style = "color: black;padding-top: 0px"), 
+                 style = "color: black; padding-top: 0px",
+                 menuItem(span("Color control", 
+                               style = "color: black;padding-top: 0px"), 
+                          style = "color: black; padding-top: 0px",
+                          colourInput(inputId = "edge_color_fix", 
+                                      label = NULL,
+                                      value = "black")),
+                 menuItem(span("Width control", 
+                               style = "color: black;padding-top: 0px"), 
+                          style = "color: black; padding-top: 0px",
+                          numericInput(inputId = "edge_width_fix", 
+                                       label = NULL, 
+                                       min = 1, max = 10, 
+                                       value = 1))),
+        class = "wellpanel_custom"
+      )
+    }})}
