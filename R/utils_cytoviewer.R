@@ -1152,8 +1152,10 @@
     cur_edges <- TRUE
     cur_directed <- input$directed
     cur_nodes_first <- input$nodes_first
+    cur_edge_width_fix <- input$edge_width_fix
+    cur_edge_color_fix <- input$edge_color_fix
   }else{
-    cur_graph <- NULL
+    cur_graph <- cur_edge_width_fix <- cur_edge_color_fix <- NULL
     cur_edges <- cur_nodes_first <- cur_directed <- FALSE
   }
   
@@ -1169,7 +1171,9 @@
               nodes_first = cur_nodes_first,
               node_color_fix = input$node_color_fix,
               node_size_fix = input$node_size_fix,
-              node_shape_fix = input$node_shape_fix
+              node_shape_fix = input$node_shape_fix,
+              edge_color_fix = cur_edge_color_fix,
+              edge_width_fix = cur_edge_width_fix
               )
   
 }
@@ -1191,6 +1195,7 @@
                             maxOptions = 10)
                        ),
         uiOutput("fine_graph_controls"),
+        uiOutput("fine_edge_controls"),
         menuItem(span("Node control", 
                       style = "color: black;padding-top: 0px"), 
                  style = "color: black; padding-top: 0px",
@@ -1203,9 +1208,9 @@
       menuItem(span("Size control", 
                     style = "color: black;padding-top: 0px"), 
                style = "color: black; padding-top: 0px",
-               numericInput(inputId = "node_size_fix", 
+               sliderInput(inputId = "node_size_fix", 
                            label = NULL, 
-                           min = 1, max = 10, 
+                           min = 1, max = 5, step = 0.5, 
                            value = 1)),
       menuItem(span("Shape control", 
                     style = "color: black;padding-top: 0px"), 
@@ -1222,7 +1227,6 @@
 
 .populate_graph_controls <- function(session, object, input){
   observeEvent(input$plotpoints, {
-    
     if (input$plotpoints) {
       updateSelectizeInput(session, inputId = "spatial_graph",
                            choices = colPairNames(object),
@@ -1237,23 +1241,92 @@
         checkboxInput("directed", "Directed layout", 
                       value = FALSE, width = NULL),
         checkboxInput("nodes_first", "Nodes first", 
-                      value = FALSE, width = NULL),
-        menuItem(span("Edge control", 
-                      style = "color: black;padding-top: 0px"), 
-                 style = "color: black; padding-top: 0px",
-                 menuItem(span("Color control", 
-                               style = "color: black;padding-top: 0px"), 
-                          style = "color: black; padding-top: 0px",
-                          colourInput(inputId = "edge_color_fix", 
-                                      label = NULL,
-                                      value = "black")),
-                 menuItem(span("Width control", 
-                               style = "color: black;padding-top: 0px"), 
-                          style = "color: black; padding-top: 0px",
-                          numericInput(inputId = "edge_width_fix", 
-                                       label = NULL, 
-                                       min = 1, max = 10, 
-                                       value = 1))),
-        class = "wellpanel_custom"
-      )
+                      value = FALSE, width = NULL), 
+        class = "wellpanel_custom")
     }})}
+
+
+.create_fine_edge_controls <- function(input, image, mask, object, img_id, ...){
+  renderUI({
+    if(!input$spatial_graph == ""){
+      wellPanel(
+        menuItem(span("Edge control", 
+                style = "color: black;padding-top: 0px"), 
+           style = "color: black; padding-top: 0px",
+           menuItem(span("Color control", 
+                         style = "color: black;padding-top: 0px"), 
+                    style = "color: black; padding-top: 0px",
+                    colourInput(inputId = "edge_color_fix", 
+                                label = NULL,
+                                value = "black")),
+           menuItem(span("Width control", 
+                         style = "color: black;padding-top: 0px"), 
+                    style = "color: black; padding-top: 0px",
+                    sliderInput(inputId = "edge_width_fix", 
+                                 label = NULL, 
+                                 min = 0.5, max = 5, step = 0.5,
+                                 value = 0.5))),
+        class = "wellpanel_custom"
+        )
+    }})}
+
+
+.create_advanced_graph_controls <- function(input, image, mask, object, img_id, ...){
+  renderUI({
+    if (input$plotpoints){
+        wellPanel(
+          selectizeInput("node_color_by", label = span("Color by (Nodes)",
+                                                  style = "color: black; padding-top: 0px"), 
+                         choices = NULL, options = NULL, 
+                         list(placeholder = 'Color by', maxItems = 1,
+                              maxOptions = 10)
+          ),
+          selectizeInput("node_color_by_selection",
+                         label = span("Select color by",
+                                      style = "color: black; padding-top: 0px"),
+                         choices = NULL,
+                         multiple = TRUE)
+        )}})}
+
+
+.populate_advanced_graph_controls <- function(session, object, input){
+
+  observeEvent(input$plotpoints, {
+
+    if (input$plotpoints && is.null(object)) {
+      updateSelectizeInput(session, inputId = "node_color_by",
+                           choices = c(""),
+                           server = TRUE,
+                           selected = "")
+    }
+
+    if (input$plotpoints && !is.null(object)) {
+      updateSelectizeInput(session, inputId = "node_color_by",
+                           choices = names(colData(object)),
+                           server = TRUE,
+                           selected = "")
+      
+      observeEvent(input$node_color_by, {
+
+        validate(
+          need(is.null(dim(colData(object)[[input$node_color_by]])),
+               "NOTE: The current [Node color by] choice can not be visualized
+               because it has more than one dimension in
+               colData(object)[[Node color by]].")
+        )
+
+        cur_entries <- length(unique(colData(object)[[input$node_color_by]]))
+        if(is.numeric(colData(object)[[input$node_color_by]]) && cur_entries > 23L){
+          updateSelectizeInput(session, inputId = "node_color_by_selection",
+                               choices = input$node_color_by,
+                               server = TRUE,
+                               selected = input$node_color_by)
+        }else{
+          updateSelectizeInput(session, inputId = "node_color_by_selection",
+                               choices = unique(colData(object)[[input$node_color_by]]),
+                               server = TRUE,
+                               selected = unique(colData(object)[[input$node_color_by]][1]))
+        }})
+    }
+  })
+}

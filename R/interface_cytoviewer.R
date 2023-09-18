@@ -228,6 +228,8 @@
                           checkboxInput("plotpoints", "Show points-level plot", 
                                         value = FALSE, width = NULL),
                           uiOutput("graph_controls")), 
+                 menuItem("Advanced controls",
+                          uiOutput("advanced_graph_controls")),
                  startExpanded = TRUE, icon = icon("circle-nodes")
         ),
         menuItem("General",

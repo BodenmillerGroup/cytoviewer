@@ -86,9 +86,14 @@
   output$graphPlot <- .graphPlot(input, image, mask, object, img_id, ...)
   
   output$graph_controls <- .create_graph_controls(input, image, mask, object, img_id, ...)
-
-  .populate_graph_controls(session, object, input)
+  output$advanced_graph_controls <- .create_advanced_graph_controls(input, image, mask, object, img_id, ...)
   
+  .populate_graph_controls(session, object, input)
+  .populate_advanced_graph_controls(session, object, input)
+    
   output$fine_graph_controls <- .create_fine_graph_controls(input, image, mask, object, img_id, ...)
+  output$fine_edge_controls <- .create_fine_edge_controls(input, image, mask, object, img_id, ...)
+  
+    
     
 }
