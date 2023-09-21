@@ -266,9 +266,10 @@
                  tabsetPanel(
                    tabPanel("Composite",box(
                      withSpinner(
-                       svgPanZoomOutput("imagePlot"), type = 6), 
+                       fullscreen_this(
+                         svgPanZoomOutput("imagePlot")), type = 6), 
                      title = NULL, id = "expression", status = "primary", 
-                     width = 12, height = NULL)),
+                     width = NULL, height = NULL)),
                    tabPanel("Channels", value = "tiles_tab", width = 12, 
                             withSpinner(uiOutput("tiles_tab"), type = 6)))),
         tabPanel("Cell-level", 
