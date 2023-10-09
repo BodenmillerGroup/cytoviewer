@@ -40,3 +40,6 @@ Changes in version 1.0.0 (2023-05-26):
 Changes in version 1.0.1 (2023-07-27): 
 + added validation messages and fixes for metadata overlay
 + added more tests and validation checks
+
+Changes in version 1.1.2 (2023-10-09): 
++ vignette updates

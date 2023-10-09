@@ -1,5 +1,5 @@
 Package: cytoviewer
-Version: 1.1.1
+Version: 1.1.2
 Title: An interactive multi-channel image viewer for R
 Description: 
     This R package supports interactive visualization of multi-channel images 
