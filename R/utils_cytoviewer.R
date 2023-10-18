@@ -742,8 +742,8 @@
                       style = "color: black;padding-top: 0px"), 
                  style = "color: black; padding-top: 0px",
                  lapply(seq_along(input$select_outline), function (i){
-                   cur_col <- c(brewer.pal(12, "Paired"),
-                                brewer.pal(8, "Pastel2")[-c(3,5,8)],
+                   cur_col <- c(brewer.pal(9, "Set1"),
+                                brewer.pal(8, "Pastel2"),
                                 brewer.pal(12, "Set3")[-c(2,3,8,9,11,12)])
                    colourInput(inputId = paste0("color_outline",i),
                                label = if (is.logical(colData(object)[[input$outline_by]])) {
@@ -882,8 +882,8 @@
                         style = "color: black;padding-top: 0px"), 
                    style = "color: black; padding-top: 0px",
                    lapply(seq_along(input$color_by_selection), function (i){
-                     cur_col <- c(brewer.pal(12, "Paired"),
-                                  brewer.pal(8, "Pastel2")[-c(3,5,8)],
+                     cur_col <- c(brewer.pal(9, "Set1"),
+                                  brewer.pal(8, "Pastel2"),
                                   brewer.pal(12, "Set3")[-c(2,3,8,9,11,12)])
                      colourInput(inputId = paste0("color_by",i),
                                  label = if (is.logical(colData(object)[[input$color_by]])) {
@@ -1072,7 +1072,7 @@
                            image, img_id, cell_id){
   renderUI({
     if(input$plotcells){
-    box(withSpinner(svgPanZoomOutput("cellsPlot"),type = 6), 
+    box(withSpinner(svgPanZoomOutput("cellsPlot", width = "100%",height = "75vh"),type = 6), 
           title = NULL, 
           id = "expression",
           status = "primary",
