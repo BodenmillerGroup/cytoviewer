@@ -203,7 +203,6 @@
                              colourInput(inputId = "color6", label = "Color", 
                                          value = "blue")),
                     hr(),
-                    #icon = icon("fas fa-sliders-h"), 
                     startExpanded = FALSE),
             menuItem("Advanced controls",
                      checkboxInput("outline", "Show cell outlines", 
@@ -268,7 +267,7 @@
                      withSpinner(
                          svgPanZoomOutput("imagePlot", width = "100%", height = "75vh"), type = 6), 
                      title = NULL, id = "expression", status = "primary", 
-                     width = NULL, height = NULL)),
+                     width = 12, height = NULL)),
                    tabPanel("Channels", value = "tiles_tab", width = 12, 
                             withSpinner(uiOutput("tiles_tab"), type = 6)))),
         tabPanel("Cell-level", 

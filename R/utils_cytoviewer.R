@@ -336,7 +336,7 @@
     if (input$outline && !is.null(input$outline_by)){
       if (input$outline_by == "") {
         
-        req(img_id)
+        req(img_id, cur_markers)
         
         cur_mask <- .get_mask(input, mask, img_id, cur_image)
         
@@ -356,7 +356,7 @@
       
         } else if (input$outline_by != "") { 
         
-        req(img_id, cell_id) 
+        req(img_id, cell_id, cur_markers) 
           
         validate(
           need(is.null(dim(colData(object)[[input$outline_by]])), 
@@ -486,7 +486,7 @@
     if (input$outline && !is.null(input$outline_by)){
       if(input$outline_by == "") {
         
-        req(img_id)
+        req(img_id, markers)
         
         cur_mask <- .get_mask(input, mask, img_id, cur_image)
         
@@ -507,7 +507,7 @@
       
     } else if (input$outline_by != "") {
       
-      req(img_id, cell_id) 
+      req(img_id, cell_id, markers) 
       
       cur_entries <- length(unique(colData(object)[[input$outline_by]]))
       
