@@ -1,30 +1,23 @@
 Changes in version 0.1.0 (2022-11-14):
-
 + initial version
 
 Changes in version 0.1.1 (2022-11-18):
-
 + first working version
 
 Changes in version 0.1.2 (2022-11-28):
-
 + allow selecting of cell types
 
 Changes in version 0.1.5 (2023-02-14):
-
 + small fixes to solve check issues
 
 Changes in version 0.1.6 (2023-02-23):
-
 + public release of cytoviewer on GitHub
 + main functionality done
 
 Changes in version 0.99.0 (2023-03-23):
-
 + code preparations for Bioconductor submission
 
 Changes in version 0.99.1 (2023-04-12):
-
 + code adjustments after Bioconductor approval
 + included reactive image / mask reading
 
@@ -43,3 +36,6 @@ Changes in version 1.0.1 (2023-07-27):
 
 Changes in version 1.1.2 (2023-10-09): 
 + vignette updates
+
+Changes in version 1.1.3 (2023-10-19): 
++ enlarged default display area and changed default color settings

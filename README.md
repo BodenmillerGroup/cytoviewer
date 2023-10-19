@@ -4,8 +4,9 @@
 
 <!-- badges: start -->
 
-[![codecov](https://codecov.io/gh/BodenmillerGroup/cytoviewer/branch/devel/graph/badge.svg)](https://app.codecov.io/gh/BodenmillerGroup/cytoviewer/tree/devel)
 [![docs](https://github.com/BodenmillerGroup/cytoviewer/actions/workflows/docs.yml/badge.svg)](https://github.com/BodenmillerGroup/cytoviewer/actions/workflows/docs.yml)
+[![codecov](https://codecov.io/gh/BodenmillerGroup/cytoviewer/branch/devel/graph/badge.svg)](https://app.codecov.io/gh/BodenmillerGroup/cytoviewer/tree/devel)
+
 
 <!-- badges: end -->
 
@@ -17,16 +18,17 @@ cytometry and other highly multiplexed imaging techniques. The
 `cytoviewer` package is divided into image-level (Composite and
 Channels) and cell-level visualization (Masks). It allows users 
 to overlay individual images with segmentation masks, integrates well 
-with [SingleCellExperiment](https://bioconductor.org/packages/release/bioc/html/SingleCellExperiment.html)
-and [SpatialExperiment](https://bioconductor.org/packages/release/bioc/html/SingleCellExperiment.html)
-objects for metadata visualization and supports image downloads.
+with [SingleCellExperiment](https://bioconductor.org/packages/release/bioc/html/SingleCellExperiment.html) / [SpatialExperiment](https://bioconductor.org/packages/release/bioc/html/SingleCellExperiment.html) 
+and [CytoImageList](https://www.bioconductor.org/packages/release/bioc/html/cytomapper.html)
+objects for metadata and image visualization and supports image downloads.
 
 ## Check status
 
 | Bioc branch |                                                                                                     Checks                                                                                                      |
 |:------------------------------------------:|:--------------------------:|
-|   Release   | [![build-check-release](https://github.com/BodenmillerGroup/cytoviewer/workflows/build-checks-release/badge.svg)](https://github.com/BodenmillerGroup/cytoviewer/actions?query=workflow%3Abuild-checks-release) |
-|    Devel    |    [![build-check-devel](https://github.com/BodenmillerGroup/cytoviewer/workflows/build-checks-devel/badge.svg)](https://github.com/BodenmillerGroup/cytoviewer/actions?query=workflow%3Abuild-checks-devel)    |
+|   Release   | [![build-checks-release](https://github.com/BodenmillerGroup/cytoviewer/actions/workflows/build-checks-release.yml/badge.svg?branch=devel)](https://github.com/BodenmillerGroup/cytoviewer/actions/workflows/build-checks-release.yml) |
+|    Devel    | [![build-checks-devel](https://github.com/BodenmillerGroup/cytoviewer/actions/workflows/build-checks-devel.yml/badge.svg?branch=devel)](https://github.com/BodenmillerGroup/cytoviewer/actions/workflows/build-checks-devel.yml) |
+
 
 ## Requirements
 
@@ -62,7 +64,7 @@ To load the package in your R session, type the following:
 library(cytoviewer)
 ```
 
-## Usage
+## Basic usage
 
 ``` r
 library(cytoviewer)
@@ -82,10 +84,13 @@ app <- cytoviewer(image = pancreasImages,
 
 if (interactive()) {
   
-  shiny::runApp(app, launch.browser = TRUE)
+  shiny::runApp(app)
 
   }
 ```
+
+For more detailed information on package usage and functionality, 
+please refer to [https://bodenmillergroup.github.io/cytoviewer/](https://bodenmillergroup.github.io/cytoviewer/). 
 
 ## Contributing
 
