@@ -224,12 +224,13 @@
                  startExpanded = TRUE, icon = icon("shapes")
                  ),
         menuItem("Points-level", 
-                 menuItem("Basic controls",
+                 menuItem("Node controls",
                           checkboxInput("plotpoints", "Show points-level plot", 
                                         value = FALSE, width = NULL),
-                          uiOutput("graph_controls")), 
-                 menuItem("Advanced controls",
-                          uiOutput("advanced_graph_controls")),
+                          uiOutput("node_color_controls"),
+                          uiOutput("node_size_controls")), 
+                 menuItem("Edge controls",
+                          uiOutput("edge_controls")),
                  startExpanded = TRUE, icon = icon("circle-nodes")
         ),
         menuItem("General",
@@ -263,11 +264,15 @@
           "#sidebarItemExpanded {
             overflow: auto;
             max-height: 100vh}", 
-          HTML("
+        HTML("
         .wellpanel_custom {
           background-color: #367FA9;
-        }
-      "))
+        }"),
+        HTML("
+        .wellpanel_node {
+          background-color: #FFFFFF;
+        }")
+        )
         )
     return(cm_side)
 }

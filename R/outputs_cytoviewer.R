@@ -85,11 +85,21 @@
   
   output$graphPlot <- .graphPlot(input, image, mask, object, img_id, ...)
   
-  output$graph_controls <- .create_graph_controls(input, image, mask, object, img_id, ...)
-  output$advanced_graph_controls <- .create_advanced_graph_controls(input, image, mask, object, img_id, ...)
+  output$node_color_controls <- .create_node_color_controls(input, image, mask, object, img_id, ...)
+  output$basic_node_color_controls <- .create_basic_node_color(input, image, mask, object, img_id, ...)
+  output$advanced_node_color_controls <- .create_advanced_node_color(input, image, mask, object, img_id, ...)
+  
+  output$node_size_controls <- .create_node_size_controls(input, image, mask, object, img_id, ...)
+  output$basic_node_size_controls <- .create_basic_node_size(input, image, mask, object, img_id, ...)
+  output$advanced_node_size_controls <- .create_advanced_node_size(input, image, mask, object, img_id, ...)
+  
+  output$edge_controls <- .create_edge_controls(input, image, mask, object, img_id, ...)
+  
+  #output$advanced_graph_controls <- .create_advanced_graph_controls(input, image, mask, object, img_id, ...)
   
   .populate_graph_controls(session, object, input)
-  .populate_advanced_graph_controls(session, object, input)
+  .populate_node_color_controls(session, object, input)
+  .populate_node_size_controls(session, object, input)
     
   output$fine_graph_controls <- .create_fine_graph_controls(input, image, mask, object, img_id, ...)
   output$fine_edge_controls <- .create_fine_edge_controls(input, image, mask, object, img_id, ...)

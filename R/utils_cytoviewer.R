@@ -1105,7 +1105,8 @@
 .add_graph_tab <- function(input, image, mask, object, img_id, ...){
   renderUI({
     if(input$plotpoints){
-      box(withSpinner(plotOutput("graphPlot"),type = 6), 
+      box(withSpinner(
+        plotOutput("graphPlot", width = "100%", height = "75vh"), type = 6), 
           title = NULL, 
           id = "expression",
           status = "primary",
@@ -1117,14 +1118,17 @@
 
 ## Visualize graphs
 .graphPlot <- function(input, image, mask, object, img_id, ...){
+  
   # renderSvgPanZoom({
-  # 
-  #   suppressMessages(svgPanZoom(
-  #     .create_graph(input, object, mask, img_id, ...),
-  #   zoomScaleSensitivity = 0.4,
-  #   maxZoom = 20,
-  #   controlIconsEnabled = TRUE,
-  #   viewBox = FALSE))
+  #   browser()
+  #   svgPanZoom(
+  #    suppressMessages(
+  #      gridSVG(.create_graph(input, image, mask, object, img_id, ...))
+  #      ),
+  #    zoomScaleSensitivity = 0.4,
+  #    maxZoom = 20,
+  #    controlIconsEnabled = TRUE,
+  #    viewBox = FALSE)
   # })
   
   renderPlot(.create_graph(input, image, mask, object, img_id, ...))
@@ -1174,54 +1178,167 @@
               node_shape_fix = input$node_shape_fix,
               edge_color_fix = cur_edge_color_fix,
               edge_width_fix = cur_edge_width_fix
-              )
-  
+              )+
+    ggtitle("")
 }
 
 
 ## Create graph interface basic controls 
-.create_graph_controls <- function(input, image, mask, object, img_id, ...){
-  
-  shape_names <- c("circle", "square", "diamond", "triangle", 
-                   "plus", "cross", "asterisk")
-  
+# .create_node_controls <- function(input, image, mask, object, img_id, ...){
+#   
+#   shape_names <- c("circle", "square", "diamond", "triangle", 
+#                    "plus", "cross", "asterisk")
+#   
+#   renderUI({
+#     if (input$plotpoints){
+#       wellPanel(
+#         menuItem(span("Node control", 
+#                       style = "color: black;padding-top: 0px"), 
+#                  style = "color: black; padding-top: 0px",
+#           menuItem(span("Color control", 
+#                       style = "color: black;padding-top: 0px"), 
+#                  style = "color: black; padding-top: 0px",
+#                  colourInput(inputId = "node_color_fix", 
+#                              label = NULL,
+#                              value = "grey")),
+#           menuItem(span("Size control", 
+#                     style = "color: black;padding-top: 0px"), 
+#                style = "color: black; padding-top: 0px",
+#                sliderInput(inputId = "node_size_fix", 
+#                            label = NULL, 
+#                            min = 1, max = 5, step = 0.5, 
+#                            value = 1)),
+#           menuItem(span("Shape control", 
+#                     style = "color: black;padding-top: 0px"), 
+#                style = "color: black; padding-top: 0px",
+#                selectInput(inputId = "node_shape_fix", 
+#                            label = NULL, 
+#                            choices = shape_names, 
+#                            selected = "circle"
+#                             )))
+#       )
+#     }})}
+
+
+
+.create_node_color_controls <- function(input, image, mask, object, img_id, ...){
   renderUI({
     if (input$plotpoints){
       wellPanel(
-        selectizeInput("spatial_graph", label = span("Spatial graph",
-                                                style = "color: black; padding-top: 0px"), 
+        menuItem(span("Node color control", 
+                      style = "color: black;padding-top: 0px"), 
+                 style = "color: black; padding-top: 0px",
+        selectizeInput("node_color_by", label = span("Color by (Nodes)",
+                                                     style = "color: black; padding-top: 0px"), 
                        choices = NULL, options = NULL, 
-                       list(placeholder = 'Spatial graph', maxItems = 1,
+                       list(placeholder = 'Color by', maxItems = 1,
                             maxOptions = 10)
-                       ),
-        uiOutput("fine_graph_controls"),
-        uiOutput("fine_edge_controls"),
-        menuItem(span("Node control", 
-                      style = "color: black;padding-top: 0px"), 
-                 style = "color: black; padding-top: 0px",
-        menuItem(span("Color control", 
-                      style = "color: black;padding-top: 0px"), 
-                 style = "color: black; padding-top: 0px",
-                 colourInput(inputId = "node_color_fix", 
-                             label = NULL,
-                             value = "grey")),
-      menuItem(span("Size control", 
-                    style = "color: black;padding-top: 0px"), 
-               style = "color: black; padding-top: 0px",
-               sliderInput(inputId = "node_size_fix", 
-                           label = NULL, 
-                           min = 1, max = 5, step = 0.5, 
-                           value = 1)),
-      menuItem(span("Shape control", 
-                    style = "color: black;padding-top: 0px"), 
-               style = "color: black; padding-top: 0px",
-               selectInput(inputId = "node_shape_fix", 
-                           label = NULL, 
-                           choices = shape_names, 
-                           selected = "circle"
-                            )))
+        ),
+        selectizeInput("node_color_by_selection",
+                       label = span("Select color by",
+                                    style = "color: black; padding-top: 0px"),
+                       choices = NULL,
+                       multiple = TRUE),
+        uiOutput("basic_node_color_controls"),
+        uiOutput("advanced_node_color_controls"))
+      )}})}
+
+
+.create_basic_node_color <- function(input, image, mask, object, img_id, ...){
+  renderUI({
+    if (input$plotpoints && is.null(input$node_color_by_selection)){
+      wellPanel(colourInput(inputId = "node_color_fix", 
+                             label = "Basic color",
+                             value = "gray"),
+                class = "wellpanel_node"
+        )}})}
+
+.create_advanced_node_color <- function(input, image, mask, object, img_id, ...){
+  renderUI({
+    if(input$plotpoints && !is.null(input$node_color_by_selection)){
+      cur_entries <- length(unique(colData(object)[[input$node_color_by]]))
+      wellPanel(
+        if(is.numeric(colData(object)[[input$node_color_by]]) && cur_entries > 23L){ 
+                   radioButtons(inputId = "numeric_node_color_outline", 
+                                label = "Color palettes",
+                                choices = list("viridis","inferno","plasma"), 
+                                selected = "viridis")
+        }else{
+          lapply(seq_along(input$node_color_by_selection), function (i){
+                     cur_col <- c(brewer.pal(12, "Paired"),
+                                  brewer.pal(8, "Pastel2")[-c(3,5,8)],
+                                  brewer.pal(12, "Set3")[-c(2,3,8,9,11,12)])
+                     colourInput(inputId = paste0("color_outline",i),
+                                 label = if (is.logical(colData(object)[[input$node_color_by]])) {
+                                   req(any(as.numeric(colData(object)[[input$node_color_by]]) %in% input$node_color_by_selection))
+                                   as.logical(as.numeric(input$node_color_by_selection[i]))
+                                 } else { input$node_color_by_selection[i] },
+                                 value = cur_col[i])
+                   })
+        }, class = "wellpanel_node"
       )
-    }})}
+      }})}
+
+
+.create_node_size_controls <- function(input, image, mask, object, img_id, ...){
+  renderUI({
+    if (input$plotpoints){
+      wellPanel(
+        menuItem(span("Node size control", 
+                      style = "color: black;padding-top: 0px"), 
+                 style = "color: black; padding-top: 0px",
+                 selectizeInput("node_size_by", label = span("Color by (Nodes)",
+                                                              style = "color: black; padding-top: 0px"), 
+                                choices = NULL, options = NULL, 
+                                list(placeholder = 'Size by', maxItems = 1,
+                                     maxOptions = 10)
+                 ),
+                 selectizeInput("node_size_by_selection",
+                                label = span("Select size by",
+                                             style = "color: black; padding-top: 0px"),
+                                choices = NULL,
+                                multiple = TRUE),
+                 uiOutput("basic_node_size_controls"),
+                 uiOutput("advanced_node_size_controls"))
+      )}})}
+
+.create_basic_node_size <- function(input, image, mask, object, img_id, ...){
+  renderUI({
+    if (input$plotpoints && is.null(input$node_size_by_selection)){
+      wellPanel(sliderInput(inputId = "node_size_fix", 
+                            label = "Basic size",
+                            min = 1, max = 5, step = 0.5,
+                            value = 1),
+                class = "wellpanel_node"
+      )}})}
+
+.create_advanced_node_size <- function(input, image, mask, object, img_id, ...){
+  renderUI({
+    if (input$plotpoints && !is.null(input$node_size_by_selection)){
+      wellPanel(sliderInput(inputId = "node_size_fix", 
+                            label = "Size range",
+                            min = 1, max = 5, step = 0.5,
+                            value = c(2,4)),
+                class = "wellpanel_node"
+      )}})}
+
+
+.create_edge_controls <- function(input, image, mask, object, img_id, ...){
+  renderUI({
+    if (input$plotpoints){
+      #wellPanel(
+        menuItem(span("Edge control", 
+                      style = "color: black;padding-top: 0px"), 
+                 style = "color: black; padding-top: 0px",
+                 selectizeInput("spatial_graph", label = span("Spatial graph",
+                                                              style = "color: black; padding-top: 0px"), 
+                                choices = NULL, options = NULL, 
+                                list(placeholder = 'Spatial graph', maxItems = 1,
+                                     maxOptions = 10)
+                 ),
+                 uiOutput("fine_graph_controls"),
+                 uiOutput("fine_edge_controls"))#)
+}})}
 
 
 
@@ -1271,25 +1388,7 @@
     }})}
 
 
-.create_advanced_graph_controls <- function(input, image, mask, object, img_id, ...){
-  renderUI({
-    if (input$plotpoints){
-        wellPanel(
-          selectizeInput("node_color_by", label = span("Color by (Nodes)",
-                                                  style = "color: black; padding-top: 0px"), 
-                         choices = NULL, options = NULL, 
-                         list(placeholder = 'Color by', maxItems = 1,
-                              maxOptions = 10)
-          ),
-          selectizeInput("node_color_by_selection",
-                         label = span("Select color by",
-                                      style = "color: black; padding-top: 0px"),
-                         choices = NULL,
-                         multiple = TRUE)
-        )}})}
-
-
-.populate_advanced_graph_controls <- function(session, object, input){
+.populate_node_color_controls <- function(session, object, input){
 
   observeEvent(input$plotpoints, {
 
@@ -1330,3 +1429,48 @@
     }
   })
 }
+
+
+.populate_node_size_controls <- function(session, object, input){
+  
+  observeEvent(input$plotpoints, {
+    
+    if (input$plotpoints && is.null(object)) {
+      updateSelectizeInput(session, inputId = "node_size_by",
+                           choices = c(""),
+                           server = TRUE,
+                           selected = "")
+    }
+    
+    if (input$plotpoints && !is.null(object)) {
+      updateSelectizeInput(session, inputId = "node_size_by",
+                           choices = names(colData(object)),
+                           server = TRUE,
+                           selected = "")
+      
+      observeEvent(input$node_size_by, {
+        
+        validate(
+          need(is.null(dim(colData(object)[[input$node_size_by]])),
+               "NOTE: The current [Node size by] choice can not be visualized
+               because it has more than one dimension in
+               colData(object)[[Node size by]].")
+        )
+        
+        cur_entries <- length(unique(colData(object)[[input$node_size_by]]))
+        if(is.numeric(colData(object)[[input$node_size_by]]) && cur_entries > 23L){
+          updateSelectizeInput(session, inputId = "node_size_by_selection",
+                               choices = input$node_size_by,
+                               server = TRUE,
+                               selected = input$node_size_by)
+        }else{
+          updateSelectizeInput(session, inputId = "node_size_by_selection",
+                               choices = unique(colData(object)[[input$node_size_by]]),
+                               server = TRUE,
+                               selected = unique(colData(object)[[input$node_size_by]][1]))
+        }})
+    }
+  })
+}
+
+
