@@ -1169,6 +1169,7 @@
   plotSpatial(cur_object, 
               img_id = img_id, 
               scales = "free",
+              coords = c("Pos_X", "Pos_Y"),
               colPairName = cur_graph,
               draw_edges = cur_edges,
               directed = cur_directed,
@@ -1228,7 +1229,7 @@
         menuItem(span("Node color control", 
                       style = "color: black;padding-top: 0px"), 
                  style = "color: black; padding-top: 0px",
-        selectizeInput("node_color_by", label = span("Color by (Nodes)",
+        selectizeInput("node_color_by", label = span("Color by",
                                                      style = "color: black; padding-top: 0px"), 
                        choices = NULL, options = NULL, 
                        list(placeholder = 'Color by', maxItems = 1,
@@ -1287,7 +1288,7 @@
         menuItem(span("Node size control", 
                       style = "color: black;padding-top: 0px"), 
                  style = "color: black; padding-top: 0px",
-                 selectizeInput("node_size_by", label = span("Color by (Nodes)",
+                 selectizeInput("node_size_by", label = span("Size by",
                                                               style = "color: black; padding-top: 0px"), 
                                 choices = NULL, options = NULL, 
                                 list(placeholder = 'Size by', maxItems = 1,
@@ -1443,8 +1444,12 @@
     }
     
     if (input$plotpoints && !is.null(object)) {
+      cur_choices <- names(colData(object))[unlist(
+        lapply(seq_along(colData(object)), 
+               function(i){is.numeric(colData(object)[[i]])}))]
+      
       updateSelectizeInput(session, inputId = "node_size_by",
-                           choices = names(colData(object)),
+                           choices = cur_choices,
                            server = TRUE,
                            selected = "")
       
