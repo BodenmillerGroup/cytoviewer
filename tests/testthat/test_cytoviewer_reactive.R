@@ -14,7 +14,7 @@ test_that("cytoviewer: input testing works", {
                       contrast1 = 1, contrast2 = 1, contrast3 = 1, contrast4 = 1, contrast5 = 1,
                       brightness1 = 1, brightness2 = 1, brightness3 = 1, brightness4 = 1, brightness5 = 1,
                       gamma1 = 1, gamma2 = 1, gamma3 = 1, gamma4 = 1, gamma5 = 1,
-                      color1 = "#FF00FF", color2 = "#00FFFF", color3 = "#FFFF00", color4 = "#FF0000", color5 = "#00FF00")
+                      color1 = "#FF00FF", color2 = "#00FFFF", color3 = "#FFFF00", color4 = "#FF0000", color5 = "#00FF00", resolution = 1)
     
     expect_equal(input$sample, "E34_imc")
     expect_equal(input$marker1, "H3")
@@ -70,7 +70,8 @@ test_that("cytoviewer: plot input testing works", {
                       thick = FALSE, 
                       interpolate = TRUE,
                       outline = FALSE, 
-                      outline_by = NULL
+                      outline_by = NULL, 
+                      resolution = 1
 )
     
     image <- pancreasImages[1]
@@ -141,7 +142,8 @@ test_that("cytoviewer: plot input 2 testing works", {
                       thick = FALSE, 
                       interpolate = TRUE,
                       outline = TRUE, 
-                      outline_by = ""
+                      outline_by = "", 
+                      resolution = 1
     )
     
     image <- pancreasImages[1]
@@ -182,7 +184,8 @@ test_that("cytoviewer: plot input 3 testing works", {
                       interpolate = TRUE,
                       outline = TRUE, 
                       outline_by = "CellType",
-                      select_outline = "celltype_C"
+                      select_outline = "celltype_C",
+                      resolution = 1
     )
     
     image <- pancreasImages[1]
@@ -224,7 +227,8 @@ test_that("cytoviewer: plot input 4 testing works", {
                       interpolate = TRUE,
                       outline = TRUE, 
                       outline_by = "Area",
-                      numeric_color_outline = "viridis"
+                      numeric_color_outline = "viridis",
+                      resolution = 1
     )
     
     image <- pancreasImages[1]
@@ -264,7 +268,8 @@ test_that("cytoviewer: plot input 5 testing works", {
                       thick = FALSE, 
                       interpolate = TRUE,
                       outline = TRUE,
-                      outline_by = ""
+                      outline_by = "",
+                      resolution = 1
     )
     
     image <- pancreasImages[1]
@@ -300,7 +305,8 @@ test_that("cytoviewer: plot input 6 testing works", {
                       color_by = "CellType",
                       color_by_selection = "celltype_C",
                       color_by1 = "blue",
-                      missing_colorby = "white"
+                      missing_colorby = "white",
+                      resolution = 1
     )
     
     image <- pancreasImages[1]
@@ -336,7 +342,8 @@ test_that("cytoviewer: plot input 7 testing works", {
                       color_by = "Pattern",
                       color_by_selection = "1",
                       color_by1 = "blue",
-                      missing_colorby = "white"
+                      missing_colorby = "white",
+                      resolution = 1
     )
     
     image <- pancreasImages[1]
@@ -371,7 +378,8 @@ test_that("cytoviewer: plot input 8 testing works", {
                       plotcells = TRUE, 
                       color_by = "Area",
                       color_by_selection = "Area",
-                      numeric_colorby = "viridis"
+                      numeric_colorby = "viridis",
+                      resolution = 1
     )
     image <- NULL
     mask <- pancreasMasks[1]
@@ -403,7 +411,8 @@ test_that("cytoviewer: plot input 9 testing works", {
                       scalebar = 20,
                       interpolate = TRUE,
                       plotcells = TRUE,
-                      color_by = ""
+                      color_by = "",
+                      resolution = 1
     )
     
     image <- pancreasImages[1]
@@ -434,7 +443,8 @@ test_that("cytoviewer: plot input 10 testing works", {
                       scalebar = 20,
                       interpolate = TRUE,
                       plotcells = TRUE,
-                      color_by = ""
+                      color_by = "",
+                      resolution = 1
     )
     
     image <- NULL
@@ -472,7 +482,8 @@ test_that("cytoviewer: plot input 11 testing works", {
                       thick = FALSE, 
                       interpolate = TRUE,
                       outline = FALSE, 
-                      outline_by = NULL
+                      outline_by = NULL,
+                      resolution = 1
     )
     
     image <- pancreasImages[1]
