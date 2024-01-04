@@ -103,8 +103,9 @@
         # return updated img_id 
         updated_sample <- img_IDs[updated_index]
     
-        updateSelectInput(session, inputId = "sample",
+        updateSelectizeInput(session, inputId = "sample",
                         choices = unique(img_IDs),
+                        server = TRUE,
                         selected = updated_sample)
     
         }, ignoreInit = TRUE)    
@@ -118,8 +119,9 @@
         # return updated img_id
         updated_sample <- img_IDs[updated_index]
     
-        updateSelectInput(session, inputId = "sample",
+        updateSelectizeInput(session, inputId = "sample",
                         choices = unique(img_IDs),
+                        server = TRUE,
                         selected = updated_sample)
 
     }, ignoreInit = TRUE)    
@@ -133,6 +135,7 @@
   # Store image IDs
     updateSelectizeInput(session, inputId = "sample",
                         choices = unique(img_IDs),
+                        server = TRUE,
                         selected = unique(img_IDs)[1])
     
   # Store marker names 
