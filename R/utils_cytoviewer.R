@@ -324,7 +324,8 @@
     cur_color <- cur_color[names(cur_color) != ""]
     
     cur_basic_outline <- input$basic_color_outline
-    cur_scale <- input$scalebar
+    cur_scale <- .get_scalebar(input)
+    cur_resolution <- .get_resolution(input)
     cur_thick <- input$thick
     cur_interpolate <- input$interpolate
     
@@ -350,7 +351,7 @@
                    legend = cur_legend,
                    image_title = cur_imagetitle,
                    thick = cur_thick,
-                   scale_bar = list(length = cur_scale),
+                   scale_bar = list(length = cur_scale, label = cur_scale*cur_resolution),
                    interpolate = cur_interpolate,
                    ...)
       
@@ -407,7 +408,7 @@
                    legend = cur_legend,
                    image_title = cur_imagetitle,
                    thick = cur_thick,
-                   scale_bar = list(length = cur_scale),
+                   scale_bar = list(length = cur_scale, label = cur_scale*cur_resolution),
                    interpolate = cur_interpolate,
                    ...)
         
@@ -419,7 +420,7 @@
                  bcg = cur_bcg,
                  legend = cur_legend,
                  image_title = cur_imagetitle,
-                 scale_bar = list(length = cur_scale),
+                 scale_bar = list(length = cur_scale, label = cur_scale*cur_resolution),
                  interpolate = cur_interpolate,
                  ...)   
     }
@@ -474,7 +475,8 @@
     cur_bcg <- cur_bcg[names(cur_bcg) != ""]
     
     cur_basic_outline <- input$basic_color_outline
-    cur_scale <- input$scalebar
+    cur_scale <- .get_scalebar(input)
+    cur_resolution <- .get_resolution(input)
     cur_thick <- input$thick
     cur_interpolate <- input$interpolate
     
@@ -500,7 +502,7 @@
                  legend = cur_legend,
                  image_title = cur_imagetitle,
                  thick = cur_thick,
-                 scale_bar = list(length = cur_scale),
+                 scale_bar = list(length = cur_scale, label = cur_scale*cur_resolution),
                  interpolate = cur_interpolate,
                  return_plot = TRUE,
                  ...)
@@ -552,7 +554,7 @@
                  legend = cur_legend,
                  image_title = cur_imagetitle,
                  thick = cur_thick,
-                 scale_bar = list(length = cur_scale),
+                 scale_bar = list(length = cur_scale, label = cur_scale*cur_resolution),
                  interpolate = cur_interpolate,
                  return_plot = TRUE,
                  ...)
@@ -565,7 +567,7 @@
                  bcg = cur_bcg,
                  legend = cur_legend,
                  image_title = cur_imagetitle,
-                 scale_bar = list(length = cur_scale),
+                 scale_bar = list(length = cur_scale, label = cur_scale*cur_resolution),
                  interpolate = cur_interpolate,
                  return_plot = TRUE,
                  ...)   
@@ -963,7 +965,8 @@
   
   req(img_id)
 
-  cur_scale <- input$scalebar
+  cur_scale <- .get_scalebar(input)
+  cur_resolution <- .get_resolution(input)
   cur_legend <- .show_legend(input)
   cur_imagetitle <- .show_title(input)
   cur_missingcolor <- input$missing_colorby
@@ -1047,7 +1050,7 @@
             missing_colour = cur_missingcolor, 
             legend = cur_legend,
             image_title = cur_imagetitle,
-            scale_bar = list(length = cur_scale),
+            scale_bar = list(length = cur_scale, label = cur_scale*cur_resolution),
             ...)
     
 }
@@ -1093,7 +1096,40 @@
       cur_value <- round(dim(mask[[1]])[1]/4, digits=-1)
       }
     
-    numericInput(inputId = "scalebar", label = "Scale bar length", 
+    numericInput(inputId = "scalebar", label = "Scale bar length [Pixels]", 
                  value = cur_value, min = 0, max = 1000, step = 5)
   })
 }
+
+.get_scalebar <- function(input){
+  cur_scale <- input$scalebar
+  
+  validate(
+    need(!is.na(cur_scale) && cur_scale > 0, "NOTE: Please specify a [Scale bar length [Pixels]] value."),
+  )
+  
+  return(cur_scale)
+}
+
+# Add resolution tab
+.add_resolution <- function(input){
+  renderUI({
+    numericInput(inputId = "resolution", label = "Pixel resolution [um]", 
+                 value = 1, min = 0, max = 100, step = 1)
+  })
+}
+
+.get_resolution <- function(input){
+  cur_resolution <- input$resolution
+  
+  validate(
+    need(!is.na(cur_resolution) && cur_resolution > 0, "NOTE: Please specify a [Pixel resolution [um]] value."),
+    )
+  
+  return(cur_resolution)
+}
+
+
+
+
+
