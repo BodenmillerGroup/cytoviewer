@@ -20,7 +20,9 @@ Channels) and cell-level visualization (Masks). It allows users
 to overlay individual images with segmentation masks, integrates well 
 with [SingleCellExperiment](https://bioconductor.org/packages/release/bioc/html/SingleCellExperiment.html) / [SpatialExperiment](https://bioconductor.org/packages/release/bioc/html/SingleCellExperiment.html) 
 and [CytoImageList](https://www.bioconductor.org/packages/release/bioc/html/cytomapper.html)
-objects for metadata and image visualization and supports image downloads.
+objects for metadata and image visualization and supports image downloads.  
+
+Read the **BMC Bioinformatics paper** here: [doi.org/10.1186/s12859-023-05546-z](doi.org/10.1186/s12859-023-05546-z)
 
 ## Check status
 
@@ -102,11 +104,11 @@ issue a pull request.
 
 ## Citation
 
-If you are using `cytoviewer` in your work, please cite the released preprint as:
+If you are using `cytoviewer` in your work, please cite the paper as:
 
 ```
-Lasse Meyer, Nils Eling, and Bernd Bodenmiller (2023). cytoviewer: an R/Bioconductor package for interactive 
-visualization and exploration of highly multiplexed imaging data, biorxiv, doi.org/10.1101/2023.05.24.542115
+Meyer, L., Eling, N., & Bodenmiller, B. (2024). cytoviewer: an R/Bioconductor package for interactive visualization 
+and exploration of highly multiplexed imaging data. BMC Bioinformatics, doi.org/10.1186/s12859-023-05546-z
 ```
 
 

@@ -1,0 +1,12 @@
+ 	
+citHeader("To cite the package 'cytoviewer' in publications use:")
+
+citEntry(entry="article",
+         title = "cytoviewer: an R/Bioconductor package for interactive visualization and exploration of highly multiplexed imaging data",
+         author = personList(as.person("Lasse Meyer"),
+                             as.person("Nils Eling"),
+                             as.person("Bernd Bodenmiller")),
+         year = 2024,
+         journal = "BMC Bioinformatics",
+	 doi = "doi.org/10.1186/s12859-023-05546-z",
+         textVersion = "Lasse Meyer, Nils Eling, Bernd Bodenmiller (2024). cytoviewer: an R/Bioconductor package for interactive visualization and exploration of highly multiplexed imaging data. BMC Bioinformatics, doi: doi.org/10.1186/s12859-023-05546-z")
