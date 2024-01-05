@@ -13,9 +13,12 @@
   .create_interactive_observer(image, mask, input, session)
   
   output$scalebar_controls <- renderUI({})
+  output$resolution_controls <- renderUI({})
   outputOptions(output, "scalebar_controls", suspendWhenHidden = FALSE)
+  outputOptions(output, "resolution_controls", suspendWhenHidden = FALSE)
   output$scalebar_controls <- .add_scalebar(input, object, mask,image, 
                                             img_id, cell_id)
+  output$resolution_controls <- .add_resolution(input)
   
   ## Session info 
   cur_sessionInfo <- sessionInfo()

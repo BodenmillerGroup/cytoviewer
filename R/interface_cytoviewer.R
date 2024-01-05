@@ -226,6 +226,7 @@
                  menuItem("Basic controls", 
                           menuItem("Image appearance",
                           uiOutput("scalebar_controls"),
+                          uiOutput("resolution_controls"),
                           checkboxInput(inputId = "show_legend","Show Legend", 
                                         value = FALSE),
                           checkboxInput(inputId = "show_title","Show Title", 
