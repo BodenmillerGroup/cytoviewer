@@ -500,3 +500,34 @@ test_that("cytoviewer: plot input 11 testing works", {
   })
   
 })  
+
+test_that("cytoviewer: plot input 12 testing works", {
+  
+  # Load datasets 
+  library(cytomapper)
+  data("pancreasMasks")
+  data("pancreasSCE")
+  
+  testServer(app = cytoviewer(mask = pancreasMasks, object = pancreasSCE, img_id = "ImageNb", cell_id = "CellNb"), {
+    
+    session$setInputs(sample = "E34_mask", 
+                      show_legend = FALSE, 
+                      show_title = FALSE,
+                      gaussian_blur = FALSE, 
+                      scalebar = 20,
+                      interpolate = TRUE,
+                      plotcells = TRUE,
+                      color_by = "",
+                      resolution = 1
+    )
+    
+    image <- NULL
+    mask <- pancreasMasks[1]
+    object <- NULL
+    img_id <- "ImageNb"
+    
+    # Plot cells output (Masks but no images and object)
+    expect_silent(.create_cells(input, object, mask, image, img_id, cell_id))
+    
+  })
+})  
