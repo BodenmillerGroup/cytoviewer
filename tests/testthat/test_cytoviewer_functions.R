@@ -149,6 +149,13 @@ test_that("cytoviewer: validity check testing works", {
   cur_object_3 <- pancreasSCE
   colData(cur_object_3)[["CellNb"]] <- as.character(colData(cur_object_3)[["CellNb"]])
   
+  expect_error(cytoviewer(mask = pancreasMasks, 
+                          object = cur_object_3, 
+                          img_id = "ImageNb", 
+                          cell_id = "CellNb"), 
+               regexp = "Cell ids should only contain numeric integer values.",
+               fixed = TRUE)
+  
   cur_object_4 <- pancreasSCE
   colData(cur_object_4)[["CellNb"]][1] <- 824.1
   
