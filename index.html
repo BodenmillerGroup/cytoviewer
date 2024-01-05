@@ -74,7 +74,7 @@
       </header><div class="row">
   <div class="contents col-md-9">
 
-<p><img src="articles/imgs/cytoviewer_sticker.png" align="right" alt="" width="100"></p>
+<p><img src="articles/imgs/cytoviewer_sticker.png" align="right" width="100"></p>
 <div class="section level1">
 <div class="page-header"><h1 id="cytoviewer">cytoviewer<a class="anchor" aria-label="anchor" href="#cytoviewer"></a>
 </h1></div>
@@ -156,7 +156,14 @@
 <span>  <span class="fu">shiny</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/shiny/man/runApp.html" class="external-link">runApp</a></span><span class="op">(</span><span class="va">app</span><span class="op">)</span></span>
 <span></span>
 <span>  <span class="op">}</span></span></code></pre></div>
-<p>For more detailed information on package usage and functionality, please refer to <a href="https://bodenmillergroup.github.io/cytoviewer/" class="external-link">https://bodenmillergroup.github.io/cytoviewer/</a>.</p>
+<p>For more detailed information on package usage and functionality, please refer to <a href="https://bodenmillergroup.github.io/cytoviewer/" class="external-link uri">https://bodenmillergroup.github.io/cytoviewer/</a>.</p>
+</div>
+<div class="section level2">
+<h2 id="application-overview">Application overview<a class="anchor" aria-label="anchor" href="#application-overview"></a>
+</h2>
+<div class="figure">
+<img src="articles/imgs/cytoviewer_overview.png" alt=""><p class="caption"><strong>Figure 1: cytoviewer interface and functionality.</strong> <strong>(A)</strong> The supported functionality (right) of <em>cytoviewer</em> depends on the data inputs (left). To match information between the objects, cell (cell_id) and image (img_id) identifiers can be provided. SCE/SPE = <em>SingleCellExperiment</em>/<em>SpatialExperiment</em>. <strong>(B)</strong> The graphical user interface of <em>cytoviewer</em> is divided into a body, header, and sidebar. The body of <em>cytoviewer</em> includes the image viewer, which has three tabs: Composite (Image-level), Channels (Image-level), and Mask (Cell-level). Zooming is supported for Composite and Mask tabs. The package version, R session information, help page, and a drop-down menu for image downloads are located in the header. The sidebar menu has controls for sample selection, image visualization, mask visualization, and general settings. Scale bar: 150 µm <strong>(C)</strong> <em>cytoviewer</em> supports different viewing modes. Top: The “channels” tab of image-level visualization displays individual channels. Shown are Ecad (magenta), CD8a (cyan), and CD68 (yellow) marking tumor cells, CD8+ T cells, and myeloid cells, respectively. Center: The “composite” tab of image-level visualization visualizes image composites combining multiple channels. These composite images can be overlayed with cell outlines, which can be colored by cell-specific metadata. Shown here are cell outlines colored by cell area (continous value) and cell type (categorical value; tumor cells in white). Channel color settings are as follows for all markers: Contrast: 2,5; Brightness: 1; Gamma: 1.2. Bottom: The “mask” tab can be used to visualize segmentation masks that can be colored by cell-specific metadata. Shown here are segmentation masks colored by cell area (continuous) and cell type (categorical; tumor cells in magenta). Scale bars: 150 µm. <strong>(D)</strong> “Image appearance” controls can be used to add legends or titles and to change the scale bar length for image-level (top) and cell level (bottom) visualization. The cell-level mask plot depicts tumor (magenta), myeloid (yellow), and CD8+ T cells (cyan). Scale bars: 100 µm. <strong>Adapted from Meyer et al., 2024</strong></p>
+</div>
 </div>
 <div class="section level2">
 <h2 id="contributing">Contributing<a class="anchor" aria-label="anchor" href="#contributing"></a>
