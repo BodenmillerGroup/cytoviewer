@@ -12,7 +12,7 @@ jobs:
     container: rocker/r-ver:devel
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
       - name: Query dependencies
         run: |
@@ -24,13 +24,14 @@ jobs:
         run: |
           apt-get update 
           apt-get install -y --no-install-recommends apt-utils 
-          apt-get install -y --no-install-recommends zlib1g-dev libfftw3-dev libxml2-dev libpng-dev libtiff-dev libfontconfig1-dev libcurl4-gnutls-dev libcairo2-dev libssl-dev libxt-dev curl libgdal-dev libproj-dev pandoc pandoc-citeproc libmagick++-dev libarchive-dev
+          apt-get install -y --no-install-recommends libharfbuzz-dev libfribidi-dev zlib1g-dev libfftw3-dev libxml2-dev libpng-dev libtiff-dev libfontconfig1-dev libcurl4-gnutls-dev libcairo2-dev libssl-dev libxt-dev curl libgdal-dev libproj-dev pandoc libmagick++-dev libarchive-dev
           apt-get clean
           rm -rf /var/lib/apt/ilists/*
 
       - name: Install dependencies
         run: |
          install.packages("BiocManager")
+         install.packages("svglite")
          BiocManager::install(version = "devel", update = TRUE, ask = FALSE, force = TRUE) 
          remotes::install_deps(dependencies = TRUE, repos = BiocManager::repositories(), Ncpu = 2L)
         shell: Rscript {0}
