@@ -39,3 +39,9 @@ inst/scripts/*_full_clean.tiff
 inst/scripts/*_full_mask.tiff
 *.DS_Store
 docs
+
+# Claude Code setup files
+.claude/
+CLAUDE.md
+TODO.md
+COMPLETED.md
