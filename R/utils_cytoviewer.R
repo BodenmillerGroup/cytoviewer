@@ -3,12 +3,14 @@
 # -----------------------------------------------------------------------------
 
 #' @importFrom cytomapper plotCells plotPixels channelNames CytoImageList
-#' @importFrom SingleCellExperiment colData
+#' @importFrom imcRtools plotSpatial
+#' @importFrom SingleCellExperiment colData colPair colPairNames
+#' @importFrom ggplot2 ggtitle
 #' @importFrom viridis viridis
 #' @importFrom archive archive_write_files
 #' @importFrom colourpicker colourInput
 #' @importFrom grDevices dev.off pdf png replayPlot
-#' @importFrom RColorBrewer brewer.pal 
+#' @importFrom RColorBrewer brewer.pal
 #' @importFrom shinycssloaders withSpinner
 #' @importFrom svglite stringSVG
 #' @importFrom svgPanZoom svgPanZoom renderSvgPanZoom svgPanZoomOutput
@@ -1189,7 +1191,7 @@
   
   cur_object <- object[, colData(object)[[img_id]] %in% mcols(cur_mask)[,img_id]]
   
-  if(!input$spatial_graph == ""){
+  if(!is.null(input$spatial_graph) && input$spatial_graph != ""){
     cur_graph <- input$spatial_graph
     cur_edges <- TRUE
     cur_directed <- input$directed
@@ -1392,7 +1394,7 @@
 
 .create_fine_graph_controls <- function(input, image, mask, object, img_id, ...){
   renderUI({
-    if(!input$spatial_graph == ""){
+    if(!is.null(input$spatial_graph) && input$spatial_graph != ""){
       wellPanel(
         checkboxInput("directed", "Directed layout", 
                       value = FALSE, width = NULL),
@@ -1404,7 +1406,7 @@
 
 .create_fine_edge_controls <- function(input, image, mask, object, img_id, ...){
   renderUI({
-    if(!input$spatial_graph == ""){
+    if(!is.null(input$spatial_graph) && input$spatial_graph != ""){
       wellPanel(
         menuItem(span("Edge control", 
                 style = "color: black;padding-top: 0px"), 

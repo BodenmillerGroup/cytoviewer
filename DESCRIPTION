@@ -33,8 +33,9 @@ Imports:
     EBImage,
     methods,
     cytomapper,
+    imcRtools,
     SingleCellExperiment,
-    S4Vectors, 
+    S4Vectors,
     SummarizedExperiment
 Suggests:
     BiocStyle,
@@ -46,5 +47,5 @@ biocViews: ImmunoOncology, Software, SingleCell, OneChannel, TwoChannel, MultiCh
 VignetteBuilder: knitr
 URL: https://github.com/BodenmillerGroup/cytoviewer
 BugReports: https://github.com/BodenmillerGroup/cytoviewer/issues
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.3
 Encoding: UTF-8
