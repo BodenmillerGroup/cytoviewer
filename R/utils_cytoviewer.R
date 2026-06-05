@@ -1146,33 +1146,25 @@
   renderUI({
     if(input$plotpoints){
       box(withSpinner(
-        plotOutput("graphPlot", width = "100%", height = "75vh"), type = 6), 
-          title = NULL, 
-          id = "expression",
+        svgPanZoomOutput("graphPlot", width = "100%", height = "75vh"), type = 6),
+          title = NULL,
+          id = "graph",
           status = "primary",
           width = 12)
     }
   })
-    
 }
 
 ## Visualize graphs
 .graphPlot <- function(input, image, mask, object, img_id, ...){
-  
-  # renderSvgPanZoom({
-  #   browser()
-  #   svgPanZoom(
-  #    suppressMessages(
-  #      gridSVG(.create_graph(input, image, mask, object, img_id, ...))
-  #      ),
-  #    zoomScaleSensitivity = 0.4,
-  #    maxZoom = 20,
-  #    controlIconsEnabled = TRUE,
-  #    viewBox = FALSE)
-  # })
-  
-  renderPlot(.create_graph(input, image, mask, object, img_id, ...))
-
+  renderSvgPanZoom({
+    suppressMessages(svgPanZoom(
+      stringSVG(print(.create_graph(input, image, mask, object, img_id, ...))),
+      zoomScaleSensitivity = 0.4,
+      maxZoom = 20,
+      controlIconsEnabled = TRUE,
+      viewBox = FALSE))
+  })
 }
 
 ## Create graph plot 
@@ -1288,9 +1280,9 @@
 .create_basic_node_color <- function(input, image, mask, object, img_id, ...){
   renderUI({
     if (input$plotpoints && is.null(input$node_color_by_selection)){
-      wellPanel(colourInput(inputId = "node_color_fix", 
+      wellPanel(colourInput(inputId = "node_color_fix",
                              label = "Basic color",
-                             value = "gray"),
+                             value = "black"),
                 class = "wellpanel_node"
         )}})}
 
@@ -1346,10 +1338,10 @@
 .create_basic_node_size <- function(input, image, mask, object, img_id, ...){
   renderUI({
     if (input$plotpoints && is.null(input$node_size_by_selection)){
-      wellPanel(sliderInput(inputId = "node_size_fix", 
+      wellPanel(sliderInput(inputId = "node_size_fix",
                             label = "Basic size",
-                            min = 1, max = 5, step = 0.5,
-                            value = 1),
+                            min = 0.5, max = 5, step = 0.5,
+                            value = 1.5),
                 class = "wellpanel_node"
       )}})}
 
