@@ -94,7 +94,6 @@
   
   output$node_size_controls <- .create_node_size_controls(input, image, mask, object, img_id, ...)
   output$basic_node_size_controls <- .create_basic_node_size(input, image, mask, object, img_id, ...)
-  output$advanced_node_size_controls <- .create_advanced_node_size(input, image, mask, object, img_id, ...)
   
   output$edge_controls <- .create_edge_controls(input, image, mask, object, img_id, ...)
   
