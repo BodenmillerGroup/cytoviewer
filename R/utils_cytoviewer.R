@@ -60,25 +60,34 @@
         adjust the scale bar length and include legend/image titles, 
         while the Image filters section allows to control pixel-wise interpolation 
         (default) and apply a Gaussian filter."),
-        h3("Image download"), 
-        p("The cytoviewer package supports fast and uncomplicated image downloads. 
-        Download controls are part of the", em("Header"), ".", "The user can 
-        specify a file name, select the image of interest (Composite, Channels, 
-        Mask) and the file format (pdf, png). Upon clicking the download button, 
+        h3("Points-level visualization"),
+        p("Points-level visualization uses", em("Node controls"), "and",
+          em("Edge controls"), ".",
+          "Node controls allow coloring and sizing of individual cells by
+          cell-specific metadata from", code("colData(object)"), ".
+          Edge controls allow the selection of a spatial graph stored in
+          the object's", code("colPair"), "slot and control edge appearance
+          (color, width, direction)."),
+        h3("Image download"),
+        p("The cytoviewer package supports fast and uncomplicated image downloads.
+        Download controls are part of the", em("Header"), ".", "The user can
+        specify a file name, select the image of interest (Composite, Channels,
+        Mask, Graph) and the file format (pdf, png). Upon clicking the download button,
         a pop-window should appear where the user can specify the download location.")
     )
 }
 
 # Create general observers for header
-.create_general_observer <- function(input, si){
-  
+.create_general_observer <- function(input, si, image, mask, object,
+                                     img_id, cell_id){
+
     # Return session info
     observeEvent(input$SessionInfo, {
         showModal(modalDialog(
             pre(paste(capture.output(si), collapse = "\n")),
-            size = "l",fade = TRUE,
+            size = "l", fade = TRUE,
             footer = NULL, easyClose = TRUE,
-            title = "Session Info",
+            title = "Session Info"
         ))
     })
 
@@ -86,11 +95,112 @@
     observeEvent(input$Help, {
         showModal(modalDialog(
             .general_help(),
-            size = "l",fade = TRUE,
+            size = "l", fade = TRUE,
             footer = NULL, easyClose = TRUE,
-            title = "Help",
+            title = "Help"
         ))
     })
+
+    # Return R code for current visualization
+    observeEvent(input$ViewCode, {
+        code <- .generate_r_code(input, image, mask, object, img_id, cell_id)
+        showModal(modalDialog(
+            tagList(
+                tags$details(
+                    tags$summary(tags$b("Image-level (plotPixels)")),
+                    tags$pre(style = "margin-top:8px", code$image)
+                ),
+                tags$hr(),
+                tags$details(
+                    tags$summary(tags$b("Cell-level (plotCells)")),
+                    tags$pre(style = "margin-top:8px", code$cells)
+                ),
+                tags$hr(),
+                tags$details(
+                    tags$summary(tags$b("Points-level (plotSpatial)")),
+                    tags$pre(style = "margin-top:8px", code$points)
+                )
+            ),
+            size = "l", fade = TRUE,
+            footer = NULL, easyClose = TRUE,
+            title = "R Code"
+        ))
+    })
+}
+
+.generate_r_code <- function(input, image, mask, object, img_id, cell_id){
+
+    cur_sample <- if (!is.null(input$sample) && input$sample != "") input$sample else "<sample>"
+
+    # --- Image-level ---
+    cur_markers <- .select_markers(input)
+    cur_markers <- cur_markers[cur_markers != ""]
+    if (length(cur_markers) == 0) cur_markers <- "<marker>"
+    markers_str <- paste0('c("', paste(cur_markers, collapse = '", "'), '")')
+
+    image_code <- paste0(
+        'library(cytomapper)\n\n',
+        'plotPixels(\n',
+        '  image      = image["', cur_sample, '"],\n',
+        '  colour_by  = ', markers_str, ',\n',
+        '  ...\n',
+        ')'
+    )
+
+    # --- Cell-level ---
+    cur_colorby <- if (!is.null(input$color_by) && input$color_by != "") {
+        paste0('"', input$color_by, '"')
+    } else { "NULL" }
+
+    cells_code <- paste0(
+        'library(cytomapper)\n\n',
+        'plotCells(\n',
+        '  mask    = mask["', cur_sample, '"],\n',
+        if (!is.null(object)) paste0('  object  = object,\n') else '',
+        '  img_id  = "', if (!is.null(img_id)) img_id else "<img_id>", '",\n',
+        '  cell_id = "', if (!is.null(cell_id)) cell_id else "<cell_id>", '",\n',
+        '  colour_by = ', cur_colorby, ',\n',
+        '  ...\n',
+        ')'
+    )
+
+    # --- Points-level ---
+    cur_color_by   <- .select_node_color_by(input)
+    cur_color_arg  <- if (!is.null(cur_color_by)) {
+        paste0('  node_color_by  = "', cur_color_by, '",\n')
+    } else {
+        paste0('  node_color_fix = "', if (!is.null(input$node_color_fix)) input$node_color_fix else "black", '",\n')
+    }
+    cur_size_by  <- if (!is.null(input$node_size_by) && input$node_size_by != "") input$node_size_by else NULL
+    cur_size_arg <- if (!is.null(cur_size_by)) {
+        paste0('  node_size_by  = "', cur_size_by, '",\n')
+    } else {
+        paste0('  node_size_fix = ', if (!is.null(input$node_size_fix)) input$node_size_fix else 1.5, ',\n')
+    }
+    cur_graph <- if (!is.null(input$spatial_graph) && input$spatial_graph != "") {
+        paste0('"', input$spatial_graph, '"')
+    } else { "NULL" }
+    cur_directed    <- if (!is.null(input$directed)) input$directed else FALSE
+    cur_nodes_first <- if (!is.null(input$nodes_first)) input$nodes_first else FALSE
+
+    points_code <- paste0(
+        'library(imcRtools)\n\n',
+        'plotSpatial(\n',
+        '  object      = object[, colData(object)$', if (!is.null(img_id)) img_id else "<img_id>",
+            ' == "', cur_sample, '"],\n',
+        '  img_id      = "', if (!is.null(img_id)) img_id else "<img_id>", '",\n',
+        '  coords      = c("Pos_X", "Pos_Y"),\n',
+        cur_color_arg,
+        cur_size_arg,
+        '  colPairName = ', cur_graph, ',\n',
+        '  draw_edges  = ', tolower(as.character(cur_graph != "NULL")), ',\n',
+        '  directed    = ', tolower(as.character(cur_directed)), ',\n',
+        '  nodes_first = ', tolower(as.character(cur_nodes_first)), ',\n',
+        '  ...\n',
+        ')'
+    )
+
+    list(image = image_code, cells = cells_code, points = points_code)
 }
 
 # Create interactive observers
@@ -588,7 +698,7 @@
                                image, img_id, cell_id, ...){
     downloadHandler(
     filename = function(){
-      if(input$fileselection %in% c("Composite","Mask")){
+      if(input$fileselection %in% c("Composite","Mask","Graph")){
         paste0(input$filename1, ".",input$filename2)
       } else {
         paste0(input$filename1,".zip")
@@ -616,6 +726,16 @@
           } else {
             png(filename = file)
             .create_cells(input, object, mask, image, img_id, cell_id, ...)
+            dev.off()
+          }
+        } else if (input$fileselection == "Graph") {
+          if (input$filename2 == "pdf") {
+            pdf(file = file)
+            print(.create_graph(input, image, mask, object, img_id, ...))
+            dev.off()
+          } else {
+            png(filename = file)
+            print(.create_graph(input, image, mask, object, img_id, ...))
             dev.off()
           }
         } else {

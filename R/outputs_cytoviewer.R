@@ -22,7 +22,9 @@
   
   ## Session info 
   cur_sessionInfo <- sessionInfo()
-  .create_general_observer(input, si = cur_sessionInfo)
+  .create_general_observer(input, si = cur_sessionInfo,
+                           image = image, mask = mask, object = object,
+                           img_id = img_id, cell_id = cell_id)
   
   ## Download 
   output$downloadData <- .downloadSelection(input, object, mask, image, 

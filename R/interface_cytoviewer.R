@@ -30,7 +30,17 @@
                     style = paste0("background-color: #3C8DBC; color: white; ",
                                    "border-color: #3C8DBC"),
                 ),
-                status = "info", 
+                status = "info",
+                icon(NULL)
+            ),
+            notificationItem(
+                text = actionButton(
+                    inputId = "ViewCode",
+                    label = "View R Code",
+                    style = paste0("background-color: #3C8DBC; color: white; ",
+                                   "border-color: #3C8DBC"),
+                ),
+                status = "info",
                 icon(NULL)
             ),
             headerText = "",
@@ -48,8 +58,8 @@
           notificationItem(
             text = radioButtons(inputId = "fileselection", 
                                 label = "Select image",
-                                choices = list("Composite","Channels","Mask"), 
-                                selected = "Composite"), 
+                                choices = list("Composite","Channels","Mask","Graph"),
+                                selected = "Composite"),
             icon = icon(NULL),
             status = "info"
           ),
@@ -223,17 +233,17 @@
                  startExpanded = TRUE, icon = icon("shapes")
                  ),
         menuItem("Points-level", 
-                 menuItem("Node controls",
+                 menuItem("Basic controls",
                           checkboxInput("plotpoints", "Show points-level plot", 
                                         value = FALSE, width = NULL),
                           uiOutput("node_color_controls"),
                           uiOutput("node_size_controls")), 
-                 menuItem("Edge controls",
+                 menuItem("Advanced controls",
                           uiOutput("edge_controls")),
                  startExpanded = TRUE, icon = icon("circle-nodes")
         ),
         menuItem("General",
-                 menuItem("Basic controls", 
+                 menuItem("Image/Cell controls", 
                           menuItem("Image appearance",
                           uiOutput("scalebar_controls"),
                           uiOutput("resolution_controls"),
