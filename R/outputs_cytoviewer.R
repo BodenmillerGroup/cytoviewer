@@ -83,18 +83,24 @@
   output$cellsPlot <- .cellsPlot(input, object, mask, image, 
                                  img_id, cell_id, ...)
   
-  #4. Points-level 
+  #4. Points-level
   output$graph_tab <- .add_graph_tab(input, image, mask, object, img_id, ...)
-  
+
   output$graphPlot <- .graphPlot(input, image, mask, object, img_id, ...)
-  
+
+  output$node_color_controls <- renderUI({})
+  output$node_size_controls  <- renderUI({})
+  output$edge_controls       <- renderUI({})
+  outputOptions(output, "node_color_controls", suspendWhenHidden = FALSE)
+  outputOptions(output, "node_size_controls",  suspendWhenHidden = FALSE)
+  outputOptions(output, "edge_controls",       suspendWhenHidden = FALSE)
   output$node_color_controls <- .create_node_color_controls(input, image, mask, object, img_id, ...)
   output$basic_node_color_controls <- .create_basic_node_color(input, image, mask, object, img_id, ...)
   output$advanced_node_color_controls <- .create_advanced_node_color(input, image, mask, object, img_id, ...)
-  
+
   output$node_size_controls <- .create_node_size_controls(input, image, mask, object, img_id, ...)
   output$basic_node_size_controls <- .create_basic_node_size(input, image, mask, object, img_id, ...)
-  
+
   output$edge_controls <- .create_edge_controls(input, image, mask, object, img_id, ...)
   
   #output$advanced_graph_controls <- .create_advanced_graph_controls(input, image, mask, object, img_id, ...)
