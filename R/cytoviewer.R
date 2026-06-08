@@ -17,8 +17,12 @@
 #'    the integer cell IDs are stored. These IDs should match the integer pixel
 #'    values in the segmentation mask object (\code{mask}).
 #'@param img_id character specifying the \code{colData(object)} and
-#'    \code{mcols(mask)} and/or \code{mcols(image)} entry, 
+#'    \code{mcols(mask)} and/or \code{mcols(image)} entry,
 #'    in which the image IDs are stored.
+#'@param coords character vector of length 2 specifying the names of the
+#'    \code{colData} (for a \code{SingleCellExperiment} object) or the
+#'    \code{spatialCoords} entries indicating the cells' x and y locations.
+#'    Defaults to \code{c("Pos_X", "Pos_Y")}.
 #'    
 #'@section The input objects:
 #' 
@@ -118,19 +122,20 @@ cytoviewer <- function(
     mask = NULL,
     object = NULL,
     cell_id = NULL,
-    img_id = NULL) {
+    img_id = NULL,
+    coords = c("Pos_X", "Pos_Y")) {
 
-  .valid.cytoviewer.shiny(image, mask, object, cell_id, img_id)
-  
+  .valid.cytoviewer.shiny(image, mask, object, cell_id, img_id, coords)
+
     shiny_ui <- dashboardPage(
         header = .cytoviewer_header(),
         sidebar = .cytoviewer_sidebar(),
-        body = .cytoviewer_body() 
+        body = .cytoviewer_body()
     )
 
     shiny_server <- function(input, output, session) {
         .cytoviewer_server(object, mask, image, cell_id, img_id,
-                            input, output, session)
+                            input, output, session, coords = coords)
     }
     
     shinyApp(ui = shiny_ui, server = shiny_server)

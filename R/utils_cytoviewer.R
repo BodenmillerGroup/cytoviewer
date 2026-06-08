@@ -5,7 +5,7 @@
 #' @importFrom cytomapper plotCells plotPixels channelNames CytoImageList
 #' @importFrom imcRtools plotSpatial
 #' @importFrom SingleCellExperiment colData colPair colPairNames
-#' @importFrom ggplot2 ggtitle scale_color_manual scale_color_gradientn
+#' @importFrom ggplot2 ggtitle scale_color_manual scale_color_gradientn scale_shape_manual
 #' @importFrom viridis viridis
 #' @importFrom archive archive_write_files
 #' @importFrom colourpicker colourInput
@@ -79,7 +79,7 @@
 
 # Create general observers for header
 .create_general_observer <- function(input, si, image, mask, object,
-                                     img_id, cell_id){
+                                     img_id, cell_id, coords){
 
     # Return session info
     observeEvent(input$SessionInfo, {
@@ -103,7 +103,7 @@
 
     # Return R code for current visualization
     observeEvent(input$ViewCode, {
-        code <- .generate_r_code(input, image, mask, object, img_id, cell_id)
+        code <- .generate_r_code(input, image, mask, object, img_id, cell_id, coords)
         showModal(modalDialog(
             tagList(
                 tags$details(
@@ -128,7 +128,7 @@
     })
 }
 
-.generate_r_code <- function(input, image, mask, object, img_id, cell_id){
+.generate_r_code <- function(input, image, mask, object, img_id, cell_id, coords){
 
     cur_sample <- if (!is.null(input$sample) && input$sample != "") input$sample else "<sample>"
 
@@ -189,7 +189,7 @@
         '  object      = object[, colData(object)$', if (!is.null(img_id)) img_id else "<img_id>",
             ' == "', cur_sample, '"],\n',
         '  img_id      = "', if (!is.null(img_id)) img_id else "<img_id>", '",\n',
-        '  coords      = c("Pos_X", "Pos_Y"),\n',
+        '  coords      = c("', coords[1], '", "', coords[2], '"),\n',
         cur_color_arg,
         cur_size_arg,
         '  colPairName = ', cur_graph, ',\n',
@@ -1291,6 +1291,9 @@
 
 .create_graph <- function(input, image, mask, object, img_id, ...){
 
+  dots <- list(...)
+  cur_coords <- if (!is.null(dots$coords)) dots$coords else c("Pos_X", "Pos_Y")
+
   req(img_id, !is.null(object))
   req(!is.null(input$sample), input$sample != "")
   if (!is.null(image)) {
@@ -1330,7 +1333,12 @@
   if (!is.null(cur_node_color_by) && !is.null(input$node_color_by_selection)) {
     cur_entries <- length(unique(colData(object)[[cur_node_color_by]]))
     if (!is.numeric(colData(object)[[cur_node_color_by]]) || cur_entries <= 23L) {
-      if (!is.logical(colData(object)[[cur_node_color_by]])) {
+      if (is.logical(colData(object)[[cur_node_color_by]])) {
+        cur_object <- cur_object[, as.numeric(colData(cur_object)[[cur_node_color_by]]) %in%
+                                   input$node_color_by_selection]
+        req(any(as.numeric(colData(cur_object)[[cur_node_color_by]]) %in%
+                  input$node_color_by_selection))
+      } else {
         cur_object <- cur_object[, colData(cur_object)[[cur_node_color_by]] %in%
                                    input$node_color_by_selection]
         validate(
@@ -1350,44 +1358,71 @@
   if (!is.null(input$spatial_graph) && input$spatial_graph != "") {
     cur_graph       <- input$spatial_graph
     cur_edges       <- TRUE
-    cur_directed    <- input$directed
-    cur_nodes_first <- input$nodes_first
-    cur_edge_width_fix <- input$edge_width_fix
-    cur_edge_color_fix <- input$edge_color_fix
+    cur_directed    <- if (!is.null(input$directed))    input$directed    else FALSE
+    cur_nodes_first <- if (!is.null(input$nodes_first)) input$nodes_first else FALSE
+    cur_edge_color_fix <- if (!is.null(input$edge_color_fix)) input$edge_color_fix else "black"
+    cur_edge_width_fix <- if (!is.null(input$edge_width_fix)) input$edge_width_fix else 0.5
   } else {
-    cur_graph <- cur_edge_width_fix <- cur_edge_color_fix <- NULL
+    cur_graph <- cur_edge_color_fix <- cur_edge_width_fix <- NULL
     cur_edges <- cur_nodes_first <- cur_directed <- FALSE
   }
 
-  req(!is.null(cur_directed))
-  req(!is.null(cur_nodes_first))
+  cur_node_color_fix <- if (is.null(cur_node_color_by)) {
+    if (!is.null(input$node_color_fix)) input$node_color_fix else "black"
+  } else NULL
+  cur_node_colors <- if (!is.null(cur_node_color_by)) .select_node_color(input, object) else NULL
 
-  # Node color: use _by if set, else _fix
-  cur_node_color_fix <- if (is.null(cur_node_color_by)) input$node_color_fix else NULL
-  cur_node_colors    <- if (!is.null(cur_node_color_by)) .select_node_color(input, object) else NULL
-
-  # Node size: use _by if set, else _fix
   cur_node_size_by  <- if (!is.null(input$node_size_by) && input$node_size_by != "") input$node_size_by else NULL
-  cur_node_size_fix <- if (is.null(cur_node_size_by)) input$node_size_fix else NULL
+  cur_node_size_fix <- if (is.null(cur_node_size_by)) {
+    if (!is.null(input$node_size_fix)) input$node_size_fix else 1.5
+  } else NULL
+
+  cur_node_shape_by  <- if (!is.null(input$node_shape_by) && input$node_shape_by != "") input$node_shape_by else NULL
+  if (!is.null(cur_node_shape_by)) {
+    validate(
+      need(length(unique(colData(object)[[cur_node_shape_by]])) <= 6L,
+           "NOTE: The current [Node shape by] choice has more than 6 levels
+           and cannot be used for shape mapping.")
+    )
+  }
+  if (!is.null(cur_node_shape_by) && !is.null(input$node_shape_by_selection)) {
+    if (is.logical(colData(object)[[cur_node_shape_by]])) {
+      cur_object <- cur_object[, as.numeric(colData(cur_object)[[cur_node_shape_by]]) %in%
+                                 input$node_shape_by_selection]
+      req(any(as.numeric(colData(cur_object)[[cur_node_shape_by]]) %in%
+                input$node_shape_by_selection))
+    } else {
+      cur_object <- cur_object[, colData(cur_object)[[cur_node_shape_by]] %in%
+                                 input$node_shape_by_selection]
+      validate(
+        need(input$node_shape_by_selection %in% colData(cur_object)[[cur_node_shape_by]],
+             "NOTE: Your [Node shape by] choices are not featured in the current image.")
+      )
+    }
+  }
+  cur_node_shapes    <- if (!is.null(cur_node_shape_by)) .select_node_shape(input, object) else NULL
+  cur_node_shape_fix <- if (is.null(cur_node_shape_by)) {
+    if (!is.null(input$node_shape_fix)) as.integer(input$node_shape_fix) else NULL
+  } else NULL
 
   p <- plotSpatial(cur_object,
-                   img_id      = img_id,
-                   scales      = "free",
-                   coords      = c("Pos_X", "Pos_Y"),
-                   colPairName = cur_graph,
-                   draw_edges  = cur_edges,
-                   directed    = cur_directed,
-                   nodes_first = cur_nodes_first,
+                   img_id         = img_id,
+                   scales         = "free",
+                   coords         = cur_coords,
+                   colPairName    = cur_graph,
+                   draw_edges     = cur_edges,
+                   directed       = cur_directed,
+                   nodes_first    = cur_nodes_first,
                    node_color_by  = cur_node_color_by,
                    node_color_fix = cur_node_color_fix,
                    node_size_by   = cur_node_size_by,
                    node_size_fix  = cur_node_size_fix,
-                   node_shape_fix = input$node_shape_fix,
+                   node_shape_by  = cur_node_shape_by,
+                   node_shape_fix = cur_node_shape_fix,
                    edge_color_fix = cur_edge_color_fix,
                    edge_width_fix = cur_edge_width_fix) +
     ggtitle("")
 
-  # Apply per-category / continuous color scale when using node_color_by
   if (!is.null(cur_node_color_by) && !is.null(cur_node_colors)) {
     cur_entries <- length(unique(colData(object)[[cur_node_color_by]]))
     if (is.numeric(colData(object)[[cur_node_color_by]]) && cur_entries > 23L) {
@@ -1395,6 +1430,10 @@
     } else {
       p <- p + scale_color_manual(values = cur_node_colors)
     }
+  }
+
+  if (!is.null(cur_node_shape_by) && !is.null(cur_node_shapes)) {
+    p <- p + scale_shape_manual(values = cur_node_shapes)
   }
 
   p
@@ -1428,10 +1467,31 @@
 
   if (!any(cur_vec == "")) {
     req(length(cur_vec) == length(input$node_color_by_selection))
-    names(cur_vec) <- input$node_color_by_selection
+    names(cur_vec) <- if (is.logical(colData(object)[[cur_color_by]])) {
+      as.logical(as.numeric(input$node_color_by_selection))
+    } else {
+      input$node_color_by_selection
+    }
     return(cur_vec)
   }
   NULL
+}
+
+.select_node_shape <- function(input, object){
+  if (is.null(input$node_shape_by_selection)) return(NULL)
+  cur_shape_by <- if (!is.null(input$node_shape_by) && input$node_shape_by != "") input$node_shape_by else NULL
+  cur_vec <- vapply(seq_along(input$node_shape_by_selection), function(i) {
+    val <- input[[paste0("node_shape_advanced", i)]]
+    if (is.null(val)) return(NA_integer_)
+    as.integer(val)
+  }, integer(1))
+  if (any(is.na(cur_vec))) return(NULL)
+  names(cur_vec) <- if (!is.null(cur_shape_by) && is.logical(colData(object)[[cur_shape_by]])) {
+    as.logical(as.numeric(input$node_shape_by_selection))
+  } else {
+    as.character(input$node_shape_by_selection)
+  }
+  cur_vec
 }
 
 
@@ -1479,12 +1539,11 @@
                                 selected = "viridis")
         }else{
           lapply(seq_along(input$node_color_by_selection), function (i){
-                     cur_col <- c(brewer.pal(12, "Paired"),
-                                  brewer.pal(8, "Pastel2")[-c(3,5,8)],
-                                  brewer.pal(12, "Set3")[-c(2,3,8,9,11,12)])
+            cur_col <- c(brewer.pal(9, "Set1"),
+                         brewer.pal(8, "Pastel2"),
+                         brewer.pal(12, "Set3")[-c(2,3,8,9,11,12)])
                      colourInput(inputId = paste0("node_color_advanced", i),
                                  label = if (is.logical(colData(object)[[input$node_color_by]])) {
-                                   req(any(as.numeric(colData(object)[[input$node_color_by]]) %in% input$node_color_by_selection))
                                    as.logical(as.numeric(input$node_color_by_selection[i]))
                                  } else { input$node_color_by_selection[i] },
                                  value = cur_col[i])
@@ -1521,21 +1580,112 @@
   })
 }
 
+.create_node_shape_controls <- function(input, image, mask, object, img_id, ...){
+  renderUI({
+    if (input$plotpoints){
+      wellPanel(
+        menuItem(span("Node shape control",
+                      style = "color: black;padding-top: 0px"),
+                 style = "color: black; padding-top: 0px",
+                 selectizeInput("node_shape_by",
+                                label = span("Shape by",
+                                             style = "color: black; padding-top: 0px"),
+                                choices = NULL, options = NULL,
+                                list(placeholder = 'Shape by', maxItems = 1,
+                                     maxOptions = 10)),
+                 selectizeInput("node_shape_by_selection",
+                                label = span("Select shape by",
+                                             style = "color: black; padding-top: 0px"),
+                                choices = NULL,
+                                multiple = TRUE),
+                 uiOutput("basic_node_shape_controls"),
+                 uiOutput("advanced_node_shape_controls"))
+      )
+    }
+  })}
+
+.create_basic_node_shape <- function(input, image, mask, object, img_id, ...){
+  renderUI({
+    if (input$plotpoints && is.null(input$node_shape_by_selection)){
+      wellPanel(
+        selectInput("node_shape_fix",
+                    label = span("Basic shape", style = "color: black"),
+                    choices = c("Circle" = 19, "Square" = 15, "Triangle" = 17,
+                                "Diamond" = 18, "Plus" = 3, "Cross" = 4),
+                    selected = 19),
+        class = "wellpanel_node"
+      )
+    }
+  })}
+
+.create_advanced_node_shape <- function(input, image, mask, object, img_id, ...){
+  renderUI({
+    if (input$plotpoints && !is.null(input$node_shape_by_selection)) {
+      default_shapes <- c(19, 15, 17, 18, 3, 4)
+      wellPanel(
+        lapply(seq_along(input$node_shape_by_selection), function(i) {
+          selectInput(inputId = paste0("node_shape_advanced", i),
+                      label = span(
+                        if (is.logical(colData(object)[[input$node_shape_by]])) {
+                          as.character(as.logical(as.numeric(input$node_shape_by_selection[i])))
+                        } else {
+                          as.character(input$node_shape_by_selection[i])
+                        },
+                        style = "color: black"),
+                      choices = c("Circle" = 19, "Square" = 15, "Triangle" = 17,
+                                  "Diamond" = 18, "Plus" = 3, "Cross" = 4),
+                      selected = default_shapes[min(i, 6)])
+        }),
+        class = "wellpanel_node"
+      )
+    }
+  })}
+
+.populate_node_shape_controls <- function(session, object, input){
+  observeEvent(input$plotpoints, {
+    if (input$plotpoints && !is.null(object)) {
+      updateSelectizeInput(session, inputId = "node_shape_by",
+                           choices = names(colData(object)),
+                           server = TRUE, selected = "")
+    } else if (input$plotpoints) {
+      updateSelectizeInput(session, inputId = "node_shape_by",
+                           choices = c(""), server = TRUE, selected = "")
+    }
+  })
+
+  observeEvent(input$node_shape_by, {
+    req(input$plotpoints, !is.null(object))
+
+    if (is.null(input$node_shape_by) || input$node_shape_by == "") {
+      updateSelectizeInput(session, inputId = "node_shape_by_selection",
+                           choices = c(""), server = TRUE, selected = "")
+      return()
+    }
+
+    updateSelectizeInput(session, inputId = "node_shape_by_selection",
+                         choices = unique(colData(object)[[input$node_shape_by]]),
+                         server = TRUE, selected = "")
+  })
+}
+
+.create_spatial_graph_control <- function(input, image, mask, object, img_id, ...){
+  renderUI({
+    if (input$plotpoints){
+      selectizeInput("spatial_graph",
+                     label = "Spatial graph",
+                     choices = NULL,
+                     options = list(placeholder = 'Spatial graph',
+                                    maxItems = 1, maxOptions = 10))
+    }
+  })}
+
 .create_edge_controls <- function(input, image, mask, object, img_id, ...){
   renderUI({
     if (input$plotpoints){
-      #wellPanel(
-        menuItem(span("Edge control", 
-                      style = "color: black;padding-top: 0px"), 
-                 style = "color: black; padding-top: 0px",
-                 selectizeInput("spatial_graph", label = span("Spatial graph",
-                                                              style = "color: black; padding-top: 0px"), 
-                                choices = NULL, options = NULL, 
-                                list(placeholder = 'Spatial graph', maxItems = 1,
-                                     maxOptions = 10)
-                 ),
-                 uiOutput("fine_graph_controls"),
-                 uiOutput("fine_edge_controls"))#)
+      tagList(
+        uiOutput("edge_color_controls"),
+        uiOutput("edge_width_controls"),
+        uiOutput("fine_graph_controls"))
 }})}
 
 
@@ -1552,39 +1702,43 @@
 .create_fine_graph_controls <- function(input, image, mask, object, img_id, ...){
   renderUI({
     if(!is.null(input$spatial_graph) && input$spatial_graph != ""){
-      wellPanel(
-        checkboxInput("directed", "Directed layout", 
-                      value = FALSE, width = NULL),
-        checkboxInput("nodes_first", "Nodes first", 
-                      value = FALSE, width = NULL), 
-        class = "wellpanel_custom")
+        wellPanel(
+          menuItem(span("Other edge control", 
+                        style = "color: black;padding-top: 0px"),
+          checkboxInput("directed",
+                        span("Directed layout", style = "color: black"),
+                        value = FALSE, width = NULL),
+          checkboxInput("nodes_first",
+                        span("Nodes first", style = "color: black"),
+                        value = FALSE, width = NULL),
+          class = "wellpanel_node"))
     }})}
 
 
-.create_fine_edge_controls <- function(input, image, mask, object, img_id, ...){
+.create_edge_color_controls <- function(input, image, mask, object, img_id, ...){
   renderUI({
-    if(!is.null(input$spatial_graph) && input$spatial_graph != ""){
+    if (!is.null(input$spatial_graph) && input$spatial_graph != "") {
       wellPanel(
-        menuItem(span("Edge control", 
-                style = "color: black;padding-top: 0px"), 
-           style = "color: black; padding-top: 0px",
-           menuItem(span("Color control", 
-                         style = "color: black;padding-top: 0px"), 
-                    style = "color: black; padding-top: 0px",
-                    colourInput(inputId = "edge_color_fix", 
-                                label = NULL,
-                                value = "black")),
-           menuItem(span("Width control", 
-                         style = "color: black;padding-top: 0px"), 
-                    style = "color: black; padding-top: 0px",
-                    sliderInput(inputId = "edge_width_fix", 
-                                 label = NULL, 
-                                 min = 0.5, max = 5, step = 0.5,
-                                 value = 0.5))),
-        class = "wellpanel_custom"
-        )
-    }})}
+        colourInput(inputId = "edge_color_fix",
+                    label = span("Edge color control", style = "color: black"),
+                    value = "black"),
+        class = "wellpanel_node"
+      )
+    }
+  })}
 
+.create_edge_width_controls <- function(input, image, mask, object, img_id, ...){
+  renderUI({
+    if (!is.null(input$spatial_graph) && input$spatial_graph != "") {
+      wellPanel(
+        sliderInput(inputId = "edge_width_fix",
+                    label = span("Edge width control", style = "color: black"),
+                    min = 0.5, max = 5, step = 0.5,
+                    value = 0.5),
+        class = "wellpanel_node"
+      )
+    }
+  })}
 
 .populate_node_color_controls <- function(session, object, input){
   observeEvent(input$plotpoints, {
