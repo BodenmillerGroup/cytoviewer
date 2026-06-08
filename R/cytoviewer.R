@@ -22,8 +22,7 @@
 #'@param coords character vector of length 2 specifying the names of the
 #'    \code{colData} (for a \code{SingleCellExperiment} object) or the
 #'    \code{spatialCoords} entries indicating the cells' x and y locations.
-#'    Defaults to \code{c("Pos_X", "Pos_Y")}.
-#'    
+#'
 #'@section The input objects:
 #' 
 #' The functionality of \code{cytoviewer} depends on which input objects are
@@ -123,7 +122,7 @@ cytoviewer <- function(
     object = NULL,
     cell_id = NULL,
     img_id = NULL,
-    coords = c("Pos_X", "Pos_Y")) {
+    coords = NULL) {
 
   .valid.cytoviewer.shiny(image, mask, object, cell_id, img_id, coords)
 

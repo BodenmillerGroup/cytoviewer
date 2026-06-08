@@ -1,6 +1,4 @@
-# -----------------------------------------------------------------------------
 # Helper functions to modify the visual appearance of the shiny app
-# -----------------------------------------------------------------------------
 
 #' @importFrom utils packageVersion
 #' @importFrom colourpicker colourInput
@@ -24,19 +22,19 @@
                 icon = icon(NULL)
             ),
             notificationItem(
-                text = actionButton(
-                    inputId = "Help",
-                    label = "Help",
-                    style = paste0("background-color: #3C8DBC; color: white; ",
-                                   "border-color: #3C8DBC"),
-                ),
-                status = "info",
-                icon(NULL)
+              text = actionButton(
+                inputId = "ViewCode",
+                label = "R Code",
+                style = paste0("background-color: #3C8DBC; color: white; ",
+                               "border-color: #3C8DBC"),
+              ),
+              status = "info",
+              icon(NULL)
             ),
             notificationItem(
                 text = actionButton(
-                    inputId = "ViewCode",
-                    label = "View R Code",
+                    inputId = "Help",
+                    label = "Help",
                     style = paste0("background-color: #3C8DBC; color: white; ",
                                    "border-color: #3C8DBC"),
                 ),
@@ -246,7 +244,7 @@
         ),
         menuItem("General",
                  menuItem("Basic controls", 
-                          menuItem("Appearance",
+                          menuItem("Image/Cell appearance",
                           uiOutput("scalebar_controls"),
                           uiOutput("resolution_controls"),
                           checkboxInput(inputId = "show_legend","Show Legend", 

@@ -143,10 +143,14 @@
       stop("Cell ids should only contain numeric integer values.")
     }
     
+    if (is.null(coords)) {
+      stop("Please provide a 'coords' argument.")
+    }
+
     if (!is.character(coords) || length(coords) != 2L) {
       stop("'coords' must be a character vector of length 2.")
-      }
-    
+    }
+
     if (!all(coords %in% colnames(colData(object)))) {
       stop("'coords' entries not found in 'colData(object)'.")
     }

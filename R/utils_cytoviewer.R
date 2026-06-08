@@ -1,6 +1,4 @@
-# -----------------------------------------------------------------------------
 # Helper functions to modify the server side of the shiny app
-# -----------------------------------------------------------------------------
 
 #' @importFrom cytomapper plotCells plotPixels channelNames CytoImageList
 #' @importFrom imcRtools plotSpatial
@@ -33,11 +31,10 @@
         p("The cytoviewer interface is divided into a", 
         strong("Header, Sidebar and Body"), "section.", 
         "The Header includes package version information, access to session 
-        information and this help page as well as a dropdown-menu for image 
+        information, R code and this help page as well as a dropdown-menu for image 
         downloads.", "The Body features a Tabset-Panel layout allowing the user 
-        to switch between three image modes:", strong("Image-level 
-                                                      (Composite and Channels) 
-                                                      and Cell-level (Mask).")),
+        to switch between four modes:", strong("Image-level (Composite and Channels), 
+                                               Cell-level (Mask) and Points-level (Graph)")),
         h3("Image-level visualization"),
         p("Image visualization control is split into", 
           em("basic and advanced controls"),".",
@@ -54,20 +51,20 @@
         Here, the user can choose to display the provided segmentation masks.
         If an object is provided, the masks can be colored by cell-specific
         metadata."),
+        h3("Points-level visualization"),
+        p("Point visualization control is split into", 
+          em("basic and advanced controls"),".",
+          "Basic controls allow coloring, sizing and shaping of individual cell 
+          centroids by cell-specific metadata from the colData slot of the object.
+          Advanced controls allow the selection of a spatial graph stored in
+          the object's colPair slot and control edge appearance (color, width, 
+          direction)."),
         h3("General controls"),
-        p("General controls is subdivided into an", em("Image appearance and 
-        Image filters"), "part.", "In the Image appearance section, the user can 
-        adjust the scale bar length and include legend/image titles, 
+        p("General controls is subdivided into an", em("Image/Cell appearance and 
+        Image filters"), "part.", "In the Image/Cell appearance section, the user can 
+        adjust the scale bar length, set the pixel resolution and include legend/image titles, 
         while the Image filters section allows to control pixel-wise interpolation 
         (default) and apply a Gaussian filter."),
-        h3("Points-level visualization"),
-        p("Points-level visualization uses", em("Node controls"), "and",
-          em("Edge controls"), ".",
-          "Node controls allow coloring and sizing of individual cells by
-          cell-specific metadata from", code("colData(object)"), ".
-          Edge controls allow the selection of a spatial graph stored in
-          the object's", code("colPair"), "slot and control edge appearance
-          (color, width, direction)."),
         h3("Image download"),
         p("The cytoviewer package supports fast and uncomplicated image downloads.
         Download controls are part of the", em("Header"), ".", "The user can
@@ -110,15 +107,19 @@
                     tags$summary(tags$b("Image-level (plotPixels)")),
                     tags$pre(style = "margin-top:8px", code$image)
                 ),
-                tags$hr(),
-                tags$details(
-                    tags$summary(tags$b("Cell-level (plotCells)")),
-                    tags$pre(style = "margin-top:8px", code$cells)
+                if (isTRUE(input$plotcells)) tagList(
+                    tags$hr(),
+                    tags$details(
+                        tags$summary(tags$b("Cell-level (plotCells)")),
+                        tags$pre(style = "margin-top:8px", code$cells)
+                    )
                 ),
-                tags$hr(),
-                tags$details(
-                    tags$summary(tags$b("Points-level (plotSpatial)")),
-                    tags$pre(style = "margin-top:8px", code$points)
+                if (isTRUE(input$plotpoints)) tagList(
+                    tags$hr(),
+                    tags$details(
+                        tags$summary(tags$b("Points-level (plotSpatial)")),
+                        tags$pre(style = "margin-top:8px", code$points)
+                    )
                 )
             ),
             size = "l", fade = TRUE,
@@ -133,16 +134,55 @@
     cur_sample <- if (!is.null(input$sample) && input$sample != "") input$sample else "<sample>"
 
     # --- Image-level ---
-    cur_markers <- .select_markers(input)
-    cur_markers <- cur_markers[cur_markers != ""]
-    if (length(cur_markers) == 0) cur_markers <- "<marker>"
-    markers_str <- paste0('c("', paste(cur_markers, collapse = '", "'), '")')
+    all_markers <- c(input$marker1, input$marker2, input$marker3,
+                     input$marker4, input$marker5, input$marker6)
+    all_views   <- c(isTRUE(input$view1), isTRUE(input$view2), isTRUE(input$view3),
+                     isTRUE(input$view4), isTRUE(input$view5), isTRUE(input$view6))
+    active_idx  <- which(nchar(all_markers) > 0 & all_views)
+    if (length(active_idx) == 0) active_idx <- seq_along(all_markers)
+    active_markers <- all_markers[active_idx]
+    markers_str <- paste0('c("', paste(active_markers, collapse = '", "'), '")')
+
+    colour_pairs <- vapply(active_idx, function(i) {
+        col <- if (!is.null(input[[paste0("color", i)]])) input[[paste0("color", i)]] else "white"
+        paste0('"', all_markers[i], '" = c("black", "', col, '")')
+    }, character(1))
+    colour_img_str <- paste0('list(', paste(colour_pairs, collapse = ", "), ')')
+
+    bcg_parts <- Filter(Negate(is.null), lapply(active_idx, function(i) {
+        b  <- if (!is.null(input[[paste0("brightness", i)]])) input[[paste0("brightness", i)]] else 1
+        cc <- if (!is.null(input[[paste0("contrast",   i)]])) input[[paste0("contrast",   i)]] else 1
+        g  <- if (!is.null(input[[paste0("gamma",      i)]])) input[[paste0("gamma",      i)]] else 1
+        if (b == 1 && cc == 1 && g == 1) return(NULL)
+        paste0('"', all_markers[i], '" = c(', b, ', ', cc, ', ', g, ')')
+    }))
+    bcg_str <- if (length(bcg_parts) > 0) {
+        paste0('  bcg        = list(', paste(bcg_parts, collapse = ", "), '),\n')
+    } else ""
+
+    outline_str <- ""
+    if (isTRUE(input$outline)) {
+        thick <- if (!is.null(input$thick)) input$thick else 1
+        if (!is.null(input$outline_by) && input$outline_by != "") {
+            outline_str <- paste0(
+                '  outline_by = "', input$outline_by, '",\n',
+                '  thick      = ', thick, ',\n')
+        } else {
+            mc <- if (!is.null(input$basic_color_outline)) input$basic_color_outline else "white"
+            outline_str <- paste0(
+                '  missing_colour = "', mc, '",\n',
+                '  thick          = ', thick, ',\n')
+        }
+    }
 
     image_code <- paste0(
         'library(cytomapper)\n\n',
         'plotPixels(\n',
         '  image      = image["', cur_sample, '"],\n',
         '  colour_by  = ', markers_str, ',\n',
+        '  colour     = ', colour_img_str, ',\n',
+        bcg_str,
+        outline_str,
         '  ...\n',
         ')'
     )
@@ -152,50 +192,87 @@
         paste0('"', input$color_by, '"')
     } else { "NULL" }
 
+    cell_colour_str <- "NULL"
+    if (!is.null(input$color_by) && input$color_by != "" &&
+        !is.null(input$color_by_selection) && length(input$color_by_selection) > 0) {
+        cell_colour_pairs <- Filter(Negate(is.null), lapply(
+            seq_along(input$color_by_selection), function(i) {
+                col <- input[[paste0("color_by", i)]]
+                if (is.null(col)) return(NULL)
+                paste0('"', input$color_by_selection[i], '" = "', col, '"')
+            }))
+        if (length(cell_colour_pairs) > 0) {
+            cell_colour_str <- paste0(
+                'list("', input$color_by, '" = c(',
+                paste(cell_colour_pairs, collapse = ", "), '))')
+        }
+    }
+
+    missing_col_cells <- if (!is.null(input$missing_colorby)) {
+        paste0('"', input$missing_colorby, '"')
+    } else '"white"'
+
     cells_code <- paste0(
         'library(cytomapper)\n\n',
         'plotCells(\n',
-        '  mask    = mask["', cur_sample, '"],\n',
-        if (!is.null(object)) paste0('  object  = object,\n') else '',
-        '  img_id  = "', if (!is.null(img_id)) img_id else "<img_id>", '",\n',
-        '  cell_id = "', if (!is.null(cell_id)) cell_id else "<cell_id>", '",\n',
-        '  colour_by = ', cur_colorby, ',\n',
+        '  mask           = mask["', cur_sample, '"],\n',
+        if (!is.null(object)) '  object         = object,\n' else '',
+        '  img_id         = "', if (!is.null(img_id)) img_id else "<img_id>", '",\n',
+        '  cell_id        = "', if (!is.null(cell_id)) cell_id else "<cell_id>", '",\n',
+        '  colour_by      = ', cur_colorby, ',\n',
+        '  colour         = ', cell_colour_str, ',\n',
+        '  missing_colour = ', missing_col_cells, ',\n',
         '  ...\n',
         ')'
     )
 
     # --- Points-level ---
-    cur_color_by   <- .select_node_color_by(input)
-    cur_color_arg  <- if (!is.null(cur_color_by)) {
+    cur_color_by  <- .select_node_color_by(input)
+    cur_color_arg <- if (!is.null(cur_color_by)) {
         paste0('  node_color_by  = "', cur_color_by, '",\n')
     } else {
         paste0('  node_color_fix = "', if (!is.null(input$node_color_fix)) input$node_color_fix else "black", '",\n')
     }
     cur_size_by  <- if (!is.null(input$node_size_by) && input$node_size_by != "") input$node_size_by else NULL
     cur_size_arg <- if (!is.null(cur_size_by)) {
-        paste0('  node_size_by  = "', cur_size_by, '",\n')
+        paste0('  node_size_by   = "', cur_size_by, '",\n')
     } else {
-        paste0('  node_size_fix = ', if (!is.null(input$node_size_fix)) input$node_size_fix else 1.5, ',\n')
+        paste0('  node_size_fix  = ', if (!is.null(input$node_size_fix)) input$node_size_fix else 1.5, ',\n')
+    }
+    cur_shape_by  <- if (!is.null(input$node_shape_by) && input$node_shape_by != "") input$node_shape_by else NULL
+    cur_shape_arg <- if (!is.null(cur_shape_by)) {
+        paste0('  node_shape_by  = "', cur_shape_by, '",\n')
+    } else {
+        paste0('  node_shape_fix = ', if (!is.null(input$node_shape_fix)) as.integer(input$node_shape_fix) else 19L, ',\n')
     }
     cur_graph <- if (!is.null(input$spatial_graph) && input$spatial_graph != "") {
         paste0('"', input$spatial_graph, '"')
     } else { "NULL" }
-    cur_directed    <- if (!is.null(input$directed)) input$directed else FALSE
+    cur_directed    <- if (!is.null(input$directed))    input$directed    else FALSE
     cur_nodes_first <- if (!is.null(input$nodes_first)) input$nodes_first else FALSE
+    cur_edge_color  <- if (!is.null(input$edge_color_fix)) paste0('"', input$edge_color_fix, '"') else '"black"'
+    cur_edge_width  <- if (!is.null(input$edge_width_fix)) input$edge_width_fix else 0.5
+
+    coords_str <- if (!is.null(coords)) {
+        paste0('c("', coords[1], '", "', coords[2], '")')
+    } else '"<coords>"'
 
     points_code <- paste0(
         'library(imcRtools)\n\n',
         'plotSpatial(\n',
-        '  object      = object[, colData(object)$', if (!is.null(img_id)) img_id else "<img_id>",
-            ' == "', cur_sample, '"],\n',
-        '  img_id      = "', if (!is.null(img_id)) img_id else "<img_id>", '",\n',
-        '  coords      = c("', coords[1], '", "', coords[2], '"),\n',
+        '  object         = object[, colData(object)$',
+            if (!is.null(img_id)) img_id else "<img_id>", ' == "', cur_sample, '"],\n',
+        '  img_id         = "', if (!is.null(img_id)) img_id else "<img_id>", '",\n',
+        '  coords         = ', coords_str, ',\n',
         cur_color_arg,
         cur_size_arg,
-        '  colPairName = ', cur_graph, ',\n',
-        '  draw_edges  = ', tolower(as.character(cur_graph != "NULL")), ',\n',
-        '  directed    = ', tolower(as.character(cur_directed)), ',\n',
-        '  nodes_first = ', tolower(as.character(cur_nodes_first)), ',\n',
+        cur_shape_arg,
+        '  colPairName    = ', cur_graph, ',\n',
+        '  draw_edges     = ', tolower(as.character(cur_graph != "NULL")), ',\n',
+        '  directed       = ', tolower(as.character(cur_directed)), ',\n',
+        '  nodes_first    = ', tolower(as.character(cur_nodes_first)), ',\n',
+        '  edge_color_fix = ', cur_edge_color, ',\n',
+        '  edge_width_fix = ', cur_edge_width, ',\n',
         '  ...\n',
         ')'
     )
@@ -1292,7 +1369,7 @@
 .create_graph <- function(input, image, mask, object, img_id, ...){
 
   dots <- list(...)
-  cur_coords <- if (!is.null(dots$coords)) dots$coords else c("Pos_X", "Pos_Y")
+  cur_coords <- dots$coords
 
   req(img_id, !is.null(object))
   req(!is.null(input$sample), input$sample != "")
@@ -1692,7 +1769,7 @@
 
 .populate_graph_controls <- function(session, object, input){
   observeEvent(input$plotpoints, {
-    if (input$plotpoints) {
+    if (input$plotpoints && !is.null(object)) {
       updateSelectizeInput(session, inputId = "spatial_graph",
                            choices = colPairNames(object),
                            server = TRUE,
