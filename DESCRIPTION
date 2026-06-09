@@ -33,8 +33,11 @@ Imports:
     EBImage,
     methods,
     cytomapper,
-    imcRtools,
+    ggraph,
+    tidygraph,
+    rlang,
     SingleCellExperiment,
+    SpatialExperiment,
     S4Vectors,
     SummarizedExperiment
 Suggests:

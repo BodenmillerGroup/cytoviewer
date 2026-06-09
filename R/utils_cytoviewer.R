@@ -1,9 +1,12 @@
 # Helper functions to modify the server side of the shiny app
 
 #' @importFrom cytomapper plotCells plotPixels channelNames CytoImageList
-#' @importFrom imcRtools plotSpatial
 #' @importFrom SingleCellExperiment colData colPair colPairNames
-#' @importFrom ggplot2 ggtitle scale_color_manual scale_color_gradientn scale_shape_manual
+#' @importFrom ggplot2 ggtitle scale_color_manual scale_color_gradientn scale_shape_manual scale_size_manual theme element_text element_blank scale_y_reverse
+#' @importFrom ggraph ggraph create_layout geom_node_point geom_edge_fan0 geom_edge_link0 scale_edge_color_manual scale_edge_width_manual
+#' @importFrom tidygraph tbl_graph
+#' @importFrom rlang .data
+#' @importFrom SpatialExperiment spatialCoords
 #' @importFrom viridis viridis
 #' @importFrom archive archive_write_files
 #' @importFrom colourpicker colourInput
@@ -15,7 +18,7 @@
 #' @importFrom utils capture.output
 #' @importFrom EBImage gblur
 #' @importFrom methods as
-#' @importFrom S4Vectors endoapply mcols mcols<-
+#' @importFrom S4Vectors endoapply mcols mcols<- isRedundantHit
 
 
 # Generate help text
@@ -104,20 +107,20 @@
         showModal(modalDialog(
             tagList(
                 tags$details(
-                    tags$summary(tags$b("Image-level (plotPixels)")),
+                    tags$summary(tags$b("Image-level")),
                     tags$pre(style = "margin-top:8px", code$image)
                 ),
                 if (isTRUE(input$plotcells)) tagList(
                     tags$hr(),
                     tags$details(
-                        tags$summary(tags$b("Cell-level (plotCells)")),
+                        tags$summary(tags$b("Cell-level")),
                         tags$pre(style = "margin-top:8px", code$cells)
                     )
                 ),
                 if (isTRUE(input$plotpoints)) tagList(
                     tags$hr(),
                     tags$details(
-                        tags$summary(tags$b("Points-level (plotSpatial)")),
+                        tags$summary(tags$b("Points-level")),
                         tags$pre(style = "margin-top:8px", code$points)
                     )
                 )
@@ -1364,7 +1367,128 @@
   })
 }
 
-## Create graph plot 
+## Internal plotSpatial implementation (replaces imcRtools::plotSpatial)
+
+.makeNodes_cytoviewer <- function(object, img_id, node_color_by,
+                                   node_shape_by, node_size_by) {
+    cols  <- unique(c(img_id, node_color_by, node_shape_by, node_size_by))
+    nodes <- colData(object)[, cols, drop = FALSE]
+    if (!is.null(node_shape_by))
+        nodes[, node_shape_by] <- as.character(nodes[, node_shape_by])
+    nodes
+}
+
+.generateGraph_cytoviewer <- function(object, nodes, colPairName,
+                                       draw_edges, directed) {
+    if (draw_edges) {
+        cur_SH <- colPair(object, colPairName)
+        if (!directed) cur_SH <- cur_SH[!isRedundantHit(cur_SH)]
+        edges <- as.data.frame(as(cur_SH, "DataFrame"))
+        tbl_graph(nodes = as.data.frame(nodes), edges = edges,
+                  directed = directed)
+    } else {
+        tbl_graph(nodes = as.data.frame(nodes), directed = directed)
+    }
+}
+
+.generatePlot_cytoviewer <- function(layout, draw_edges, directed,
+                                      node_color_by, node_size_by, node_shape_by,
+                                      node_color_fix, node_size_fix, node_shape_fix,
+                                      edge_color_fix, edge_width_fix, nodes_first) {
+    node_mapping <- aes(colour = .data[[node_color_by]],
+                        size   = .data[[node_size_by]],
+                        shape  = .data[[node_shape_by]])
+    if (is.null(node_color_by))   node_mapping$colour <- NULL
+    if (is.null(node_size_by))    node_mapping$size   <- NULL
+    if (is.null(node_shape_by))   node_mapping$shape  <- NULL
+    if (!is.null(node_color_fix)) node_mapping$colour <- as.character(node_color_fix)
+    if (!is.null(node_size_fix))  node_mapping$size   <- as.character(node_size_fix)
+    if (!is.null(node_shape_fix)) node_mapping$shape  <- as.character(node_shape_fix)
+
+    if (draw_edges) {
+        edge_mapping <- aes()
+        if (!is.null(edge_color_fix))
+            edge_mapping$edge_colour <- as.character(edge_color_fix)
+        if (!is.null(edge_width_fix))
+            edge_mapping$edge_width  <- as.character(edge_width_fix)
+
+        cur_geom_edge <- if (directed) geom_edge_fan0(edge_mapping) else
+                                       geom_edge_link0(edge_mapping)
+
+        if (nodes_first) ggraph(layout) + geom_node_point(node_mapping) + cur_geom_edge
+        else             ggraph(layout) + cur_geom_edge + geom_node_point(node_mapping)
+    } else {
+        ggraph(layout) + geom_node_point(node_mapping)
+    }
+}
+
+.postProcessPlot_cytoviewer <- function(p, node_color_fix, node_shape_fix,
+                                         node_size_fix, edge_color_fix,
+                                         edge_width_fix) {
+    if (!is.null(node_color_fix)) {
+        names(node_color_fix) <- as.character(node_color_fix)
+        p <- p + scale_color_manual(values = node_color_fix, guide = "none")
+    }
+    if (!is.null(node_shape_fix)) {
+        names(node_shape_fix) <- as.character(node_shape_fix)
+        p <- p + scale_shape_manual(values = node_shape_fix, guide = "none")
+    }
+    if (!is.null(node_size_fix)) {
+        names(node_size_fix) <- as.character(node_size_fix)
+        p <- p + scale_size_manual(values = node_size_fix, guide = "none")
+    }
+    if (!is.null(edge_color_fix)) {
+        names(edge_color_fix) <- as.character(edge_color_fix)
+        p <- p + scale_edge_color_manual(values = edge_color_fix, guide = "none")
+    }
+    if (!is.null(edge_width_fix)) {
+        names(edge_width_fix) <- as.character(edge_width_fix)
+        p <- p + scale_edge_width_manual(values = edge_width_fix, guide = "none")
+    }
+    p + theme(axis.text = element_text(), panel.background = element_blank()) +
+        scale_y_reverse()
+}
+
+.plotSpatial_cytoviewer <- function(object, img_id, coords,
+                                    node_color_by  = NULL,
+                                    node_shape_by  = NULL,
+                                    node_size_by   = NULL,
+                                    node_color_fix = NULL,
+                                    node_shape_fix = NULL,
+                                    node_size_fix  = NULL,
+                                    draw_edges     = FALSE,
+                                    directed       = TRUE,
+                                    edge_color_fix = NULL,
+                                    edge_width_fix = NULL,
+                                    colPairName    = NULL,
+                                    nodes_first    = TRUE) {
+
+    nodes     <- .makeNodes_cytoviewer(object, img_id, node_color_by,
+                                        node_shape_by, node_size_by)
+    cur_graph <- .generateGraph_cytoviewer(object, nodes, colPairName,
+                                            draw_edges, directed)
+
+    if (is(object, "SpatialExperiment")) {
+        layout <- create_layout(cur_graph, layout = "manual",
+                                x = spatialCoords(object)[, coords[1]],
+                                y = spatialCoords(object)[, coords[2]])
+    } else {
+        layout <- create_layout(cur_graph, layout = "manual",
+                                x = colData(object)[[coords[1]]],
+                                y = colData(object)[[coords[2]]])
+    }
+
+    p <- .generatePlot_cytoviewer(layout, draw_edges, directed,
+                                   node_color_by, node_size_by, node_shape_by,
+                                   node_color_fix, node_size_fix, node_shape_fix,
+                                   edge_color_fix, edge_width_fix, nodes_first)
+
+    .postProcessPlot_cytoviewer(p, node_color_fix, node_shape_fix,
+                                 node_size_fix, edge_color_fix, edge_width_fix)
+}
+
+
+## Create graph plot
 
 .create_graph <- function(input, image, mask, object, img_id, ...){
 
@@ -1444,6 +1568,10 @@
     cur_edges <- cur_nodes_first <- cur_directed <- FALSE
   }
 
+  if (!is.null(cur_node_color_by) &&
+      (is.null(input$node_color_by_selection) || length(input$node_color_by_selection) == 0)) {
+    cur_node_color_by <- NULL
+  }
   cur_node_color_fix <- if (is.null(cur_node_color_by)) {
     if (!is.null(input$node_color_fix)) input$node_color_fix else "black"
   } else NULL
@@ -1455,11 +1583,11 @@
   } else NULL
 
   cur_node_shape_by  <- if (!is.null(input$node_shape_by) && input$node_shape_by != "") input$node_shape_by else NULL
-  if (!is.null(cur_node_shape_by)) {
+  if (!is.null(cur_node_shape_by) && !is.null(input$node_shape_by_selection)) {
     validate(
-      need(length(unique(colData(object)[[cur_node_shape_by]])) <= 6L,
-           "NOTE: The current [Node shape by] choice has more than 6 levels
-           and cannot be used for shape mapping.")
+      need(length(input$node_shape_by_selection) <= 6L,
+           "NOTE: Your [Node shape by] selection has more than 6 entries.
+           Please deselect entries to use shape mapping.")
     )
   }
   if (!is.null(cur_node_shape_by) && !is.null(input$node_shape_by_selection)) {
@@ -1477,27 +1605,30 @@
       )
     }
   }
+  if (!is.null(cur_node_shape_by) &&
+      (is.null(input$node_shape_by_selection) || length(input$node_shape_by_selection) == 0)) {
+    cur_node_shape_by <- NULL
+  }
   cur_node_shapes    <- if (!is.null(cur_node_shape_by)) .select_node_shape(input, object) else NULL
   cur_node_shape_fix <- if (is.null(cur_node_shape_by)) {
     if (!is.null(input$node_shape_fix)) as.integer(input$node_shape_fix) else NULL
   } else NULL
 
-  p <- plotSpatial(cur_object,
-                   img_id         = img_id,
-                   scales         = "free",
-                   coords         = cur_coords,
-                   colPairName    = cur_graph,
-                   draw_edges     = cur_edges,
-                   directed       = cur_directed,
-                   nodes_first    = cur_nodes_first,
-                   node_color_by  = cur_node_color_by,
-                   node_color_fix = cur_node_color_fix,
-                   node_size_by   = cur_node_size_by,
-                   node_size_fix  = cur_node_size_fix,
-                   node_shape_by  = cur_node_shape_by,
-                   node_shape_fix = cur_node_shape_fix,
-                   edge_color_fix = cur_edge_color_fix,
-                   edge_width_fix = cur_edge_width_fix) +
+  p <- .plotSpatial_cytoviewer(cur_object,
+                              img_id         = img_id,
+                              coords         = cur_coords,
+                              colPairName    = cur_graph,
+                              draw_edges     = cur_edges,
+                              directed       = cur_directed,
+                              nodes_first    = cur_nodes_first,
+                              node_color_by  = cur_node_color_by,
+                              node_color_fix = cur_node_color_fix,
+                              node_size_by   = cur_node_size_by,
+                              node_size_fix  = cur_node_size_fix,
+                              node_shape_by  = cur_node_shape_by,
+                              node_shape_fix = cur_node_shape_fix,
+                              edge_color_fix = cur_edge_color_fix,
+                              edge_width_fix = cur_edge_width_fix) +
     ggtitle("")
 
   if (!is.null(cur_node_color_by) && !is.null(cur_node_colors)) {
@@ -1674,7 +1805,8 @@
                                 label = span("Select shape by",
                                              style = "color: black; padding-top: 0px"),
                                 choices = NULL,
-                                multiple = TRUE),
+                                multiple = TRUE,
+                                options = list(maxItems = 6)),
                  uiOutput("basic_node_shape_controls"),
                  uiOutput("advanced_node_shape_controls"))
       )
@@ -1721,9 +1853,10 @@
 .populate_node_shape_controls <- function(session, object, input){
   observeEvent(input$plotpoints, {
     if (input$plotpoints && !is.null(object)) {
+      cur_choices <- names(colData(object))[vapply(seq_along(colData(object)),
+        function(i) !is.numeric(colData(object)[[i]]), logical(1))]
       updateSelectizeInput(session, inputId = "node_shape_by",
-                           choices = names(colData(object)),
-                           server = TRUE, selected = "")
+                           choices = cur_choices, server = TRUE, selected = "")
     } else if (input$plotpoints) {
       updateSelectizeInput(session, inputId = "node_shape_by",
                            choices = c(""), server = TRUE, selected = "")
@@ -1741,7 +1874,8 @@
 
     updateSelectizeInput(session, inputId = "node_shape_by_selection",
                          choices = unique(colData(object)[[input$node_shape_by]]),
-                         server = TRUE, selected = "")
+                         server = TRUE,
+                         selected = unique(colData(object)[[input$node_shape_by]][1]))
   })
 }
 

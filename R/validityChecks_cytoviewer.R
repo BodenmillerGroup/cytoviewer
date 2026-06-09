@@ -2,6 +2,7 @@
 
 #' @importFrom cytomapper channelNames
 #' @importFrom SingleCellExperiment colData
+#' @importFrom SpatialExperiment spatialCoordsNames
 #' @importFrom SummarizedExperiment assayNames
 #' @importFrom methods is
 #' @importFrom S4Vectors mcols
@@ -151,8 +152,14 @@
       stop("'coords' must be a character vector of length 2.")
     }
 
-    if (!all(coords %in% colnames(colData(object)))) {
-      stop("'coords' entries not found in 'colData(object)'.")
+    if (is(object, "SpatialExperiment")) {
+      if (!all(coords %in% spatialCoordsNames(object))) {
+        stop("'coords' entries not found in 'spatialCoordsNames(object)'.")
+      }
+    } else {
+      if (!all(coords %in% colnames(colData(object)))) {
+        stop("'coords' entries not found in 'colData(object)'.")
+      }
     }
     
     }
