@@ -1,5 +1,5 @@
 Package: cytoviewer
-Version: 1.9.0
+Version: 1.13.1
 Title: An interactive multi-channel image viewer for R
 Description: 
     This R package supports interactive visualization of multi-channel images 
@@ -33,6 +33,7 @@ Imports:
     EBImage,
     methods,
     cytomapper,
+    ggplot2,
     ggraph,
     tidygraph,
     rlang,

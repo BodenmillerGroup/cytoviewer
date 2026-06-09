@@ -230,9 +230,9 @@
                           uiOutput("Colorby_colors")), 
                  startExpanded = TRUE, icon = icon("shapes")
                  ),
-        menuItem("Points-level", 
+        menuItem("Point-level", 
                  menuItem("Basic controls",
-                          checkboxInput("plotpoints", "Show points-level plot", 
+                          checkboxInput("plotpoints", "Show point-level plot", 
                                         value = FALSE, width = NULL),
                           uiOutput("node_color_controls"),
                           uiOutput("node_size_controls"),
@@ -304,7 +304,7 @@
                  tabsetPanel(
                    tabPanel("Mask", value = "cells_tab", width = 12, 
                             withSpinner(uiOutput("cells_tab"), type = 6)))),
-        tabPanel("Points-level", 
+        tabPanel("Point-level", 
                  tabsetPanel(
                    tabPanel("Graph", value = "graph_tab", width = 12, 
                             withSpinner(uiOutput("graph_tab"), type = 6))))

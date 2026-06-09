@@ -2,7 +2,7 @@
 
 #' @importFrom cytomapper plotCells plotPixels channelNames CytoImageList
 #' @importFrom SingleCellExperiment colData colPair colPairNames
-#' @importFrom ggplot2 ggtitle scale_color_manual scale_color_gradientn scale_shape_manual scale_size_manual theme element_text element_blank scale_y_reverse
+#' @importFrom ggplot2 aes ggtitle scale_color_manual scale_color_gradientn scale_shape_manual scale_size_manual theme element_text element_blank scale_y_reverse
 #' @importFrom ggraph ggraph create_layout geom_node_point geom_edge_fan0 geom_edge_link0 scale_edge_color_manual scale_edge_width_manual
 #' @importFrom tidygraph tbl_graph
 #' @importFrom rlang .data

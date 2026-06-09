@@ -7,7 +7,7 @@ test_that("cytoviewer: input testing works", {
   data("pancreasSCE")
   
   # Input testing 
-  testServer(app = cytoviewer(image = pancreasImages, mask = pancreasMasks, object = pancreasSCE, img_id = "ImageNb", cell_id = "CellNb"), {
+  testServer(app = cytoviewer(image = pancreasImages, mask = pancreasMasks, object = pancreasSCE, img_id = "ImageNb", cell_id = "CellNb", coords = c("Pos_X", "Pos_Y")), {
     
     session$setInputs(sample = "E34_imc", 
                       marker1 = "H3", marker2 = "CD99", marker3 = "PIN", marker4 = "CD8a", marker5 = "CDH",
@@ -54,7 +54,7 @@ test_that("cytoviewer: plot input testing works", {
   data("pancreasMasks")
   data("pancreasSCE")
     
-  testServer(app = cytoviewer(image = pancreasImages, mask = pancreasMasks, object = pancreasSCE, img_id = "ImageNb", cell_id = "CellNb"), {
+  testServer(app = cytoviewer(image = pancreasImages, mask = pancreasMasks, object = pancreasSCE, img_id = "ImageNb", cell_id = "CellNb", coords = c("Pos_X", "Pos_Y")), {
     
     session$setInputs(sample = "E34_imc", 
                       marker1 = "H3", marker2 = "CD99", marker3 = "PIN", marker4 = "CD8a", marker5 = "CDH", marker6 = "",
@@ -126,7 +126,7 @@ test_that("cytoviewer: plot input 2 testing works", {
   data("pancreasMasks")
   data("pancreasSCE")
   
-  testServer(app = cytoviewer(image = pancreasImages, mask = pancreasMasks, object = pancreasSCE, img_id = "ImageNb", cell_id = "CellNb"), {
+  testServer(app = cytoviewer(image = pancreasImages, mask = pancreasMasks, object = pancreasSCE, img_id = "ImageNb", cell_id = "CellNb", coords = c("Pos_X", "Pos_Y")), {
     
     session$setInputs(sample = "E34_imc", 
                       marker1 = "H3", marker2 = "CD99", marker3 = "PIN", marker4 = "CD8a", marker5 = "CDH", marker6 = "",
@@ -167,7 +167,7 @@ test_that("cytoviewer: plot input 3 testing works", {
   data("pancreasMasks")
   data("pancreasSCE")
   
-  testServer(app = cytoviewer(image = pancreasImages, mask = pancreasMasks, object = pancreasSCE, img_id = "ImageNb", cell_id = "CellNb"), {
+  testServer(app = cytoviewer(image = pancreasImages, mask = pancreasMasks, object = pancreasSCE, img_id = "ImageNb", cell_id = "CellNb", coords = c("Pos_X", "Pos_Y")), {
     
     session$setInputs(sample = "E34_imc", 
                       marker1 = "H3", marker2 = "CD99", marker3 = "PIN", marker4 = "CD8a", marker5 = "CDH", marker6 = "",
@@ -209,7 +209,7 @@ test_that("cytoviewer: plot input 4 testing works", {
   data("pancreasMasks")
   data("pancreasSCE")
   
-  testServer(app = cytoviewer(image = pancreasImages, mask = pancreasMasks, object = pancreasSCE, img_id = "ImageNb", cell_id = "CellNb"), {
+  testServer(app = cytoviewer(image = pancreasImages, mask = pancreasMasks, object = pancreasSCE, img_id = "ImageNb", cell_id = "CellNb", coords = c("Pos_X", "Pos_Y")), {
     
     session$setInputs(sample = "E34_imc", 
                       marker1 = "H3", marker2 = "CD99", marker3 = "PIN", marker4 = "CD8a", marker5 = "CDH", marker6 = "",
@@ -252,7 +252,7 @@ test_that("cytoviewer: plot input 5 testing works", {
   data("pancreasMasks")
   data("pancreasSCE")
   
-  testServer(app = cytoviewer(image = pancreasImages, mask = pancreasMasks, object = pancreasSCE, img_id = "ImageNb", cell_id = "CellNb"), {
+  testServer(app = cytoviewer(image = pancreasImages, mask = pancreasMasks, object = pancreasSCE, img_id = "ImageNb", cell_id = "CellNb", coords = c("Pos_X", "Pos_Y")), {
     
     session$setInputs(sample = "E34_imc", 
                       marker1 = "H3", marker2 = "CD99", marker3 = "PIN", marker4 = "CD8a", marker5 = "CDH", marker6 = "",
@@ -293,7 +293,7 @@ test_that("cytoviewer: plot input 6 testing works", {
   data("pancreasMasks")
   data("pancreasSCE")
   
-  testServer(app = cytoviewer(image = pancreasImages, mask = pancreasMasks, object = pancreasSCE, img_id = "ImageNb", cell_id = "CellNb"), {
+  testServer(app = cytoviewer(image = pancreasImages, mask = pancreasMasks, object = pancreasSCE, img_id = "ImageNb", cell_id = "CellNb", coords = c("Pos_X", "Pos_Y")), {
     
     session$setInputs(sample = "E34_imc", 
                       show_legend = FALSE, 
@@ -330,7 +330,7 @@ test_that("cytoviewer: plot input 7 testing works", {
   data("pancreasMasks")
   data("pancreasSCE")
   
-  testServer(app = cytoviewer(image = pancreasImages, mask = pancreasMasks, object = pancreasSCE, img_id = "ImageNb", cell_id = "CellNb"), {
+  testServer(app = cytoviewer(image = pancreasImages, mask = pancreasMasks, object = pancreasSCE, img_id = "ImageNb", cell_id = "CellNb", coords = c("Pos_X", "Pos_Y")), {
     
     session$setInputs(sample = "E34_imc", 
                       show_legend = FALSE, 
@@ -367,7 +367,7 @@ test_that("cytoviewer: plot input 8 testing works", {
   data("pancreasMasks")
   data("pancreasSCE")
   
-  testServer(app = cytoviewer(image = pancreasImages, mask = pancreasMasks, object = pancreasSCE, img_id = "ImageNb", cell_id = "CellNb"), {
+  testServer(app = cytoviewer(image = pancreasImages, mask = pancreasMasks, object = pancreasSCE, img_id = "ImageNb", cell_id = "CellNb", coords = c("Pos_X", "Pos_Y")), {
     
     session$setInputs(sample = "E34_mask", 
                       show_legend = FALSE, 
@@ -402,7 +402,7 @@ test_that("cytoviewer: plot input 9 testing works", {
   data("pancreasMasks")
   data("pancreasSCE")
   
-  testServer(app = cytoviewer(image = pancreasImages, mask = pancreasMasks, object = pancreasSCE, img_id = "ImageNb", cell_id = "CellNb"), {
+  testServer(app = cytoviewer(image = pancreasImages, mask = pancreasMasks, object = pancreasSCE, img_id = "ImageNb", cell_id = "CellNb", coords = c("Pos_X", "Pos_Y")), {
     
     session$setInputs(sample = "E34_imc", 
                       show_legend = FALSE, 
@@ -434,7 +434,7 @@ test_that("cytoviewer: plot input 10 testing works", {
   data("pancreasMasks")
   data("pancreasSCE")
   
-  testServer(app = cytoviewer(image = pancreasImages, mask = pancreasMasks, object = pancreasSCE, img_id = "ImageNb", cell_id = "CellNb"), {
+  testServer(app = cytoviewer(image = pancreasImages, mask = pancreasMasks, object = pancreasSCE, img_id = "ImageNb", cell_id = "CellNb", coords = c("Pos_X", "Pos_Y")), {
     
     session$setInputs(sample = "E34_mask", 
                       show_legend = FALSE, 
@@ -466,7 +466,7 @@ test_that("cytoviewer: plot input 11 testing works", {
   data("pancreasMasks")
   data("pancreasSCE")
   
-  testServer(app = cytoviewer(image = pancreasImages, mask = pancreasMasks, object = pancreasSCE, img_id = "ImageNb", cell_id = "CellNb"), {
+  testServer(app = cytoviewer(image = pancreasImages, mask = pancreasMasks, object = pancreasSCE, img_id = "ImageNb", cell_id = "CellNb", coords = c("Pos_X", "Pos_Y")), {
     
     session$setInputs(sample = "E34_imc", 
                       marker1 = "H3", marker2 = "H3", marker3 = "PIN", marker4 = "CD8a", marker5 = "CDH", marker6 = "",
@@ -502,32 +502,448 @@ test_that("cytoviewer: plot input 11 testing works", {
 })  
 
 test_that("cytoviewer: plot input 12 testing works", {
-  
-  # Load datasets 
+
+  # Load datasets
   library(cytomapper)
   data("pancreasMasks")
   data("pancreasSCE")
-  
-  testServer(app = cytoviewer(mask = pancreasMasks, object = pancreasSCE, img_id = "ImageNb", cell_id = "CellNb"), {
-    
-    session$setInputs(sample = "E34_mask", 
-                      show_legend = FALSE, 
+
+  testServer(app = cytoviewer(mask = pancreasMasks, object = pancreasSCE,
+                              img_id = "ImageNb", cell_id = "CellNb",
+                              coords = c("Pos_X", "Pos_Y")), {
+
+    session$setInputs(sample = "E34_mask",
+                      show_legend = FALSE,
                       show_title = FALSE,
-                      gaussian_blur = FALSE, 
+                      gaussian_blur = FALSE,
                       scalebar = 20,
                       interpolate = TRUE,
                       plotcells = TRUE,
                       color_by = "",
-                      resolution = 1
-    )
-    
+                      resolution = 1)
+
     image <- NULL
     mask <- pancreasMasks[1]
     object <- NULL
     img_id <- "ImageNb"
-    
+
     # Plot cells output (Masks but no images and object)
     expect_silent(.create_cells(input, object, mask, image, img_id, cell_id))
-    
+
   })
-})  
+})
+
+test_that("cytoviewer: plot input 13 testing works", {
+
+  library(cytomapper)
+  data("pancreasMasks")
+  data("pancreasSCE")
+
+  testServer(
+    app = cytoviewer(mask = pancreasMasks, object = pancreasSCE,
+                     img_id = "ImageNb", cell_id = "CellNb",
+                     coords = c("Pos_X", "Pos_Y")), {
+
+    session$setInputs(
+        sample         = "E34_mask",
+        plotpoints     = TRUE,
+        node_color_by  = "",
+        node_color_fix = "black",
+        node_size_by   = "",
+        node_size_fix  = 1.5,
+        node_shape_by  = "",
+        node_shape_fix = "19",
+        spatial_graph  = "")
+
+    image  <- NULL
+    mask   <- pancreasMasks[1]
+    object <- pancreasSCE
+    img_id <- "ImageNb"
+
+    # Basic graph: all fixed params, no edges
+    p <- .create_graph(input, image, mask, object, img_id,
+                       coords = c("Pos_X", "Pos_Y"))
+    expect_s3_class(p, "gg")
+  })
+})
+
+test_that("cytoviewer: plot input 14 testing works", {
+
+  library(cytomapper)
+  data("pancreasMasks")
+  data("pancreasSCE")
+
+  testServer(
+    app = cytoviewer(mask = pancreasMasks, object = pancreasSCE,
+                     img_id = "ImageNb", cell_id = "CellNb",
+                     coords = c("Pos_X", "Pos_Y")), {
+
+    # node_color_by categorical + per-category colors
+    session$setInputs(
+        sample                  = "E34_mask",
+        plotpoints               = TRUE,
+        node_color_by           = "CellType",
+        node_color_by_selection = c("celltype_A", "celltype_B",
+                                    "celltype_C"),
+        node_color_advanced1    = "yellow",
+        node_color_advanced2    = "blue",
+        node_color_advanced3    = "red",
+        node_size_by            = "",
+        node_size_fix           = 1.5,
+        node_shape_by           = "",
+        node_shape_fix          = "19",
+        spatial_graph           = "")
+
+    image  <- NULL
+    mask   <- pancreasMasks[1]
+    object <- pancreasSCE
+    img_id <- "ImageNb"
+
+    expect_silent(.create_graph(input, image, mask, object, img_id,
+                                coords = c("Pos_X", "Pos_Y")))
+  })
+})
+
+test_that("cytoviewer: plot input 15 testing works", {
+
+  library(cytomapper)
+  data("pancreasMasks")
+  data("pancreasSCE")
+
+  testServer(
+    app = cytoviewer(mask = pancreasMasks, object = pancreasSCE,
+                     img_id = "ImageNb", cell_id = "CellNb",
+                     coords = c("Pos_X", "Pos_Y")), {
+
+    # node_color_by logical (Pattern) — selection uses "0"/"1"
+    session$setInputs(
+        sample                  = "E34_mask",
+        plotpoints               = TRUE,
+        node_color_by           = "Pattern",
+        node_color_by_selection = c("0", "1"),
+        node_color_advanced1    = "grey80",
+        node_color_advanced2    = "orange",
+        node_size_by            = "",
+        node_size_fix           = 1.5,
+        node_shape_by           = "",
+        node_shape_fix          = "19",
+        spatial_graph           = "")
+
+    image  <- NULL
+    mask   <- pancreasMasks[1]
+    object <- pancreasSCE
+    img_id <- "ImageNb"
+
+    expect_silent(.create_graph(input, image, mask, object, img_id,
+                                coords = c("Pos_X", "Pos_Y")))
+  })
+})
+
+test_that("cytoviewer: plot input 16 testing works", {
+
+  library(cytomapper)
+  data("pancreasMasks")
+  data("pancreasSCE")
+
+  testServer(
+    app = cytoviewer(mask = pancreasMasks, object = pancreasSCE,
+                     img_id = "ImageNb", cell_id = "CellNb",
+                     coords = c("Pos_X", "Pos_Y")), {
+
+    # node_color_by numeric (Area) + viridis colormap
+    session$setInputs(
+        sample                  = "E34_mask",
+        plotpoints               = TRUE,
+        node_color_by           = "Area",
+        node_color_by_selection = "Area",
+        numeric_node_color      = "A",
+        node_size_by            = "",
+        node_size_fix           = 1.5,
+        node_shape_by           = "",
+        node_shape_fix          = "19",
+        spatial_graph           = "")
+
+    image  <- NULL
+    mask   <- pancreasMasks[1]
+    object <- pancreasSCE
+    img_id <- "ImageNb"
+
+    expect_silent(.create_graph(input, image, mask, object, img_id,
+                                coords = c("Pos_X", "Pos_Y")))
+  })
+})
+
+test_that("cytoviewer: plot input 17 testing works", {
+
+  library(cytomapper)
+  data("pancreasMasks")
+  data("pancreasSCE")
+
+  testServer(
+    app = cytoviewer(mask = pancreasMasks, object = pancreasSCE,
+                     img_id = "ImageNb", cell_id = "CellNb",
+                     coords = c("Pos_X", "Pos_Y")), {
+
+    # node_size_by (Area)
+    session$setInputs(
+        sample         = "E34_mask",
+        plotpoints     = TRUE,
+        node_color_by  = "",
+        node_color_fix = "black",
+        node_size_by   = "Area",
+        node_shape_by  = "",
+        node_shape_fix = "19",
+        spatial_graph  = "")
+
+    image  <- NULL
+    mask   <- pancreasMasks[1]
+    object <- pancreasSCE
+    img_id <- "ImageNb"
+
+    expect_silent(.create_graph(input, image, mask, object, img_id,
+                                coords = c("Pos_X", "Pos_Y")))
+  })
+})
+
+test_that("cytoviewer: plot input 18 testing works", {
+
+  library(cytomapper)
+  data("pancreasMasks")
+  data("pancreasSCE")
+
+  testServer(
+    app = cytoviewer(mask = pancreasMasks, object = pancreasSCE,
+                     img_id = "ImageNb", cell_id = "CellNb",
+                     coords = c("Pos_X", "Pos_Y")), {
+
+    # node_shape_by categorical + per-category shapes
+    session$setInputs(
+        sample                  = "E34_mask",
+        plotpoints               = TRUE,
+        node_color_by           = "",
+        node_color_fix          = "black",
+        node_size_by            = "",
+        node_size_fix           = 1.5,
+        node_shape_by           = "CellType",
+        node_shape_by_selection = c("celltype_A", "celltype_B",
+                                    "celltype_C"),
+        node_shape_advanced1    = "19",
+        node_shape_advanced2    = "17",
+        node_shape_advanced3    = "15",
+        spatial_graph           = "")
+
+    image  <- NULL
+    mask   <- pancreasMasks[1]
+    object <- pancreasSCE
+    img_id <- "ImageNb"
+
+    expect_silent(.create_graph(input, image, mask, object, img_id,
+                                coords = c("Pos_X", "Pos_Y")))
+  })
+})
+
+test_that("cytoviewer: plot input 19 testing works", {
+
+  library(cytomapper)
+  library(S4Vectors)
+  data("pancreasMasks")
+  data("pancreasSCE")
+
+  # Build bidirectional chain graph across all cells
+  n <- ncol(pancreasSCE)
+  test_hits <- SelfHits(
+      from  = c(seq_len(n - 1L), seq_len(n - 1L) + 1L),
+      to    = c(seq_len(n - 1L) + 1L, seq_len(n - 1L)),
+      nnode = n)
+  colPair(pancreasSCE, "test_graph") <- test_hits
+
+  testServer(
+    app = cytoviewer(mask = pancreasMasks, object = pancreasSCE,
+                     img_id = "ImageNb", cell_id = "CellNb",
+                     coords = c("Pos_X", "Pos_Y")), {
+
+    # Directed edges + color_by + all edge controls
+    session$setInputs(
+        sample                  = "E34_mask",
+        node_color_by           = "CellType",
+        node_color_by_selection = c("celltype_A", "celltype_B",
+                                    "celltype_C"),
+        node_color_advanced1    = "yellow",
+        node_color_advanced2    = "blue",
+        node_color_advanced3    = "red",
+        node_size_by            = "",
+        node_size_fix           = 1.5,
+        node_shape_by           = "",
+        node_shape_fix          = "19",
+        spatial_graph           = "test_graph",
+        directed                = TRUE,
+        nodes_first             = TRUE,
+        edge_color_fix          = "grey50",
+        edge_width_fix          = 0.5)
+
+    image  <- NULL
+    mask   <- pancreasMasks[1]
+    object <- pancreasSCE
+    img_id <- "ImageNb"
+
+    expect_silent(.create_graph(input, image, mask, object, img_id,
+                                coords = c("Pos_X", "Pos_Y")))
+  })
+})
+
+test_that("cytoviewer: plot input 20 testing works", {
+
+  library(cytomapper)
+  library(S4Vectors)
+  data("pancreasMasks")
+  data("pancreasSCE")
+
+  # Build bidirectional chain graph across all cells
+  n <- ncol(pancreasSCE)
+  test_hits <- SelfHits(
+      from  = c(seq_len(n - 1L), seq_len(n - 1L) + 1L),
+      to    = c(seq_len(n - 1L) + 1L, seq_len(n - 1L)),
+      nnode = n)
+  colPair(pancreasSCE, "test_graph") <- test_hits
+
+  testServer(
+    app = cytoviewer(mask = pancreasMasks, object = pancreasSCE,
+                     img_id = "ImageNb", cell_id = "CellNb",
+                     coords = c("Pos_X", "Pos_Y")), {
+
+    # Undirected edges + nodes_first = FALSE
+    session$setInputs(
+        sample         = "E34_mask",
+        node_color_by  = "",
+        node_color_fix = "black",
+        node_size_by   = "",
+        node_size_fix  = 1.5,
+        node_shape_by  = "",
+        node_shape_fix = "19",
+        spatial_graph  = "test_graph",
+        directed       = FALSE,
+        nodes_first    = FALSE,
+        edge_color_fix = "grey70",
+        edge_width_fix = 0.3)
+
+    image  <- NULL
+    mask   <- pancreasMasks[1]
+    object <- pancreasSCE
+    img_id <- "ImageNb"
+
+    # Undirected edges, nodes drawn last
+    expect_silent(.create_graph(input, image, mask, object, img_id,
+                                coords = c("Pos_X", "Pos_Y")))
+  })
+})
+
+test_that("cytoviewer: plot input 21 testing works", {
+
+  library(cytomapper)
+  data("pancreasMasks")
+  data("pancreasSCE")
+
+  testServer(
+    app = cytoviewer(mask = pancreasMasks, object = pancreasSCE,
+                     img_id = "ImageNb", cell_id = "CellNb",
+                     coords = c("Pos_X", "Pos_Y")), {
+
+    # node_color_by set but node_color_by_selection left NULL (never set) ->
+    # cur_node_color_by nulled, graph renders with fixed color
+    session$setInputs(
+        sample         = "E34_mask",
+        plotpoints     = TRUE,
+        node_color_by  = "CellType",
+        node_color_fix = "black",
+        node_size_by   = "",
+        node_size_fix  = 1.5,
+        node_shape_by  = "",
+        node_shape_fix = "19",
+        spatial_graph  = "")
+
+    image  <- NULL
+    mask   <- pancreasMasks[1]
+    object <- pancreasSCE
+    img_id <- "ImageNb"
+
+    expect_silent(.create_graph(input, image, mask, object, img_id,
+                                coords = c("Pos_X", "Pos_Y")))
+  })
+})
+
+test_that("cytoviewer: plot input 22 testing works", {
+
+  library(cytomapper)
+  data("pancreasMasks")
+  data("pancreasSCE")
+
+  testServer(
+    app = cytoviewer(mask = pancreasMasks, object = pancreasSCE,
+                     img_id = "ImageNb", cell_id = "CellNb",
+                     coords = c("Pos_X", "Pos_Y")), {
+
+    # node_shape_by set but node_shape_by_selection left NULL (never set) ->
+    # cur_node_shape_by nulled, graph renders with fixed shape
+    session$setInputs(
+        sample         = "E34_mask",
+        plotpoints     = TRUE,
+        node_color_by  = "",
+        node_color_fix = "black",
+        node_size_by   = "",
+        node_size_fix  = 1.5,
+        node_shape_by  = "CellType",
+        node_shape_fix = "19",
+        spatial_graph  = "")
+
+    image  <- NULL
+    mask   <- pancreasMasks[1]
+    object <- pancreasSCE
+    img_id <- "ImageNb"
+
+    expect_silent(.create_graph(input, image, mask, object, img_id,
+                                coords = c("Pos_X", "Pos_Y")))
+  })
+})
+
+test_that("cytoviewer: plot input 23 testing works", {
+
+  library(cytomapper)
+  data("pancreasMasks")
+  data("pancreasSCE")
+
+  # Add logical column to cover the logical node_shape_by branch
+  cur_sce_logical <- pancreasSCE
+  cur_sce_logical$IsActivated <- as.logical(seq_len(ncol(pancreasSCE)) %% 2)
+
+  testServer(
+    app = cytoviewer(mask = pancreasMasks, object = cur_sce_logical,
+                     img_id = "ImageNb", cell_id = "CellNb",
+                     coords = c("Pos_X", "Pos_Y")), {
+
+    # logical node_shape_by: subsetting uses numeric string selection
+    # covers lines in .create_graph and in .create_advanced_node_shape 
+    # (logical label rendering)
+    session$setInputs(
+        sample                  = "E34_mask",
+        plotpoints              = TRUE,
+        node_color_by           = "",
+        node_color_fix          = "black",
+        node_size_by            = "",
+        node_size_fix           = 1.5,
+        node_shape_by           = "IsActivated",
+        node_shape_by_selection = c("0", "1"),
+        node_shape_advanced1    = "19",
+        node_shape_advanced2    = "15",
+        spatial_graph           = "")
+
+    image  <- NULL
+    mask   <- pancreasMasks[1]
+    object <- cur_sce_logical
+    img_id <- "ImageNb"
+
+    expect_silent(.create_graph(input, image, mask, object, img_id,
+                                coords = c("Pos_X", "Pos_Y")))
+    expect_false(is.null(output$advanced_node_shape_controls))
+  })
+})
+
