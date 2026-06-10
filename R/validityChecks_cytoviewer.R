@@ -2,12 +2,13 @@
 
 #' @importFrom cytomapper channelNames
 #' @importFrom SingleCellExperiment colData
+#' @importFrom SpatialExperiment spatialCoordsNames
 #' @importFrom SummarizedExperiment assayNames
 #' @importFrom methods is
 #' @importFrom S4Vectors mcols
 #' @importFrom EBImage numberOfFrames
 
-.valid.cytoviewer.shiny <- function(image, mask, object, cell_id, img_id){
+.valid.cytoviewer.shiny <- function(image, mask, object, cell_id, img_id, coords){
   
   # General general validity 
   
@@ -134,13 +135,32 @@
   
   # Check sce validity
   if (!is.null(object)){
-    
+
     if (!all(is.numeric(colData(object)[,cell_id]))) {
       stop("Cell ids should only contain numeric integer values.")
     }
-    
+
     if(!all(colData(object)[,cell_id] == floor(colData(object)[,cell_id]))){
       stop("Cell ids should only contain numeric integer values.")
     }
-  }
+    
+    if (is.null(coords)) {
+      stop("Please provide a 'coords' argument.")
+    }
+
+    if (!is.character(coords) || length(coords) != 2L) {
+      stop("'coords' must be a character vector of length 2.")
+    }
+
+    if (is(object, "SpatialExperiment")) {
+      if (!all(coords %in% spatialCoordsNames(object))) {
+        stop("'coords' entries not found in 'spatialCoordsNames(object)'.")
+      }
+    } else {
+      if (!all(coords %in% colnames(colData(object)))) {
+        stop("'coords' entries not found in 'colData(object)'.")
+      }
+    }
+    
+    }
 }

@@ -1,28 +1,30 @@
-# -----------------------------------------------------------------------------
 # Definition of the shiny server
-# -----------------------------------------------------------------------------
 
 #' @importFrom utils sessionInfo
 
 .cytoviewer_server <- function(object, mask, image, cell_id, img_id,
                                 input, output, session, ...)
 {
-  
-  # 1. General 
-  ## Sample selection 
+  cur_coords <- if (!is.null(list(...)$coords)) list(...)$coords else c("Pos_X", "Pos_Y")
+
+  # 1. General
+  ## Sample selection
   .create_interactive_observer(image, mask, input, session)
-  
+
   output$scalebar_controls <- renderUI({})
   output$resolution_controls <- renderUI({})
   outputOptions(output, "scalebar_controls", suspendWhenHidden = FALSE)
   outputOptions(output, "resolution_controls", suspendWhenHidden = FALSE)
-  output$scalebar_controls <- .add_scalebar(input, object, mask,image, 
+  output$scalebar_controls <- .add_scalebar(input, object, mask, image,
                                             img_id, cell_id)
   output$resolution_controls <- .add_resolution(input)
-  
-  ## Session info 
+
+  ## Session info
   cur_sessionInfo <- sessionInfo()
-  .create_general_observer(input, si = cur_sessionInfo)
+  .create_general_observer(input, si = cur_sessionInfo,
+                           image = image, mask = mask, object = object,
+                           img_id = img_id, cell_id = cell_id,
+                           coords = cur_coords)
   
   ## Download 
   output$downloadData <- .downloadSelection(input, object, mask, image, 
@@ -82,4 +84,58 @@
                                      img_id, cell_id)
   output$cellsPlot <- .cellsPlot(input, object, mask, image, 
                                  img_id, cell_id, ...)
+  
+  #4. Points-level
+  output$graph_tab <- .add_graph_tab(input, image, mask, object, img_id, ...)
+
+  output$graphPlot <- .graphPlot(input, image, mask, object, img_id, ...)
+
+  output$spatial_graph_control      <- renderUI({})
+  output$node_color_controls        <- renderUI({})
+  output$basic_node_color_controls  <- renderUI({})
+  output$node_size_controls         <- renderUI({})
+  output$basic_node_size_controls   <- renderUI({})
+  output$node_shape_controls           <- renderUI({})
+  output$basic_node_shape_controls     <- renderUI({})
+  output$advanced_node_shape_controls  <- renderUI({})
+  output$edge_controls              <- renderUI({})
+  output$edge_color_controls        <- renderUI({})
+  output$edge_width_controls        <- renderUI({})
+  outputOptions(output, "spatial_graph_control",     suspendWhenHidden = FALSE)
+  outputOptions(output, "node_color_controls",       suspendWhenHidden = FALSE)
+  outputOptions(output, "basic_node_color_controls", suspendWhenHidden = FALSE)
+  outputOptions(output, "node_size_controls",        suspendWhenHidden = FALSE)
+  outputOptions(output, "basic_node_size_controls",  suspendWhenHidden = FALSE)
+  outputOptions(output, "node_shape_controls",          suspendWhenHidden = FALSE)
+  outputOptions(output, "basic_node_shape_controls",    suspendWhenHidden = FALSE)
+  outputOptions(output, "advanced_node_shape_controls", suspendWhenHidden = FALSE)
+  outputOptions(output, "edge_controls",             suspendWhenHidden = FALSE)
+  outputOptions(output, "edge_color_controls",       suspendWhenHidden = FALSE)
+  outputOptions(output, "edge_width_controls",       suspendWhenHidden = FALSE)
+
+  output$spatial_graph_control <- .create_spatial_graph_control(input, image, mask, object, img_id, ...)
+
+  output$node_color_controls       <- .create_node_color_controls(input, image, mask, object, img_id, ...)
+  output$basic_node_color_controls <- .create_basic_node_color(input, image, mask, object, img_id, ...)
+  output$advanced_node_color_controls <- .create_advanced_node_color(input, image, mask, object, img_id, ...)
+
+  output$node_size_controls       <- .create_node_size_controls(input, image, mask, object, img_id, ...)
+  output$basic_node_size_controls <- .create_basic_node_size(input, image, mask, object, img_id, ...)
+
+  output$node_shape_controls          <- .create_node_shape_controls(input, image, mask, object, img_id, ...)
+  output$basic_node_shape_controls    <- .create_basic_node_shape(input, image, mask, object, img_id, ...)
+  output$advanced_node_shape_controls <- .create_advanced_node_shape(input, image, mask, object, img_id, ...)
+
+  output$edge_controls       <- .create_edge_controls(input, image, mask, object, img_id, ...)
+  output$edge_color_controls <- .create_edge_color_controls(input, image, mask, object, img_id, ...)
+  output$edge_width_controls <- .create_edge_width_controls(input, image, mask, object, img_id, ...)
+
+  .populate_graph_controls(session, object, input)
+  .populate_node_color_controls(session, object, input)
+  .populate_node_size_controls(session, object, input)
+  .populate_node_shape_controls(session, object, input)
+
+  output$fine_graph_controls <- .create_fine_graph_controls(input, image, mask, object, img_id, ...)
+  
+    
 }

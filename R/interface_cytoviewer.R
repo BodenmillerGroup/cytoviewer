@@ -1,6 +1,4 @@
-# -----------------------------------------------------------------------------
 # Helper functions to modify the visual appearance of the shiny app
-# -----------------------------------------------------------------------------
 
 #' @importFrom utils packageVersion
 #' @importFrom colourpicker colourInput
@@ -24,13 +22,23 @@
                 icon = icon(NULL)
             ),
             notificationItem(
+              text = actionButton(
+                inputId = "ViewCode",
+                label = "R Code",
+                style = paste0("background-color: #3C8DBC; color: white; ",
+                               "border-color: #3C8DBC"),
+              ),
+              status = "info",
+              icon(NULL)
+            ),
+            notificationItem(
                 text = actionButton(
                     inputId = "Help",
                     label = "Help",
                     style = paste0("background-color: #3C8DBC; color: white; ",
                                    "border-color: #3C8DBC"),
                 ),
-                status = "info", 
+                status = "info",
                 icon(NULL)
             ),
             headerText = "",
@@ -48,8 +56,8 @@
           notificationItem(
             text = radioButtons(inputId = "fileselection", 
                                 label = "Select image",
-                                choices = list("Composite","Channels","Mask"), 
-                                selected = "Composite"), 
+                                choices = list("Composite","Channels","Mask","Graph"),
+                                selected = "Composite"),
             icon = icon(NULL),
             status = "info"
           ),
@@ -222,9 +230,21 @@
                           uiOutput("Colorby_colors")), 
                  startExpanded = TRUE, icon = icon("shapes")
                  ),
+        menuItem("Point-level", 
+                 menuItem("Basic controls",
+                          checkboxInput("plotpoints", "Show point-level plot", 
+                                        value = FALSE, width = NULL),
+                          uiOutput("node_color_controls"),
+                          uiOutput("node_size_controls"),
+                          uiOutput("node_shape_controls")),
+                 menuItem("Advanced controls",
+                          uiOutput("spatial_graph_control"),
+                          uiOutput("edge_controls")),
+                 startExpanded = TRUE, icon = icon("circle-nodes")
+        ),
         menuItem("General",
                  menuItem("Basic controls", 
-                          menuItem("Image appearance",
+                          menuItem("Image/Cell appearance",
                           uiOutput("scalebar_controls"),
                           uiOutput("resolution_controls"),
                           checkboxInput(inputId = "show_legend","Show Legend", 
@@ -253,7 +273,16 @@
         tags$style(
           "#sidebarItemExpanded {
             overflow: auto;
-            max-height: 100vh}")
+            max-height: 100vh}", 
+        HTML("
+        .wellpanel_custom {
+          background-color: #367FA9;
+        }"),
+        HTML("
+        .wellpanel_node {
+          background-color: #FFFFFF;
+        }")
+        )
         )
     return(cm_side)
 }
@@ -274,7 +303,11 @@
         tabPanel("Cell-level", 
                  tabsetPanel(
                    tabPanel("Mask", value = "cells_tab", width = 12, 
-                            withSpinner(uiOutput("cells_tab"), type = 6))))
+                            withSpinner(uiOutput("cells_tab"), type = 6)))),
+        tabPanel("Point-level", 
+                 tabsetPanel(
+                   tabPanel("Graph", value = "graph_tab", width = 12, 
+                            withSpinner(uiOutput("graph_tab"), type = 6))))
       ))
     return(cm_body)
     }
