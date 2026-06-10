@@ -14,6 +14,10 @@ This shiny application allows users to interactively visualize multi-channel ima
 
 Read the **BMC Bioinformatics paper** here: [doi.org/10.1186/s12859-023-05546-z](https://doi.org/10.1186/s12859-023-05546-z).
 
+## Updates
+
+**06/2026:** `cytoviewer` now has a point-level visualization feature that allows users to flexibly visualize spatial cell locations as a graph. 
+
 ## Check status
 
 | Bioc branch |                                                                                                                 Checks                                                                                                                 |

@@ -1367,8 +1367,7 @@
   })
 }
 
-## Internal plotSpatial implementation (replaces imcRtools::plotSpatial)
-
+## Internal plotSpatial implementation (mimics imcRtools function)
 .makeNodes_cytoviewer <- function(object, img_id, node_color_by,
                                    node_shape_by, node_size_by) {
     cols  <- unique(c(img_id, node_color_by, node_shape_by, node_size_by))
@@ -1489,7 +1488,6 @@
 
 
 ## Create graph plot
-
 .create_graph <- function(input, image, mask, object, img_id, ...){
 
   dots <- list(...)
@@ -1503,7 +1501,6 @@
     req(input$sample %in% names(mask))
   }
 
-  # Subset to current sample
   if (!is.null(image)) {
     cur_image <- image[input$sample]
     cur_mask  <- mask[mcols(mask)[[img_id]] == mcols(cur_image)[[img_id]]]
@@ -1512,7 +1509,6 @@
   }
   cur_object <- object[, colData(object)[[img_id]] %in% mcols(cur_mask)[, img_id]]
 
-  # Validate node_color_by has no multi-dim colData entry
   cur_node_color_by <- .select_node_color_by(input)
   if (!is.null(cur_node_color_by)) {
     validate(
@@ -1523,14 +1519,12 @@
     )
   }
 
-  # Validate mask/object alignment for current image
   validate(
     need(mcols(cur_mask)[[img_id]] %in% cur_object[[img_id]],
          "NOTE: Your [Node color by] choices are not featured
          in the current image.")
   )
 
-  # Subset cur_object to selected categories and validate they exist
   if (!is.null(cur_node_color_by) && !is.null(input$node_color_by_selection)) {
     cur_entries <- length(unique(colData(object)[[cur_node_color_by]]))
     if (!is.numeric(colData(object)[[cur_node_color_by]]) || cur_entries <= 23L) {
@@ -1551,11 +1545,9 @@
     }
   }
 
-  # Guard against empty object after subsetting
   req(!identical(unique(colData(cur_object)[, img_id]), integer(0)))
   req(!identical(unique(colData(cur_object)[, img_id]), character(0)))
 
-  # Edge controls
   if (!is.null(input$spatial_graph) && input$spatial_graph != "") {
     cur_graph       <- input$spatial_graph
     cur_edges       <- TRUE
@@ -1647,7 +1639,6 @@
   p
 }
 
-# Helper: return node_color_by column name or NULL
 .select_node_color_by <- function(input){
   if (!is.null(input$node_color_by) && input$node_color_by != "") {
     input$node_color_by
@@ -1656,7 +1647,6 @@
   }
 }
 
-# Helper: return named color vector (categorical) or viridis palette (continuous)
 .select_node_color <- function(input, object){
   cur_color_by <- .select_node_color_by(input)
   if (is.null(cur_color_by) || is.null(input$node_color_by_selection)) return(NULL)
