@@ -54,3 +54,6 @@ Changes in version 1.13.1 (2026-06-09):
 
 Changes in version 1.13.2 (2026-08-31): 
 + fix cell-level/downloads after points integration
+
+Changes in version 1.13.3 (2026-08-31): 
++ improve zoom-preservation

@@ -15,6 +15,7 @@
 #' @importFrom shinycssloaders withSpinner
 #' @importFrom svglite stringSVG
 #' @importFrom svgPanZoom svgPanZoom renderSvgPanZoom svgPanZoomOutput
+#' @importFrom htmlwidgets onRender
 #' @importFrom utils capture.output
 #' @importFrom EBImage gblur
 #' @importFrom methods as
@@ -621,6 +622,41 @@
     }
 }
 
+# Preserve pan/zoom across re-renders of a svgPanZoom widget.
+.persist_pan_zoom <- function(widget){
+  onRender(widget, "
+    function(el, x, data) {
+      var inst = el.zoomWidget;
+      if (!inst) return;
+
+      window.__cytoviewerPanZoom = window.__cytoviewerPanZoom || {};
+      var key = el.id;
+      var saved = window.__cytoviewerPanZoom[key];
+      var vb = inst.getSizes().viewBox || {};
+
+      if (saved && saved.width === vb.width && saved.height === vb.height) {
+        inst.updateBBox();
+        inst.zoom(saved.zoom);
+        inst.pan(saved.pan);
+      }
+
+      function record() {
+        var vb2 = inst.getSizes().viewBox || {};
+        window.__cytoviewerPanZoom[key] = {
+          pan: inst.getPan(),
+          zoom: inst.getZoom(),
+          width: vb2.width,
+          height: vb2.height
+        };
+      }
+
+      record();
+      inst.setOnPan(function() { record(); });
+      inst.setOnZoom(function() { record(); });
+    }
+  ")
+}
+
 # Visualize marker expression on images
 .imagePlot <- function(input, object, mask,
                        image, img_id, cell_id, ...){
@@ -628,10 +664,10 @@
         suppressMessages(svgPanZoom(stringSVG(
             .create_image(input, object, mask,image, img_id, cell_id, ...)
             ),
-            zoomScaleSensitivity = 0.4, 
+            zoomScaleSensitivity = 0.4,
             maxZoom = 20,
-            controlIconsEnabled = TRUE, 
-            viewBox = FALSE))
+            controlIconsEnabled = TRUE,
+            viewBox = FALSE)) |> .persist_pan_zoom()
     })
 }
 
@@ -1266,10 +1302,10 @@
     suppressMessages(svgPanZoom(stringSVG(
       .create_cells(input, object, mask, image, img_id, cell_id, ...)
     ),
-    zoomScaleSensitivity = 0.4, 
+    zoomScaleSensitivity = 0.4,
     maxZoom = 20,
-    controlIconsEnabled = TRUE, 
-    viewBox = FALSE))
+    controlIconsEnabled = TRUE,
+    viewBox = FALSE)) |> .persist_pan_zoom()
   })
 }
 
@@ -1361,7 +1397,7 @@
       zoomScaleSensitivity = 0.4,
       maxZoom = 20,
       controlIconsEnabled = TRUE,
-      viewBox = FALSE))
+      viewBox = FALSE)) |> .persist_pan_zoom()
   })
 }
 
