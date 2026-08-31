@@ -317,10 +317,10 @@ test_that("cytoviewer: plot input 6 testing works", {
 
     # Plot cells output (Images + Masks + Object - Categorical)
     expect_silent(.create_cells(input, object, mask, image, img_id, cell_id))
-    
+
   })
-  
-})  
+
+})
 
 test_that("cytoviewer: plot input 7 testing works", {
   
@@ -947,3 +947,34 @@ test_that("cytoviewer: plot input 23 testing works", {
   })
 })
 
+test_that("cytoviewer: plot input 24 testing works", {
+  
+  # Load datasets
+  library(cytomapper)
+  data("pancreasImages")
+  data("pancreasMasks")
+  data("pancreasSCE")
+  
+  # Regression test for the reactive output$cellsPlot wiring - 'coords' argument threaded through
+  # server(...) for points-level rendering must not leak into plotCells().
+  testServer(app = cytoviewer(image = pancreasImages, mask = pancreasMasks, object = pancreasSCE, img_id = "ImageNb", cell_id = "CellNb", coords = c("Pos_X", "Pos_Y")), {
+    
+    session$setInputs(sample = "E34_imc",
+                      show_legend = FALSE,
+                      show_title = FALSE,
+                      gaussian_blur = FALSE,
+                      scalebar = 20,
+                      interpolate = TRUE,
+                      plotcells = TRUE,
+                      color_by = "CellType",
+                      color_by_selection = "celltype_C",
+                      color_by1 = "blue",
+                      missing_colorby = "white",
+                      resolution = 1
+    )
+    
+    expect_silent(output$cellsPlot)
+    
+  })
+  
+})
