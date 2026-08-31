@@ -788,24 +788,22 @@
         if(input$filename2 == "pdf"){
           pdf(file = file)
           .create_image(input, object, mask,
-                        image, img_id, cell_id,
-                        ...)
+                        image, img_id, cell_id)
           dev.off()
           } else {
             png(filename = file)
             .create_image(input, object, mask,
-                          image, img_id, cell_id,
-                          ...)
+                          image, img_id, cell_id)
             dev.off()
           }
         } else if(input$fileselection == "Mask"){
           if(input$filename2 == "pdf"){
             pdf(file = file)
-            .create_cells(input, object, mask, image, img_id, cell_id, ...)
+            .create_cells(input, object, mask, image, img_id, cell_id)
             dev.off()
           } else {
             png(filename = file)
-            .create_cells(input, object, mask, image, img_id, cell_id, ...)
+            .create_cells(input, object, mask, image, img_id, cell_id)
             dev.off()
           }
         } else if (input$fileselection == "Graph") {
